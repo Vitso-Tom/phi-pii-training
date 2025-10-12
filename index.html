@@ -1528,7 +1528,7 @@ ENHANCED VERSION with all 10 features
                     </div>
                 </div>
 
-                <div class="answer-key" id="answerKey">
+                <div class="answer-key" id="answerKey" style="page-break-before: always;">
                     <h3 style="text-align: center; color: #2c3e50; margin-bottom: 1.5rem;">📊 Your Answer Review</h3>
                     <div id="answerKeyContent"></div>
                 </div>
@@ -1953,7 +1953,21 @@ ENHANCED VERSION with all 10 features
 
         // ===== CERTIFICATE ACTIONS =====
         function printCertificate() {
+            // Hide answer key before printing
+            const answerKey = document.getElementById('answerKey');
+            const certActions = document.querySelector('.cert-actions');
+            
+            if (answerKey) answerKey.style.display = 'none';
+            if (certActions) certActions.style.display = 'none';
+            
+            // Trigger print
             window.print();
+            
+            // Restore after print dialog closes
+            setTimeout(() => {
+                if (answerKey) answerKey.style.display = 'block';
+                if (certActions) certActions.style.display = 'flex';
+            }, 1000);
         }
 
         function emailCertificate() {
