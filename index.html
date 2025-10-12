@@ -1480,23 +1480,46 @@ ENHANCED VERSION with all 10 features
                 </div>
 
                 <div class="completion-certificate" id="completionCertificate">
+                    <div style="text-align: center; margin-bottom: 1rem; font-size: 2rem; color: rgba(255,255,255,0.8);">★ ★ ★</div>
                     <div class="certificate-icon">🏆</div>
-                    <h2>Congratulations!</h2>
+                    <h2>Certificate of Completion</h2>
+                    <p style="margin: 1.5rem 0; font-size: 1.1rem;">This certifies that</p>
                     <p id="userName" 
-                       style="font-size: 1.5rem; margin: 0.5rem 0; cursor: pointer; text-decoration: underline; text-decoration-style: dotted; transition: all 0.3s ease;" 
+                       style="font-size: 2rem; margin: 1rem 0; cursor: pointer; text-decoration: underline; text-decoration-style: dotted; transition: all 0.3s ease; font-weight: bold; letter-spacing: 1px;" 
                        onclick="editUserName()"
                        title="Click to edit your name">
                        Participant
                     </p>
-                    <p>has successfully completed the</p>
-                    <h3>PHI/PII Identification & Handling Training</h3>
+                    <p style="margin: 1.5rem 0; font-size: 1.1rem;">has successfully completed the</p>
+                    <h3 style="margin: 1rem 0; font-size: 1.5rem; font-weight: bold;">PHI/PII Identification & Handling Training<br>for Technical Teams</h3>
                     
                     <div class="score-display" id="finalScore"></div>
                     
-                    <p style="margin-top: 1rem;"><strong>Digital Badge:</strong> PHI/PII Technical Compliance</p>
-                    <p><strong>Date:</strong> <span id="certDate"></span></p>
-                    <p><strong>Mode:</strong> <span id="certMode"></span></p>
-                    <p><strong>Validity:</strong> 12 months</p>
+                    <div style="margin: 2rem 0; padding: 1.5rem; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                        <p style="margin: 0.5rem 0;"><strong>Digital Badge:</strong> PHI/PII Technical Compliance</p>
+                        <p style="margin: 0.5rem 0;"><strong>Date of Completion:</strong> <span id="certDate"></span></p>
+                        <p style="margin: 0.5rem 0;"><strong>Training Mode:</strong> <span id="certMode"></span></p>
+                        <p style="margin: 0.5rem 0;"><strong>Certificate Validity:</strong> 12 months</p>
+                    </div>
+                    
+                    <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid rgba(255,255,255,0.3);">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 600px; margin: 0 auto;">
+                            <div style="text-align: center;">
+                                <div style="border-bottom: 2px solid white; padding: 0.5rem; margin-bottom: 0.5rem;">
+                                    <span style="font-style: italic;">Digital Signature</span>
+                                </div>
+                                <p style="font-size: 0.9rem; margin: 0;">Training Administrator</p>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="border-bottom: 2px solid white; padding: 0.5rem; margin-bottom: 0.5rem;">
+                                    <span id="certDate2"></span>
+                                </div>
+                                <p style="font-size: 0.9rem; margin: 0;">Date</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 2rem; font-size: 2rem; color: rgba(255,255,255,0.8);">★ ★ ★</div>
                     
                     <div class="cert-actions">
                         <button class="btn btn-success" onclick="printCertificate()">🖨️ Print Certificate</button>
@@ -1917,7 +1940,10 @@ ENHANCED VERSION with all 10 features
         }
 
         function updateCertificate(score) {
-            document.getElementById('certDate').textContent = new Date().toLocaleDateString();
+            const dateStr = new Date().toLocaleDateString();
+            document.getElementById('certDate').textContent = dateStr;
+            const certDate2 = document.getElementById('certDate2');
+            if (certDate2) certDate2.textContent = dateStr;
             document.getElementById('certMode').textContent = state.mode === 'assessment' ? 'Assessment Mode' : 'Learn Mode';
             const certName = document.getElementById('userName');
             if (certName) {
