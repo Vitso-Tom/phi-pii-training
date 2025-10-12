@@ -1953,12 +1953,14 @@ ENHANCED VERSION with all 10 features
 
         // ===== CERTIFICATE ACTIONS =====
         function printCertificate() {
-            // Hide answer key before printing
+            // Hide everything except the certificate
             const answerKey = document.getElementById('answerKey');
             const certActions = document.querySelector('.cert-actions');
+            const moduleHeader = document.querySelector('#module-7 .module-header');
             
             if (answerKey) answerKey.style.display = 'none';
             if (certActions) certActions.style.display = 'none';
+            if (moduleHeader) moduleHeader.style.display = 'none';
             
             // Trigger print
             window.print();
@@ -1967,6 +1969,7 @@ ENHANCED VERSION with all 10 features
             setTimeout(() => {
                 if (answerKey) answerKey.style.display = 'block';
                 if (certActions) certActions.style.display = 'flex';
+                if (moduleHeader) moduleHeader.style.display = 'block';
             }, 1000);
         }
 
