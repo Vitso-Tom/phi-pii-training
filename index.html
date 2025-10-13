@@ -1661,46 +1661,54 @@ ENHANCED VERSION with all 10 features
                 </div>
 
                 <div class="completion-certificate" id="completionCertificate">
-                    <div style="text-align: center; margin-bottom: 1rem; font-size: 2rem; color: rgba(255,255,255,0.8);">★ ★ ★</div>
-                    <div class="certificate-icon">🏆</div>
-                    <h2>Certificate of Completion</h2>
-                    <p style="margin: 1.5rem 0; font-size: 1.1rem;">This certifies that</p>
+                    <div style="text-align: center; margin-bottom: 0.5rem;">
+                        <div style="display: inline-block; padding: 0.3rem 1.5rem; background: rgba(255,255,255,0.2); border-radius: 8px; font-weight: bold; font-size: 1rem; letter-spacing: 2px;">
+                            VITSO
+                        </div>
+                        <div style="font-size: 0.7rem; margin-top: 0.2rem; opacity: 0.9;">Healthcare Technology Compliance Training</div>
+                    </div>
+                    <div style="text-align: center; margin-bottom: 0.5rem; font-size: 1.5rem; color: rgba(255,255,255,0.8);">★ ★ ★</div>
+                    <div style="font-size: 3rem; margin-bottom: 0.5rem;">🏆</div>
+                    <h2 style="margin-bottom: 0.5rem;">Certificate of Completion</h2>
+                    <p style="margin: 0.8rem 0; font-size: 1rem;">This certifies that</p>
                     <p id="userName" 
-                       style="font-size: 2rem; margin: 1rem 0; cursor: pointer; text-decoration: underline; text-decoration-style: dotted; transition: all 0.3s ease; font-weight: bold; letter-spacing: 1px;" 
+                       style="font-size: 1.8rem; margin: 0.5rem 0; cursor: pointer; text-decoration: underline; text-decoration-style: dotted; transition: all 0.3s ease; font-weight: bold; letter-spacing: 1px;" 
                        onclick="editUserName()"
                        title="Click to edit your name">
                        Participant
                     </p>
-                    <p style="margin: 1.5rem 0; font-size: 1.1rem;">has successfully completed the</p>
-                    <h3 style="margin: 1rem 0; font-size: 1.5rem; font-weight: bold;">PHI/PII Identification & Handling Training<br>for Technical Teams</h3>
+                    <p style="margin: 0.8rem 0; font-size: 1rem;"><span id="completionStatus">has successfully completed</span> the</p>
+                    <h3 style="margin: 0.5rem 0; font-size: 1.3rem; font-weight: bold;">PHI/PII Identification & Handling Training<br>for Technical Teams</h3>
                     
                     <div class="score-display" id="finalScore"></div>
                     
-                    <div style="margin: 2rem 0; padding: 1.5rem; background: rgba(255,255,255,0.1); border-radius: 8px;">
-                        <p style="margin: 0.5rem 0;"><strong>Digital Badge:</strong> PHI/PII Technical Compliance</p>
-                        <p style="margin: 0.5rem 0;"><strong>Date of Completion:</strong> <span id="certDate"></span></p>
-                        <p style="margin: 0.5rem 0;"><strong>Training Mode:</strong> <span id="certMode"></span></p>
-                        <p style="margin: 0.5rem 0;"><strong>Certificate Validity:</strong> 12 months</p>
+                    <div style="margin: 1rem 0; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                        <p style="margin: 0.3rem 0; font-size: 0.9rem;"><strong>Digital Badge:</strong> PHI/PII Technical Compliance</p>
+                        <p style="margin: 0.3rem 0; font-size: 0.9rem;"><strong>Date of Completion:</strong> <span id="certDate"></span></p>
+                        <p style="margin: 0.3rem 0; font-size: 0.9rem;"><strong>Training Mode:</strong> <span id="certMode"></span></p>
+                        <p style="margin: 0.3rem 0; font-size: 0.9rem;"><strong>Certificate Validity:</strong> 12 months</p>
                     </div>
                     
-                    <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid rgba(255,255,255,0.3);">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 600px; margin: 0 auto;">
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid rgba(255,255,255,0.3);">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; max-width: 600px; margin: 0 auto;">
                             <div style="text-align: center;">
-                                <div style="border-bottom: 2px solid white; padding: 0.5rem; margin-bottom: 0.5rem;">
-                                    <span style="font-style: italic;">Digital Signature</span>
+                                <div style="border-bottom: 2px solid white; padding: 0.3rem; margin-bottom: 0.3rem;">
+                                    <span style="font-style: italic; font-family: 'Brush Script MT', cursive; font-size: 1.2rem;">Tom Smolinsky</span>
                                 </div>
-                                <p style="font-size: 0.9rem; margin: 0;">Training Administrator</p>
+                                <p style="font-size: 0.8rem; margin: 0; font-weight: bold;">Tom Smolinsky, CISSP</p>
+                                <p style="font-size: 0.75rem; margin: 0; opacity: 0.9;">Training Administrator</p>
+                                <p style="font-size: 0.75rem; margin: 0; opacity: 0.9;">VITSO Healthcare Compliance</p>
                             </div>
                             <div style="text-align: center;">
-                                <div style="border-bottom: 2px solid white; padding: 0.5rem; margin-bottom: 0.5rem;">
+                                <div style="border-bottom: 2px solid white; padding: 0.3rem; margin-bottom: 0.3rem;">
                                     <span id="certDate2"></span>
                                 </div>
-                                <p style="font-size: 0.9rem; margin: 0;">Date</p>
+                                <p style="font-size: 0.8rem; margin: 0; font-weight: bold;">Date</p>
                             </div>
                         </div>
                     </div>
                     
-                    <div style="text-align: center; margin-top: 2rem; font-size: 2rem; color: rgba(255,255,255,0.8);">★ ★ ★</div>
+                    <div style="text-align: center; margin-top: 1rem; font-size: 1.5rem; color: rgba(255,255,255,0.8);">★ ★ ★</div>
                     
                     <div class="cert-actions">
                         <button class="btn btn-success" onclick="printCertificate()">🖨️ Print Certificate</button>
@@ -2176,6 +2184,16 @@ ENHANCED VERSION with all 10 features
             const certName = document.getElementById('userName');
             if (certName) {
                 certName.textContent = state.userName || 'Participant';
+            }
+            
+            // Update completion status text based on pass/fail
+            const completionStatus = document.getElementById('completionStatus');
+            if (completionStatus) {
+                if (score.passed) {
+                    completionStatus.textContent = 'has successfully completed';
+                } else {
+                    completionStatus.textContent = 'has completed';
+                }
             }
         }
 
