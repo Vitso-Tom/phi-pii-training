@@ -677,7 +677,7 @@ ENHANCED VERSION with all 10 features
             <!-- Module 0: Introduction -->
             <div class="module active" id="module-0">
                 <div class="module-header">
-                    <div class="module-title">Welcome to PHI/PII Training for Builders and Tech Resources</div>
+                    <div class="module-title">Welcome to PHI/PII Training</div>
                     <p>This interactive training will help you understand and properly handle Protected Health Information (PHI) and Personally Identifiable Information (PII) in technical workflows.</p>
                 </div>
 
@@ -1325,6 +1325,34 @@ ENHANCED VERSION with all 10 features
                                 <strong>Incorrect.</strong> Population >20K = can share first 3 digits. The correct answer is <strong>Yes</strong>.
                             </div>
                         </div>
+
+                        <div class="question" data-question="23" data-correct="no">
+                            <div class="question-text">23. Dataset shows "Patient admitted: 03/15/2024, discharged: 03/18/2024" - Safe Harbor compliant?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="yes" tabindex="0">Yes - Dates alone aren't identifiable</li>
+                                <li class="option" data-answer="no" tabindex="0">No - Must remove specific dates, keep only year</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> Safe Harbor requires removing all dates except year. Must show only "2024" or use date ranges, not specific dates.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Specific dates must be removed under Safe Harbor - only year can remain. The correct answer is <strong>No</strong>.
+                            </div>
+                        </div>
+
+                        <div class="question" data-question="24" data-correct="yes">
+                            <div class="question-text">24. Research dataset shows patient ages: "42, 67, 91, 35, 93, 28" - How should ages 91 and 93 be reported for Safe Harbor compliance?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="no" tabindex="0">No change needed - actual ages are fine</li>
+                                <li class="option" data-answer="yes" tabindex="0">Yes - Must aggregate to "90+" or age ranges</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> Safe Harbor requires ages over 89 to be aggregated (e.g., "90+") because they're rare and potentially identifying.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Ages over 89 must be aggregated under Safe Harbor rules. The correct answer is <strong>Yes - Must aggregate to "90+"</strong>.
+                            </div>
+                        </div>
                     </div>
 
                     <div class="subsection-nav">
@@ -1391,24 +1419,24 @@ ENHANCED VERSION with all 10 features
                         <div class="exercise-title">Exercise 4.1: Tool Selection Challenge</div>
                     </div>
 
-                    <div class="question" data-question="23" data-correct="c">
-                        <div class="question-text">23. Debug API that processes patient medication lists - Which approach?</div>
+                    <div class="question" data-question="25" data-correct="c">
+                        <div class="question-text">25. Production API serving actual patient medication data is failing - need to debug immediately. Which approach?</div>
                         <ul class="options">
-                            <li class="option" data-answer="a" tabindex="0">a) Copy data to ChatGPT</li>
+                            <li class="option" data-answer="a" tabindex="0">a) Copy production logs to ChatGPT for analysis</li>
                             <li class="option" data-answer="b" tabindex="0">b) Use synthetic data with BAA-approved AI</li>
-                            <li class="option" data-answer="c" tabindex="0">c) Work with actual PHI using approved internal tools only</li>
-                            <li class="option" data-answer="d" tabindex="0">d) Ask colleague with personal AI</li>
+                            <li class="option" data-answer="c" tabindex="0">c) Debug using approved internal tools only with actual PHI access controls</li>
+                            <li class="option" data-answer="d" tabindex="0">d) Ask colleague to use their personal AI tools</li>
                         </ul>
                         <div class="feedback correct">
-                            <strong>Correct!</strong> When working with actual PHI, only use approved internal tools.
+                            <strong>Correct!</strong> When debugging production systems with actual PHI, only use approved internal tools with proper access controls and audit trails.
                         </div>
                         <div class="feedback incorrect">
-                            <strong>Incorrect.</strong> Only use approved internal tools for actual PHI. The correct answer is <strong>c)</strong>.
+                            <strong>Incorrect.</strong> Production PHI requires approved internal tools with proper access controls. The correct answer is <strong>c)</strong>.
                         </div>
                     </div>
 
-                    <div class="question" data-question="24" data-correct="b">
-                        <div class="question-text">24. Need patient data for mobile app testing - Which approach?</div>
+                    <div class="question" data-question="26" data-correct="b">
+                        <div class="question-text">26. Need patient data for mobile app testing - Which approach?</div>
                         <ul class="options">
                             <li class="option" data-answer="a" tabindex="0">a) Export production DB to local machine</li>
                             <li class="option" data-answer="b" tabindex="0">b) Create realistic synthetic patient profiles</li>
@@ -1474,12 +1502,12 @@ ENHANCED VERSION with all 10 features
 
                 <div class="exercise">
                     <div class="exercise-header">
-                        <div class="exercise-title">Final Scenario: Incident Response</div>
+                        <div class="exercise-title">Incident Response Scenarios</div>
                         <p>You discover yesterday's backup script uploaded patient emails + appointment types to shared Google Drive (50 people have access).</p>
                     </div>
 
-                    <div class="question" data-question="25" data-correct="c">
-                        <div class="question-text">25. Your immediate action?</div>
+                    <div class="question" data-question="27" data-correct="c">
+                        <div class="question-text">27. Your immediate action?</div>
                         <ul class="options">
                             <li class="option" data-answer="a" tabindex="0">a) Delete file and hope no one noticed</li>
                             <li class="option" data-answer="b" tabindex="0">b) Move to private folder and assess</li>
@@ -1491,6 +1519,54 @@ ENHANCED VERSION with all 10 features
                         </div>
                         <div class="feedback incorrect">
                             <strong>Incorrect.</strong> Stop exposure and report immediately. The correct answer is <strong>c)</strong>.
+                        </div>
+                    </div>
+
+                    <div class="question" data-question="28" data-correct="b">
+                        <div class="question-text">28. During investigation, you find PHI in application logs from 2 weeks ago. What should you do with the logs?</div>
+                        <ul class="options">
+                            <li class="option" data-answer="a" tabindex="0">a) Delete the logs immediately to eliminate the exposure</li>
+                            <li class="option" data-answer="b" tabindex="0">b) Preserve logs as evidence and notify security team</li>
+                            <li class="option" data-answer="c" tabindex="0">c) Manually edit logs to remove PHI, then save</li>
+                            <li class="option" data-answer="d" tabindex="0">d) Move logs to encrypted folder and continue investigation alone</li>
+                        </ul>
+                        <div class="feedback correct">
+                            <strong>Correct!</strong> Never delete or modify evidence. Preserve everything and let security/compliance teams determine proper handling.
+                        </div>
+                        <div class="feedback incorrect">
+                            <strong>Incorrect.</strong> Evidence must be preserved unmodified for investigation. The correct answer is <strong>b)</strong>.
+                        </div>
+                    </div>
+
+                    <div class="question" data-question="29" data-correct="a">
+                        <div class="question-text">29. You accidentally sent an email with patient diagnosis to wrong recipient (another patient). Who do you contact first?</div>
+                        <ul class="options">
+                            <li class="option" data-answer="a" tabindex="0">a) Your manager and IT security immediately</li>
+                            <li class="option" data-answer="b" tabindex="0">b) Send follow-up email asking recipient to delete it</li>
+                            <li class="option" data-answer="c" tabindex="0">c) Contact the email recipient to apologize first</li>
+                            <li class="option" data-answer="d" tabindex="0">d) Wait to see if recipient responds before escalating</li>
+                        </ul>
+                        <div class="feedback correct">
+                            <strong>Correct!</strong> Immediately escalate to management and security. They will coordinate proper response including patient notification and documentation.
+                        </div>
+                        <div class="feedback incorrect">
+                            <strong>Incorrect.</strong> Never try to handle PHI breaches yourself. Escalate immediately to management and security. The correct answer is <strong>a)</strong>.
+                        </div>
+                    </div>
+
+                    <div class="question" data-question="30" data-correct="c">
+                        <div class="question-text">30. While reviewing old Slack messages, you find PHI was shared in a public channel 6 months ago. What now?</div>
+                        <ul class="options">
+                            <li class="option" data-answer="a" tabindex="0">a) Too old to matter - no action needed</li>
+                            <li class="option" data-answer="b" tabindex="0">b) Delete the Slack message and move on</li>
+                            <li class="option" data-answer="c" tabindex="0">c) Report immediately regardless of when it occurred</li>
+                            <li class="option" data-answer="d" tabindex="0">d) Document it yourself for next week's team meeting</li>
+                        </ul>
+                        <div class="feedback correct">
+                            <strong>Correct!</strong> PHI incidents must be reported immediately regardless of when they occurred. Timeline matters for compliance reporting.
+                        </div>
+                        <div class="feedback incorrect">
+                            <strong>Incorrect.</strong> Report all PHI exposures immediately, no matter how old. The correct answer is <strong>c)</strong>.
                         </div>
                     </div>
                 </div>
@@ -1512,8 +1588,8 @@ ENHANCED VERSION with all 10 features
                         <div class="exercise-title">Exercise 6.1: GenAI Safety & Compliance</div>
                     </div>
 
-                    <div class="question" data-question="26" data-correct="d">
-                        <div class="question-text">26. Ask ChatGPT: "Debug this: SELECT patient_name, diagnosis FROM patients WHERE id = 12345"</div>
+                    <div class="question" data-question="31" data-correct="d">
+                        <div class="question-text">31. Ask ChatGPT: "Debug this: SELECT patient_name, diagnosis FROM patients WHERE id = 12345"</div>
                         <ul class="options">
                             <li class="option" data-answer="a" tabindex="0">a) Safe - just SQL</li>
                             <li class="option" data-answer="b" tabindex="0">b) Safe if remove patient ID</li>
@@ -1528,40 +1604,40 @@ ENHANCED VERSION with all 10 features
                         </div>
                     </div>
 
-                    <div class="question" data-question="27" data-correct="a">
-                        <div class="question-text">27. Logged into ChatGPT with work email, ask: "What are best practices for HIPAA compliance?"</div>
+                    <div class="question" data-question="32" data-correct="a">
+                        <div class="question-text">32. Ask public ChatGPT: "What are best practices for HIPAA compliance?" (no PHI shared) - Safe?</div>
                         <ul class="options">
-                            <li class="option" data-answer="a" tabindex="0">a) Unsafe - work email creates company IP linkage</li>
-                            <li class="option" data-answer="b" tabindex="0">b) Safe - general knowledge</li>
-                            <li class="option" data-answer="c" tabindex="0">c) Safe if work-related</li>
-                            <li class="option" data-answer="d" tabindex="0">d) Unsafe - HIPAA implies PHI work</li>
+                            <li class="option" data-answer="a" tabindex="0">a) Safe - general knowledge question with no PHI</li>
+                            <li class="option" data-answer="b" tabindex="0">b) Unsafe - HIPAA topic implies PHI work</li>
+                            <li class="option" data-answer="c" tabindex="0">c) Unsafe - must use BAA-approved AI only</li>
+                            <li class="option" data-answer="d" tabindex="0">d) Safe only if using personal email</li>
                         </ul>
                         <div class="feedback correct">
-                            <strong>Correct!</strong> Work email connects AI usage to company IP. Use personal accounts.
+                            <strong>Correct!</strong> General knowledge questions about compliance topics are safe when no PHI, company data, or proprietary information is shared.
                         </div>
                         <div class="feedback incorrect">
-                            <strong>Incorrect.</strong> Work email creates company IP linkage. The correct answer is <strong>a)</strong>.
+                            <strong>Incorrect.</strong> Asking general knowledge questions with no PHI is safe. The correct answer is <strong>a)</strong>.
                         </div>
                     </div>
 
-                    <div class="question" data-question="28" data-correct="c">
-                        <div class="question-text">28. Need AI help: "Optimize this query that processes patient appointment data" - What to do?</div>
+                    <div class="question" data-question="33" data-correct="c">
+                        <div class="question-text">33. Writing new code for appointment scheduling feature - need AI help with query structure and logic (no actual patient data involved) - What to do?</div>
                         <ul class="options">
-                            <li class="option" data-answer="a" tabindex="0">a) Use ChatGPT with anonymized query</li>
-                            <li class="option" data-answer="b" tabindex="0">b) Use ChatGPT but remove table names</li>
-                            <li class="option" data-answer="c" tabindex="0">c) Use company-approved enterprise AI with safeguards</li>
-                            <li class="option" data-answer="d" tabindex="0">d) Avoid AI entirely</li>
+                            <li class="option" data-answer="a" tabindex="0">a) Use public ChatGPT - no actual data involved</li>
+                            <li class="option" data-answer="b" tabindex="0">b) Use ChatGPT but use fake table names</li>
+                            <li class="option" data-answer="c" tabindex="0">c) Use company-approved BAA-covered AI with proper safeguards</li>
+                            <li class="option" data-answer="d" tabindex="0">d) Avoid AI entirely for any healthcare code</li>
                         </ul>
                         <div class="feedback correct">
-                            <strong>Correct!</strong> Only use approved enterprise AI tools configured for healthcare with BAAs.
+                            <strong>Correct!</strong> For healthcare systems development, use BAA-covered enterprise AI even for design work. This protects company IP and maintains compliance standards.
                         </div>
                         <div class="feedback incorrect">
-                            <strong>Incorrect.</strong> Only use approved enterprise AI tools. The correct answer is <strong>c)</strong>.
+                            <strong>Incorrect.</strong> Healthcare code development should use BAA-covered enterprise AI. The correct answer is <strong>c)</strong>.
                         </div>
                     </div>
 
-                    <div class="question" data-question="29" data-correct="a">
-                        <div class="question-text">29. Accidentally pasted "Patient sarah@email.com insulin dosage: 10mg" into ChatGPT - Action?</div>
+                    <div class="question" data-question="34" data-correct="a">
+                        <div class="question-text">34. Accidentally pasted "Patient sarah@email.com insulin dosage: 10mg" into ChatGPT - Action?</div>
                         <ul class="options">
                             <li class="option" data-answer="a" tabindex="0">a) Close ChatGPT and report to IT security</li>
                             <li class="option" data-answer="b" tabindex="0">b) Delete message and continue</li>
@@ -1647,7 +1723,7 @@ ENHANCED VERSION with all 10 features
             <button class="btn btn-secondary" id="prevBtn" onclick="previousModule()" disabled>← Previous</button>
             <div>
                 <span>Module </span>
-                <span id="currentModuleDisplay">0</span>
+                <span id="currentModuleDisplay">1</span>
                 <span> of </span>
                 <span id="totalModules">8</span>
             </div>
@@ -1671,14 +1747,14 @@ ENHANCED VERSION with all 10 features
             userName: '',
             module3Sections: new Set(['intro'])
         };
-   
+
         // Correct answers
         const correctAnswers = {
             1: 'b', 2: 'c', 3: 'c', 4: 'b', 5: 'c', 6: 'c', 7: 'b',
             8: 'no', 9: 'yes', 10: 'yes', 11: 'no', 12: 'no', 13: 'yes',
             14: 'no', 15: 'yes', 16: 'no', 17: 'no', 18: 'yes', 19: 'yes',
-            20: 'no', 21: 'yes', 22: 'yes', 23: 'c', 24: 'b', 25: 'c',
-            26: 'd', 27: 'a', 28: 'c', 29: 'a'
+            20: 'no', 21: 'yes', 22: 'yes', 23: 'no', 24: 'yes', 25: 'c', 26: 'b',
+            27: 'c', 28: 'b', 29: 'a', 30: 'c', 31: 'd', 32: 'a', 33: 'c', 34: 'a'
         };
 
         const allModule3Sections = ['intro', 'database', 'logging', 'inference', 'systems', 'safeharbor'];
@@ -2145,6 +2221,5 @@ ENHANCED VERSION with all 10 features
         // ===== START =====
         document.addEventListener('DOMContentLoaded', init);
     </script>
-
 </body>
 </html>
