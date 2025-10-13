@@ -2027,8 +2027,25 @@ ENHANCED VERSION with all 10 features
             document.getElementById('progressFill').style.width = progress + '%';
             document.getElementById('progressText').textContent = progress + '%';
             
-            document.getElementById('currentModuleDisplay').textContent = state.currentModule + 1;
-            document.getElementById('totalModules').textContent = totalMods;
+            // Handle footer navigation visibility and text
+            const footer = document.querySelector('.navigation');
+            const moduleCounter = footer.querySelector('div:nth-child(2)');
+            
+            if (state.currentModule === 0) {
+                // Welcome page: show footer but hide module counter
+                footer.style.display = 'flex';
+                moduleCounter.style.visibility = 'hidden';
+            } else if (state.currentModule === 7) {
+                // Completion page: hide entire footer
+                footer.style.display = 'none';
+            } else {
+                // Training modules (1-6): show footer with module counter
+                footer.style.display = 'flex';
+                moduleCounter.style.visibility = 'visible';
+                // Display as "Module X of 6" (counting only training modules)
+                document.getElementById('currentModuleDisplay').textContent = state.currentModule;
+                document.getElementById('totalModules').textContent = '6';
+            }
             
             updateNavigation();
             
