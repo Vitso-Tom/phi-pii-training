@@ -2145,5 +2145,51 @@ ENHANCED VERSION with all 10 features
         // ===== START =====
         document.addEventListener('DOMContentLoaded', init);
     </script>
+    <script>
+(function () {
+  // CONFIG: choose how to label the intro module (module-0)
+  const INTRO_AS_ZERO = true;       // true  => "Module 0 of N"
+  const INTRO_AS_WELCOME = false;   // true  => "Welcome • (N-1) modules total"
+
+  const modules = Array.from(document.querySelectorAll('.module'));
+  const total = modules.length; // e.g., 8 when you have module-0 ... module-7
+  const counterEl = document.getElementById('moduleCounter');
+
+  function buildLabel(activeIdx) {
+    if (!counterEl || activeIdx < 0) return '';
+
+    // If you prefer "Welcome" instead of numbering the intro:
+    if (INTRO_AS_WELCOME && activeIdx === 0) {
+      // e.g., "Welcome • 7 modules total"
+      return `Welcome • ${Math.max(total - 1, 0)} modules total`;
+    }
+
+    // Otherwise number everything, either 0-based or 1-based
+    const human = INTRO_AS_ZERO ? activeIdx : activeIdx + 1;
+    return `Module ${human} of ${total}`;
+  }
+
+  function updateCounter() {
+    const activeIdx = modules.findIndex(m => m.classList.contains('active'));
+    const label = buildLabel(activeIdx);
+    if (label) counterEl.textContent = label;
+  }
+
+  // Run now
+  updateCounter();
+
+  // Keep it updated whenever the active module switches:
+  // 1) Watch class changes on each .module
+  const obs = new MutationObserver(updateCounter);
+  modules.forEach(m => obs.observe(m, { attributes: true, attributeFilter: ['class'] }));
+
+  // 2) Also update on clicks/keyboard nav just in case your code swaps modules synchronously
+  document.addEventListener('click', updateCounter, true);
+  document.addEventListener('keydown', updateCounter, true);
+
+  // Optional: expose function if you want to call it from your own next/prev handlers
+  window.updateModuleCounter = updateCounter;
+})();
+</script>
 </body>
 </html>
