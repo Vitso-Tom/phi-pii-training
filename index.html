@@ -661,7 +661,7 @@ ENHANCED VERSION with all 10 features
                     📚 Learn Mode
                 </button>
                 <button class="mode-btn" onclick="setMode('assessment')" aria-label="Assessment Mode">
-                    ✍️ Assessment Mode
+                    ✏️ Assessment Mode
                 </button>
             </div>
             
@@ -809,16 +809,6 @@ ENHANCED VERSION with all 10 features
                         <div class="feedback incorrect">
                             <strong>Incorrect.</strong> Patient ID is PII (identifies an individual), and glucose reading adds health context, making it PHI. The correct answer is <strong>c) Both</strong>.
                         </div>
-                    </div>
-
-                    <div class="subsection-nav">
-                        <button class="btn btn-secondary subsection-nav-btn" onclick="prevSubsection()">
-                            ← Previous: Multi-System Flows
-                        </button>
-                        <div style="color: #6c757d; font-weight: bold;">Section 6 of 6 ✓ Complete</div>
-                        <button class="btn btn-success subsection-nav-btn" onclick="nextModule()">
-                            Continue to Next Module →
-                        </button>
                     </div>
                 </div>
 
@@ -981,7 +971,7 @@ ENHANCED VERSION with all 10 features
                 <!-- Subsection: Intro -->
                 <div class="module-subsection active" id="subsection-intro">
                     <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
-                        <strong style="color: #2980b9;">📍 Current Section: 1. Basic Context Rules</strong>
+                        <strong style="color: #2980b9;">🔍 Current Section: 1. Basic Context Rules</strong>
                     </div>
                     <div class="content-section">
                         <h3>The Context Transformation Rule</h3>
@@ -996,8 +986,8 @@ ENHANCED VERSION with all 10 features
                         <div class="question" data-question="8" data-correct="no">
                             <div class="question-text">8. General wellness newsletter about sleep tips to mike@email.com - PHI?</div>
                             <ul class="options">
-                                <li class="option" data-answer="no" tabindex="0">No</li>
                                 <li class="option" data-answer="yes" tabindex="0">Yes</li>
+                                <li class="option" data-answer="no" tabindex="0">No</li>
                             </ul>
                             <div class="feedback correct">
                                 <strong>Correct!</strong> General wellness content has no specific health context. Email is PII but no PHI.
@@ -1010,8 +1000,8 @@ ENHANCED VERSION with all 10 features
                         <div class="question" data-question="9" data-correct="yes">
                             <div class="question-text">9. "Hi Lisa, daily reminder to take your Metformin at 8 AM" to lisa.chen@email.com - PHI?</div>
                             <ul class="options">
-                                <li class="option" data-answer="yes" tabindex="0">Yes</li>
                                 <li class="option" data-answer="no" tabindex="0">No</li>
+                                <li class="option" data-answer="yes" tabindex="0">Yes</li>
                             </ul>
                             <div class="feedback correct">
                                 <strong>Correct!</strong> Email + name (PII) + Metformin (diabetes medication) = PHI.
@@ -1024,8 +1014,8 @@ ENHANCED VERSION with all 10 features
                         <div class="question" data-question="10" data-correct="yes">
                             <div class="question-text">10. "Welcome! Your blood pressure monitoring program starts soon" to sarah.johnson@email.com - PHI?</div>
                             <ul class="options">
-                                <li class="option" data-answer="yes" tabindex="0">Yes</li>
                                 <li class="option" data-answer="no" tabindex="0">No</li>
+                                <li class="option" data-answer="yes" tabindex="0">Yes</li>
                             </ul>
                             <div class="feedback correct">
                                 <strong>Correct!</strong> Email + BP monitoring program implies hypertension diagnosis = PHI.
@@ -1048,7 +1038,7 @@ ENHANCED VERSION with all 10 features
                 <!-- Subsection: Database -->
                 <div class="module-subsection" id="subsection-database">
                     <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
-                        <strong style="color: #2980b9;">📍 Current Section: 2. Database Design & API Patterns</strong>
+                        <strong style="color: #2980b9;">🔍 Current Section: 2. Database Design & API Patterns</strong>
                     </div>
                     <div class="content-section">
                         <h3>Database Design & API Response Implications</h3>
@@ -1063,8 +1053,8 @@ ENHANCED VERSION with all 10 features
                         <div class="question" data-question="11" data-correct="no">
                             <div class="question-text">11. API returns: <code>{"user_hash": "abc123", "steps_today": 8547}</code> - PHI?</div>
                             <ul class="options">
-                                <li class="option" data-answer="no" tabindex="0">No - Safe data</li>
                                 <li class="option" data-answer="yes" tabindex="0">Yes - PHI</li>
+                                <li class="option" data-answer="no" tabindex="0">No - Safe data</li>
                             </ul>
                             <div class="feedback correct">
                                 <strong>Correct!</strong> User hash (non-identifiable) + general fitness metrics = No PHI.
@@ -1077,8 +1067,8 @@ ENHANCED VERSION with all 10 features
                         <div class="question" data-question="12" data-correct="no">
                             <div class="question-text">12. API returns: <code>{"region": "northeast", "avg_heart_rate": 72, "user_count": 1847}</code> - PHI?</div>
                             <ul class="options">
-                                <li class="option" data-answer="no" tabindex="0">No - Safe</li>
                                 <li class="option" data-answer="yes" tabindex="0">Yes - PHI</li>
+                                <li class="option" data-answer="no" tabindex="0">No - Safe</li>
                             </ul>
                             <div class="feedback correct">
                                 <strong>Correct!</strong> Aggregated regional data with large user count = Safe, meets anonymization thresholds.
@@ -1091,8 +1081,8 @@ ENHANCED VERSION with all 10 features
                         <div class="question" data-question="13" data-correct="yes">
                             <div class="question-text">13. API returns: <code>{"email": "mary@company.com", "program": "cardiac_rehab", "completion": 75%}</code> - PHI?</div>
                             <ul class="options">
-                                <li class="option" data-answer="yes" tabindex="0">Yes - PHI</li>
                                 <li class="option" data-answer="no" tabindex="0">No - Safe</li>
+                                <li class="option" data-answer="yes" tabindex="0">Yes - PHI</li>
                             </ul>
                             <div class="feedback correct">
                                 <strong>Correct!</strong> Email (PII) + cardiac rehabilitation program (heart condition) = PHI.
@@ -1117,7 +1107,7 @@ ENHANCED VERSION with all 10 features
                 <!-- Subsection: Logging -->
                 <div class="module-subsection" id="subsection-logging">
                     <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
-                        <strong style="color: #2980b9;">📍 Current Section: 3. Logging & Analytics Traps</strong>
+                        <strong style="color: #2980b9;">🔍 Current Section: 3. Logging & Analytics Traps</strong>
                     </div>
                     <div class="content-section">
                         <h3>Logging & Analytics Traps</h3>
@@ -1132,8 +1122,8 @@ ENHANCED VERSION with all 10 features
                         <div class="question" data-question="14" data-correct="no">
                             <div class="question-text">14. APM shows: <code>Slow query - table: user_preferences, session_id: sess_abc123</code> - PHI?</div>
                             <ul class="options">
-                                <li class="option" data-answer="no" tabindex="0">No - Safe log</li>
                                 <li class="option" data-answer="yes" tabindex="0">Yes - PHI</li>
+                                <li class="option" data-answer="no" tabindex="0">No - Safe log</li>
                             </ul>
                             <div class="feedback correct">
                                 <strong>Correct!</strong> Session ID (non-identifiable) + user preferences (no health context) = Safe.
@@ -1146,8 +1136,8 @@ ENHANCED VERSION with all 10 features
                         <div class="question" data-question="15" data-correct="yes">
                             <div class="question-text">15. Error log: <code>API timeout for sarah@healthapp.com in insulin_dosage_calculator module</code> - PHI?</div>
                             <ul class="options">
-                                <li class="option" data-answer="yes" tabindex="0">Yes - PHI</li>
                                 <li class="option" data-answer="no" tabindex="0">No - Technical info</li>
+                                <li class="option" data-answer="yes" tabindex="0">Yes - PHI</li>
                             </ul>
                             <div class="feedback correct">
                                 <strong>Correct!</strong> Email (PII) + insulin dosage calculator (diabetes) = PHI in logs.
@@ -1160,8 +1150,8 @@ ENHANCED VERSION with all 10 features
                         <div class="question" data-question="16" data-correct="no">
                             <div class="question-text">16. System log: <code>DB connection timeout in user_authentication - user_hash: xyz789abc</code> - PHI?</div>
                             <ul class="options">
-                                <li class="option" data-answer="no" tabindex="0">No - Safe log</li>
                                 <li class="option" data-answer="yes" tabindex="0">Yes - PHI</li>
+                                <li class="option" data-answer="no" tabindex="0">No - Safe log</li>
                             </ul>
                             <div class="feedback correct">
                                 <strong>Correct!</strong> User hash (non-identifiable) + authentication (no health context) = Safe.
@@ -1186,7 +1176,7 @@ ENHANCED VERSION with all 10 features
                 <!-- Subsection: Inference -->
                 <div class="module-subsection" id="subsection-inference">
                     <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
-                        <strong style="color: #2980b9;">📍 Current Section: 4. The Inference Problem</strong>
+                        <strong style="color: #2980b9;">🔍 Current Section: 4. The Inference Problem</strong>
                     </div>
                     <div class="content-section">
                         <h3>The Inference Problem</h3>
@@ -1201,8 +1191,8 @@ ENHANCED VERSION with all 10 features
                         <div class="question" data-question="17" data-correct="no">
                             <div class="question-text">17. Analytics: "Wellness section accessed 1,247 times by 89 unique users this month" - PHI?</div>
                             <ul class="options">
-                                <li class="option" data-answer="no" tabindex="0">No - Safe aggregated</li>
                                 <li class="option" data-answer="yes" tabindex="0">Yes - Inferential PHI</li>
+                                <li class="option" data-answer="no" tabindex="0">No - Safe aggregated</li>
                             </ul>
                             <div class="feedback correct">
                                 <strong>Correct!</strong> Aggregated data with no individual identifiers = Safe.
@@ -1215,8 +1205,8 @@ ENHANCED VERSION with all 10 features
                         <div class="question" data-question="18" data-correct="yes">
                             <div class="question-text">18. Analytics: "tom@email.com clicked 'Depression Resources' 8 times this month" - PHI?</div>
                             <ul class="options">
-                                <li class="option" data-answer="yes" tabindex="0">Yes - Inferential PHI</li>
                                 <li class="option" data-answer="no" tabindex="0">No - Just usage</li>
+                                <li class="option" data-answer="yes" tabindex="0">Yes - Inferential PHI</li>
                             </ul>
                             <div class="feedback correct">
                                 <strong>Correct!</strong> Email (PII) + depression resources pattern implies mental health condition = PHI.
@@ -1229,8 +1219,8 @@ ENHANCED VERSION with all 10 features
                         <div class="question" data-question="19" data-correct="yes">
                             <div class="question-text">19. "Patient_ID A12B3 opens app at 8 AM, 1 PM, 6 PM daily, then visits 'Blood Sugar Log'" - PHI?</div>
                             <ul class="options">
-                                <li class="option" data-answer="yes" tabindex="0">Yes - Inferential PHI</li>
                                 <li class="option" data-answer="no" tabindex="0">No - Just usage</li>
+                                <li class="option" data-answer="yes" tabindex="0">Yes - Inferential PHI</li>
                             </ul>
                             <div class="feedback correct">
                                 <strong>Correct!</strong> Patient ID + regular blood sugar logging pattern implies diabetes = PHI.
@@ -1255,7 +1245,7 @@ ENHANCED VERSION with all 10 features
                 <!-- Subsection: Multi-System -->
                 <div class="module-subsection" id="subsection-systems">
                     <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
-                        <strong style="color: #2980b9;">📍 Current Section: 5. Multi-System Data Flows</strong>
+                        <strong style="color: #2980b9;">🔍 Current Section: 5. Multi-System Data Flows</strong>
                     </div>
                     <div class="content-section">
                         <h3>Multi-System Data Flows</h3>
@@ -1270,8 +1260,8 @@ ENHANCED VERSION with all 10 features
                         <div class="question" data-question="20" data-correct="no">
                             <div class="question-text">20. CRM exports contacts separately, scheduling exports time slots separately (no mixing) - PHI?</div>
                             <ul class="options">
-                                <li class="option" data-answer="no" tabindex="0">No - Systems separate</li>
                                 <li class="option" data-answer="yes" tabindex="0">Yes - Multi-system PHI</li>
+                                <li class="option" data-answer="no" tabindex="0">No - Systems separate</li>
                             </ul>
                             <div class="feedback correct">
                                 <strong>Correct!</strong> When systems truly operate separately with no data combination, PHI is not created.
@@ -1284,8 +1274,8 @@ ENHANCED VERSION with all 10 features
                         <div class="question" data-question="21" data-correct="yes">
                             <div class="question-text">21. CRM sends: "Hi John, your cardiology appointment reminder" to john.smith@email.com - PHI?</div>
                             <ul class="options">
-                                <li class="option" data-answer="yes" tabindex="0">Yes - Multi-system PHI</li>
                                 <li class="option" data-answer="no" tabindex="0">No - Systems separate</li>
+                                <li class="option" data-answer="yes" tabindex="0">Yes - Multi-system PHI</li>
                             </ul>
                             <div class="feedback correct">
                                 <strong>Correct!</strong> Email (PII from CRM) + cardiology appointment (health from EHR) = PHI when combined.
@@ -1310,7 +1300,7 @@ ENHANCED VERSION with all 10 features
                 <!-- Subsection: Safe Harbor -->
                 <div class="module-subsection" id="subsection-safeharbor">
                     <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
-                        <strong style="color: #2980b9;">📍 Current Section: 6. HIPAA Safe Harbor (Final Section)</strong>
+                        <strong style="color: #2980b9;">🔍 Current Section: 6. HIPAA Safe Harbor (Final Section)</strong>
                     </div>
                     <div class="content-section">
                         <h3>HIPAA Safe Harbor: The ZIP Code Rule</h3>
@@ -1325,8 +1315,8 @@ ENHANCED VERSION with all 10 features
                         <div class="question" data-question="22" data-correct="yes">
                             <div class="question-text">22. ZIP codes 331XX covering Chicago suburbs (Population: 45,000) - Can share "331XX"?</div>
                             <ul class="options">
-                                <li class="option" data-answer="yes" tabindex="0">Yes - Can share "331XX"</li>
                                 <li class="option" data-answer="no" tabindex="0">No - Must use "000XX"</li>
+                                <li class="option" data-answer="yes" tabindex="0">Yes - Can share "331XX"</li>
                             </ul>
                             <div class="feedback correct">
                                 <strong>Correct!</strong> Population >20K meets HIPAA Safe Harbor requirements.
@@ -1522,27 +1512,27 @@ ENHANCED VERSION with all 10 features
                         <div class="exercise-title">Exercise 6.1: GenAI Safety & Compliance</div>
                     </div>
 
-                    <div class="question" data-question="26" data-correct="b">
+                    <div class="question" data-question="26" data-correct="d">
                         <div class="question-text">26. Ask ChatGPT: "Debug this: SELECT patient_name, diagnosis FROM patients WHERE id = 12345"</div>
                         <ul class="options">
                             <li class="option" data-answer="a" tabindex="0">a) Safe - just SQL</li>
-                            <li class="option" data-answer="b" tabindex="0">b) Unsafe - PHI structure and ID</li>
-                            <li class="option" data-answer="c" tabindex="0">c) Safe if remove patient ID</li>
-                            <li class="option" data-answer="d" tabindex="0">d) Safe if anonymize tables</li>
+                            <li class="option" data-answer="b" tabindex="0">b) Safe if remove patient ID</li>
+                            <li class="option" data-answer="c" tabindex="0">c) Safe if anonymize tables</li>
+                            <li class="option" data-answer="d" tabindex="0">d) Unsafe - PHI structure and ID</li>
                         </ul>
                         <div class="feedback correct">
                             <strong>Correct!</strong> Query reveals PHI-related structure and identifiers - unsafe.
                         </div>
                         <div class="feedback incorrect">
-                            <strong>Incorrect.</strong> Query reveals PHI structure and identifiers. The correct answer is <strong>b)</strong>.
+                            <strong>Incorrect.</strong> Query reveals PHI structure and identifiers. The correct answer is <strong>d)</strong>.
                         </div>
                     </div>
 
-                    <div class="question" data-question="27" data-correct="b">
+                    <div class="question" data-question="27" data-correct="a">
                         <div class="question-text">27. Logged into ChatGPT with work email, ask: "What are best practices for HIPAA compliance?"</div>
                         <ul class="options">
-                            <li class="option" data-answer="a" tabindex="0">a) Safe - general knowledge</li>
-                            <li class="option" data-answer="b" tabindex="0">b) Unsafe - work email creates company IP linkage</li>
+                            <li class="option" data-answer="a" tabindex="0">a) Unsafe - work email creates company IP linkage</li>
+                            <li class="option" data-answer="b" tabindex="0">b) Safe - general knowledge</li>
                             <li class="option" data-answer="c" tabindex="0">c) Safe if work-related</li>
                             <li class="option" data-answer="d" tabindex="0">d) Unsafe - HIPAA implies PHI work</li>
                         </ul>
@@ -1550,31 +1540,31 @@ ENHANCED VERSION with all 10 features
                             <strong>Correct!</strong> Work email connects AI usage to company IP. Use personal accounts.
                         </div>
                         <div class="feedback incorrect">
-                            <strong>Incorrect.</strong> Work email creates company IP linkage. The correct answer is <strong>b)</strong>.
+                            <strong>Incorrect.</strong> Work email creates company IP linkage. The correct answer is <strong>a)</strong>.
                         </div>
                     </div>
 
-                    <div class="question" data-question="28" data-correct="b">
+                    <div class="question" data-question="28" data-correct="c">
                         <div class="question-text">28. Need AI help: "Optimize this query that processes patient appointment data" - What to do?</div>
                         <ul class="options">
                             <li class="option" data-answer="a" tabindex="0">a) Use ChatGPT with anonymized query</li>
-                            <li class="option" data-answer="b" tabindex="0">b) Use company-approved enterprise AI with safeguards</li>
-                            <li class="option" data-answer="c" tabindex="0">c) Use ChatGPT but remove table names</li>
+                            <li class="option" data-answer="b" tabindex="0">b) Use ChatGPT but remove table names</li>
+                            <li class="option" data-answer="c" tabindex="0">c) Use company-approved enterprise AI with safeguards</li>
                             <li class="option" data-answer="d" tabindex="0">d) Avoid AI entirely</li>
                         </ul>
                         <div class="feedback correct">
                             <strong>Correct!</strong> Only use approved enterprise AI tools configured for healthcare with BAAs.
                         </div>
                         <div class="feedback incorrect">
-                            <strong>Incorrect.</strong> Only use approved enterprise AI tools. The correct answer is <strong>b)</strong>.
+                            <strong>Incorrect.</strong> Only use approved enterprise AI tools. The correct answer is <strong>c)</strong>.
                         </div>
                     </div>
 
-                    <div class="question" data-question="29" data-correct="b">
+                    <div class="question" data-question="29" data-correct="a">
                         <div class="question-text">29. Accidentally pasted "Patient sarah@email.com insulin dosage: 10mg" into ChatGPT - Action?</div>
                         <ul class="options">
-                            <li class="option" data-answer="a" tabindex="0">a) Delete message and continue</li>
-                            <li class="option" data-answer="b" tabindex="0">b) Close ChatGPT and report to IT security</li>
+                            <li class="option" data-answer="a" tabindex="0">a) Close ChatGPT and report to IT security</li>
+                            <li class="option" data-answer="b" tabindex="0">b) Delete message and continue</li>
                             <li class="option" data-answer="c" tabindex="0">c) Edit message to remove identifiers</li>
                             <li class="option" data-answer="d" tabindex="0">d) Log out and delete account</li>
                         </ul>
@@ -1582,7 +1572,7 @@ ENHANCED VERSION with all 10 features
                             <strong>Correct!</strong> This is a reportable security incident. Stop and escalate immediately.
                         </div>
                         <div class="feedback incorrect">
-                            <strong>Incorrect.</strong> Accidental PHI exposure must be reported immediately. The correct answer is <strong>b)</strong>.
+                            <strong>Incorrect.</strong> Accidental PHI exposure must be reported immediately. The correct answer is <strong>a)</strong>.
                         </div>
                     </div>
                 </div>
@@ -1638,8 +1628,11 @@ ENHANCED VERSION with all 10 features
                     
                     <div class="cert-actions">
                         <button class="btn btn-success" onclick="printCertificate()">🖨️ Print Certificate</button>
-                        <button class="btn btn-primary" onclick="emailCertificate()">📧 Email Certificate</button>
                         <button class="btn btn-secondary" onclick="resetTraining()">🔄 Retry Training</button>
+                    </div>
+                    
+                    <div style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 6px; font-size: 0.9rem;">
+                        <strong>💡 Tip:</strong> Use your browser's "Print" dialog to save as PDF, then email or store the certificate for your records.
                     </div>
                 </div>
 
@@ -1685,7 +1678,7 @@ ENHANCED VERSION with all 10 features
             8: 'no', 9: 'yes', 10: 'yes', 11: 'no', 12: 'no', 13: 'yes',
             14: 'no', 15: 'yes', 16: 'no', 17: 'no', 18: 'yes', 19: 'yes',
             20: 'no', 21: 'yes', 22: 'yes', 23: 'c', 24: 'b', 25: 'c',
-            26: 'b', 27: 'b', 28: 'b', 29: 'b'
+            26: 'd', 27: 'a', 28: 'c', 29: 'a'
         };
 
         const allModule3Sections = ['intro', 'database', 'logging', 'inference', 'systems', 'safeharbor'];
@@ -1695,7 +1688,6 @@ ENHANCED VERSION with all 10 features
             setupModuleNavigation();
             updateDisplay();
             setupEventListeners();
-            // Name will be entered via input field in Module 0
             loadUserName();
         }
 
@@ -1873,7 +1865,6 @@ ENHANCED VERSION with all 10 features
                 updateModule3Progress();
             }
             
-            // Scroll to top of content area smoothly
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -2034,23 +2025,27 @@ ENHANCED VERSION with all 10 features
             const passed = percentage >= 80;
             
             const scoreDisplay = document.getElementById('finalScore');
-            scoreDisplay.innerHTML = `
-                <div style="font-size: 2rem; margin-bottom: 0.5rem;">
-                    ${passed ? '✅' : '❌'} ${percentage}%
-                </div>
-                <div style="font-size: 1rem;">
-                    ${correctCount} out of ${totalQuestions} correct
-                </div>
-                <div style="margin-top: 0.5rem; font-size: 0.9rem;">
-                    ${passed ? '<span style="color: #27ae60;">PASSED</span>' : '<span style="color: #e74c3c;">FAILED - 80% required</span>'}
-                </div>
-            `;
+            if (scoreDisplay) {
+                scoreDisplay.innerHTML = `
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">
+                        ${passed ? '✅' : '❌'} ${percentage}%
+                    </div>
+                    <div style="font-size: 1rem;">
+                        ${correctCount} out of ${totalQuestions} correct
+                    </div>
+                    <div style="margin-top: 0.5rem; font-size: 0.9rem;">
+                        ${passed ? '<span style="color: #27ae60;">PASSED</span>' : '<span style="color: #e74c3c;">FAILED - 80% required</span>'}
+                    </div>
+                `;
+            }
             
             return { correctCount, totalQuestions, percentage, passed };
         }
 
         function generateAnswerKey() {
             const keyContent = document.getElementById('answerKeyContent');
+            if (!keyContent) return;
+            
             keyContent.innerHTML = '';
             
             Object.keys(correctAnswers).forEach(qId => {
@@ -2079,10 +2074,12 @@ ENHANCED VERSION with all 10 features
 
         function updateCertificate(score) {
             const dateStr = new Date().toLocaleDateString();
-            document.getElementById('certDate').textContent = dateStr;
+            const certDate = document.getElementById('certDate');
+            if (certDate) certDate.textContent = dateStr;
             const certDate2 = document.getElementById('certDate2');
             if (certDate2) certDate2.textContent = dateStr;
-            document.getElementById('certMode').textContent = state.mode === 'assessment' ? 'Assessment Mode' : 'Learn Mode';
+            const certMode = document.getElementById('certMode');
+            if (certMode) certMode.textContent = state.mode === 'assessment' ? 'Assessment Mode' : 'Learn Mode';
             const certName = document.getElementById('userName');
             if (certName) {
                 certName.textContent = state.userName || 'Participant';
@@ -2091,54 +2088,24 @@ ENHANCED VERSION with all 10 features
 
         // ===== CERTIFICATE ACTIONS =====
         function printCertificate() {
-            // Hide everything except the certificate
             const answerKey = document.getElementById('answerKey');
             const certActions = document.querySelector('.cert-actions');
             const moduleHeader = document.querySelector('#module-7 .module-header');
+            const tipBox = document.querySelector('.cert-actions + div');
             
             if (answerKey) answerKey.style.display = 'none';
             if (certActions) certActions.style.display = 'none';
             if (moduleHeader) moduleHeader.style.display = 'none';
+            if (tipBox) tipBox.style.display = 'none';
             
-            // Trigger print
             window.print();
             
-            // Restore after print dialog closes
             setTimeout(() => {
                 if (answerKey) answerKey.style.display = 'block';
                 if (certActions) certActions.style.display = 'flex';
                 if (moduleHeader) moduleHeader.style.display = 'block';
+                if (tipBox) tipBox.style.display = 'block';
             }, 1000);
-        }
-
-        function emailCertificate() {
-            const score = calculateScore();
-            const subject = encodeURIComponent('PHI/PII Training Completion Certificate');
-            const body = encodeURIComponent(`
-PHI/PII Identification & Handling Training - Completion Certificate
-
-Name: ${state.userName || 'Not provided'}
-Score: ${score.percentage}% (${score.correctCount}/${score.totalQuestions})
-Status: ${score.passed ? 'PASSED ✅' : 'FAILED ❌'}
-Date: ${new Date().toLocaleDateString()}
-Training Mode: ${state.mode === 'assessment' ? 'Assessment Mode' : 'Learn Mode'}
-
-This training covered:
-- PHI/PII definitions and identification
-- Common leak points in technical workflows
-- Context-dependent PHI scenarios
-- Proper handling procedures
-- Incident response protocols
-- GenAI safety and compliance
-
-Digital Badge: PHI/PII Technical Compliance
-Validity: 12 months from completion date
-
----
-This certificate verifies successful completion of the PHI/PII Identification & Handling Training for Technical Teams.
-            `);
-            
-            window.location.href = `mailto:?subject=${subject}&body=${body}`;
         }
 
         function resetTraining() {
