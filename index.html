@@ -2145,50 +2145,112 @@ ENHANCED VERSION with all 10 features
         // ===== START =====
         document.addEventListener('DOMContentLoaded', init);
     </script>
-    <script>
+<script>
 (function () {
-  // CONFIG: choose how to label the intro module (module-0)
-  const INTRO_AS_ZERO = true;       // true  => "Module 0 of N"
-  const INTRO_AS_WELCOME = false;   // true  => "Welcome • (N-1) modules total"
+  // ===== CONFIG =====
+  const INTRO_AS_ZERO = true;        // true => "Module 0 of N" on module-0
+  const INTRO_AS_WELCOME = false;    // true => "Welcome • (N-1) modules total" on module-0
+  const SELECTORS_TO_SCAN = [
+    '#moduleCounter',
+    '#license-footer',
+    '.navigation',
+    '[class*="footer"]',
+    '[id*="footer"]'
+  ];
 
+  // ===== HELPERS =====
   const modules = Array.from(document.querySelectorAll('.module'));
-  const total = modules.length; // e.g., 8 when you have module-0 ... module-7
-  const counterEl = document.getElementById('moduleCounter');
+  const total = modules.length;
 
-  function buildLabel(activeIdx) {
-    if (!counterEl || activeIdx < 0) return '';
+  function isVisible(el) {
+    return !!(el && el.offsetParent !== null);
+  }
 
-    // If you prefer "Welcome" instead of numbering the intro:
-    if (INTRO_AS_WELCOME && activeIdx === 0) {
-      // e.g., "Welcome • 7 modules total"
-      return `Welcome • ${Math.max(total - 1, 0)} modules total`;
+  function activeModuleIndex() {
+    // 1) Prefer .active
+    let idx = modules.findIndex(m => m.classList.contains('active'));
+    if (idx >= 0) return idx;
+
+    // 2) Otherwise, visible one
+    idx = modules.findIndex(m => isVisible(m));
+    if (idx >= 0) return idx;
+
+    // 3) Otherwise, hash (e.g., #module-3)
+    if (location.hash) {
+      const m = document.querySelector(location.hash);
+      if (m) {
+        const idMatch = (m.id || '').match(/^module-(\d+)$/);
+        if (idMatch) return parseInt(idMatch[1], 10);
+      }
     }
 
-    // Otherwise number everything, either 0-based or 1-based
-    const human = INTRO_AS_ZERO ? activeIdx : activeIdx + 1;
+    // 4) Fallback to first module
+    return 0;
+  }
+
+  function buildLabel(idx) {
+    if (INTRO_AS_WELCOME && idx === 0) {
+      return `Welcome • ${Math.max(total - 1, 0)} modules total`;
+    }
+    const human = INTRO_AS_ZERO ? idx : idx + 1;
     return `Module ${human} of ${total}`;
   }
 
-  function updateCounter() {
-    const activeIdx = modules.findIndex(m => m.classList.contains('active'));
-    const label = buildLabel(activeIdx);
-    if (label) counterEl.textContent = label;
+  // Replace text in any target that already contains "Module X of Y"
+  const moduleRegex = /Module\s+\d+\s+of\s+\d+/i;
+
+  function setCounterText(label) {
+    // 1) Direct counter element
+    const direct = document.getElementById('moduleCounter');
+    if (direct) direct.textContent = label;
+
+    // 2) Patch any existing hard-coded strings in likely containers
+    const candidates = SELECTORS_TO_SCAN
+      .flatMap(sel => Array.from(document.querySelectorAll(sel)))
+      .filter((el, i, arr) => arr.indexOf(el) === i); // dedupe
+
+    candidates.forEach(el => {
+      // If element or any of its immediate text spans match "Module X of Y", replace
+      // a) element textContent directly if it matches
+      if (moduleRegex.test(el.textContent)) {
+        el.textContent = el.textContent.replace(moduleRegex, label);
+      }
+      // b) also check direct children (common for mixed content footers)
+      Array.from(el.childNodes).forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE && moduleRegex.test(node.textContent)) {
+          node.textContent = node.textContent.replace(moduleRegex, label);
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          const n = /** @type {HTMLElement} */ (node);
+          if (moduleRegex.test(n.textContent)) {
+            n.textContent = n.textContent.replace(moduleRegex, label);
+          }
+        }
+      });
+    });
   }
 
-  // Run now
-  updateCounter();
+  function updateAllCounters() {
+    const idx = activeModuleIndex();
+    const label = buildLabel(idx);
+    setCounterText(label);
+  }
 
-  // Keep it updated whenever the active module switches:
-  // 1) Watch class changes on each .module
-  const obs = new MutationObserver(updateCounter);
-  modules.forEach(m => obs.observe(m, { attributes: true, attributeFilter: ['class'] }));
+  // Initial run
+  updateAllCounters();
 
-  // 2) Also update on clicks/keyboard nav just in case your code swaps modules synchronously
-  document.addEventListener('click', updateCounter, true);
-  document.addEventListener('keydown', updateCounter, true);
+  // Re-run on class changes to any .module (when your code toggles .active)
+  const obs = new MutationObserver(updateAllCounters);
+  modules.forEach(m => obs.observe(m, { attributes: true, attributeFilter: ['class', 'style'] }));
 
-  // Optional: expose function if you want to call it from your own next/prev handlers
-  window.updateModuleCounter = updateCounter;
+  // Re-run on clicks, keys (common for next/prev handlers)
+  document.addEventListener('click', updateAllCounters, true);
+  document.addEventListener('keydown', updateAllCounters, true);
+
+  // Re-run on hash changes (if you use #module-x in nav)
+  window.addEventListener('hashchange', updateAllCounters, false);
+
+  // Optional: expose manual trigger
+  window.updateModuleCounter = updateAllCounters;
 })();
 </script>
 </body>
