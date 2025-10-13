@@ -1671,6 +1671,31 @@ ENHANCED VERSION with all 10 features
             userName: '',
             module3Sections: new Set(['intro'])
         };
+    <script>
+(function(){
+  const modules = document.querySelectorAll('.module').length
+    ? document.querySelectorAll('.module')
+    : document.querySelectorAll('[id^="module-"]');
+
+  const totalEl = document.getElementById('totalModules');
+  const currentEl = document.getElementById('currentModuleDisplay');
+
+  // initialize totals and current (show 0 on intro; change to +1 if you want 1-based)
+  if (totalEl) totalEl.textContent = String(modules.length);
+  function updateModuleUI(){
+    if (!currentEl) return;
+    currentEl.textContent = String(state.currentModule); // or String(state.currentModule + 1) for 1-based
+  }
+  window.updateModuleUI = updateModuleUI;
+  updateModuleUI();
+
+  // call this after you change modules
+  const prevOrig = window.previousModule;
+  const nextOrig = window.nextModule;
+  window.previousModule = function(){ prevOrig && prevOrig(); updateModuleUI(); };
+  window.nextModule     = function(){ nextOrig && nextOrig(); updateModuleUI(); };
+})();
+</script>
 
         // Correct answers
         const correctAnswers = {
