@@ -17,4 +17,4 @@ Build artifacts and hashes:
 - index.html (SHA-256): caea5034e38d9c0264b260d666e7702ddef8f2556bcc3354c8e50d4fed94ab1a
 
 Tooling notes:
-Drafted and edited in VS Code and ChatGPT. No proprietary third-party material included.
+Drafted and edited in VS Code. No proprietary third-party material included.
