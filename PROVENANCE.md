@@ -54,8 +54,8 @@ I (Tom Smolinsky / VITSO) wrote the training content and code. The v2.0.0 enhanc
 ## Build Artifacts and Hashes
 
 ### v2.0.0
-* `index.html` (SHA-256): `[GENERATE_NEW_HASH_HERE]`
-* `LICENSE.html` (SHA-256): `[GENERATE_HASH_IF_TRACKING]`
+* `index.html` (SHA-256): `6C074A100093C2A574C4077C21E25A79EBEC6C0A5700BF09F055C82F4C556F88`
+* `LICENSE.html` (SHA-256): `C73BCCBD5E7C6B983907F09F9D9CC7795C02AF4FAF406183198907B8BDE7BAD9`
 
 ### v1.0.3
 * `index.html` (SHA-256): `caea5034e38d9c0264b260d666e7702ddef8f2556bcc3354c8e50d4fed94ab1a`
