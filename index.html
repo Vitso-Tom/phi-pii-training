@@ -812,12 +812,40 @@ ENHANCED VERSION with all 10 features
                     </div>
                 </div>
 
+               
+                <div class="alert alert-warning">
+                    <strong>Don't worry if you got some of those wrong!</strong> Questions 2 and 3 were intentionally tricky - many experienced developers and healthcare professionals miss these initially. The key lesson here is that PHI/PII classification can be surprisingly nuanced and non-obvious.
+                </div>
+
+                <div class="content-section">
+                    <h3>Critical Insight: PHI Cannot Exist Without PII</h3>
+                    <p>Here's a fundamental principle that will help you in every situation:</p>
+                    
+                    <div class="formula-box">
+                        No PII = No PHI (Even with health data)
+                    </div>
+
+                    <div class="scenario-box">
+                        <h4>Examples:</h4>
+                        <ul>
+                            <li><strong>❌ PHI:</strong> "Patient glucose reading: 120 mg/dL" (anonymous health data = NOT PHI)</li>
+                            <li><strong>✅ PHI:</strong> "John Smith glucose reading: 120 mg/dL" (PII + health data = PHI)</li>
+                            <li><strong>❌ PHI:</strong> "Diabetes medication dosage: 10mg" (anonymous health data = NOT PHI)</li>
+                            <li><strong>✅ PHI:</strong> "john@email.com diabetes medication dosage: 10mg" (PII + health data = PHI)</li>
+                        </ul>
+                    </div>
+
+                    <p><strong>Why this matters for developers:</strong> You can work with health data safely as long as it's truly de-identified and contains no PII. The risk comes when identifiable information gets combined with health context.</p>
+                </div>
+
                 <div class="content-section" style="margin-top: 2rem; padding: 1.5rem; background: #e8f4fd; border-radius: 8px;">
                     <h3>🎯 Module 1 Key Takeaways</h3>
                     <ul>
                         <li><strong>PII = Identifiable:</strong> Any data that can reasonably identify a specific individual</li>
                         <li><strong>PHI = PII + Health Context:</strong> When identifiable information combines with health-related data</li>
                         <li><strong>Context Matters:</strong> The same data can be safe or PHI depending on what it's combined with</li>
+                        <li><strong>Technical Examples:</strong> Patient IDs, email addresses, and even device IDs can be PII</li>
+                        <li><strong>Health Context:</strong> Medications, diagnoses, appointment types, and health program enrollment all create PHI</li>
                     </ul>
                 </div>
             </div>
