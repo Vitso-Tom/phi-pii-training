@@ -63,7 +63,7 @@ I (Tom Smolinsky / VITSO) wrote the training content and code. The v2.0.0 enhanc
 ## Tooling Notes
 
 - **Editor:** VS Code
-- **AI Assistance:** Claude AI (Anthropic) for v2.0.0 feature development
+- **AI Assistance:** Claude AI (Anthropic) for v2.0.0 formatting and flow enhancements
 - **Testing:** Manual testing across Chrome, Firefox, Safari
 - **Deployment:** GitHub Pages
 - **No proprietary third-party material included**
