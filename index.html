@@ -1387,74 +1387,176 @@ VERSION 2.3 - Module 4 with Per-Subsection Exercises (Like Module 3)
                     </div>
                 </div>
 
-                <!-- Subsection: Safe Harbor -->
-                <div class="module-subsection" id="subsection-safeharbor">
-                    <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
-                        <strong style="color: #2980b9;">🔍 Current Section: 6. HIPAA Safe Harbor (Final Section)</strong>
-                    </div>
-                    <div class="content-section">
-                        <h3>HIPAA Safe Harbor: The ZIP Code Rule</h3>
-                        <p><strong>The Rule:</strong> Only share first 3 digits of ZIP codes if combined population ≥20,000 people.</p>
-                    </div>
+               <!-- Subsection: Safe Harbor -->
+<div class="module-subsection" id="subsection-safeharbor">
+    <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
+        <strong style="color: #2980b9;">🔍 Current Section: 6. HIPAA Safe Harbor (Final Section)</strong>
+    </div>
+    
+    <div class="content-section">
+        <h3>🛡️ Introduction to HIPAA Safe Harbor</h3>
+        <p>Safe Harbor is HIPAA's method for de-identifying data so it's no longer considered PHI. When properly applied, you can use the data for development, testing, and analytics without PHI restrictions.</p>
+    </div>
 
-                    <div class="exercise">
-                        <div class="exercise-header">
-                            <div class="exercise-title">Exercise 3.6f: Safe Harbor Challenge</div>
-                        </div>
+    <div class="alert alert-success">
+        <strong>📚 What's Ahead:</strong> This section introduces Safe Harbor basics needed for the scenarios below. You'll get comprehensive de-identification techniques and code examples in Module 4!
+    </div>
 
-                        <div class="question" data-question="22" data-correct="yes">
-                            <div class="question-text">22. ZIP codes 331XX covering Chicago suburbs (Population: 45,000) - Can share "331XX"?</div>
-                            <ul class="options">
-                                <li class="option" data-answer="no" tabindex="0">No - Must use "000XX"</li>
-                                <li class="option" data-answer="yes" tabindex="0">Yes - Can share "331XX"</li>
-                            </ul>
-                            <div class="feedback correct">
-                                <strong>Correct!</strong> Population >20K meets HIPAA Safe Harbor requirements.
-                            </div>
-                            <div class="feedback incorrect">
-                                <strong>Incorrect.</strong> Population >20K = can share first 3 digits. The correct answer is <strong>Yes</strong>.
-                            </div>
-                        </div>
+    <div class="content-section">
+        <h3>Safe Harbor: Three Rules You Need Now</h3>
+        <p>Safe Harbor requires removing 18 types of identifiers (you'll learn all of them in Module 4). For now, focus on these three that appear in common technical scenarios:</p>
 
-                        <div class="question" data-question="23" data-correct="no">
-                            <div class="question-text">23. Dataset shows "Patient admitted: 03/15/2024, discharged: 03/18/2024" - Safe Harbor compliant?</div>
-                            <ul class="options">
-                                <li class="option" data-answer="yes" tabindex="0">Yes - Dates alone aren't identifiable</li>
-                                <li class="option" data-answer="no" tabindex="0">No - Must remove specific dates, keep only year</li>
-                            </ul>
-                            <div class="feedback correct">
-                                <strong>Correct!</strong> Safe Harbor requires removing all dates except year. Must show only "2024" or use date ranges, not specific dates.
-                            </div>
-                            <div class="feedback incorrect">
-                                <strong>Incorrect.</strong> Specific dates must be removed under Safe Harbor - only year can remain. The correct answer is <strong>No</strong>.
-                            </div>
-                        </div>
+        <div class="scenario-box">
+            <h4>Rule 1: ZIP Codes - The 20,000 Population Rule</h4>
+            <p>You can share the first 3 digits of a ZIP code <strong>only if</strong> all ZIP codes starting with those 3 digits have a combined population of at least 20,000 people.</p>
+            
+            <table class="comparison-table" style="margin-top: 1rem;">
+                <thead>
+                    <tr>
+                        <th>Example</th>
+                        <th>Combined Population</th>
+                        <th>Can Share?</th>
+                        <th>What to Use</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ZIP 331XX (Chicago area)</td>
+                        <td>45,000</td>
+                        <td><span style="color: #27ae60;">✅ Yes</span></td>
+                        <td>"331XX" or "331**"</td>
+                    </tr>
+                    <tr>
+                        <td>ZIP 059XX (Rural Vermont)</td>
+                        <td>12,000</td>
+                        <td><span style="color: #e74c3c;">❌ No</span></td>
+                        <td>"000XX" (generic)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-                        <div class="question" data-question="24" data-correct="yes">
-                            <div class="question-text">24. Research dataset shows patient ages: "42, 67, 91, 35, 93, 28" - How should ages 91 and 93 be reported for Safe Harbor compliance?</div>
-                            <ul class="options">
-                                <li class="option" data-answer="no" tabindex="0">No change needed - actual ages are fine</li>
-                                <li class="option" data-answer="yes" tabindex="0">Yes - Must aggregate to "90+" or age ranges</li>
-                            </ul>
-                            <div class="feedback correct">
-                                <strong>Correct!</strong> Safe Harbor requires ages over 89 to be aggregated (e.g., "90+") because they're rare and potentially identifying.
-                            </div>
-                            <div class="feedback incorrect">
-                                <strong>Incorrect.</strong> Ages over 89 must be aggregated under Safe Harbor rules. The correct answer is <strong>Yes - Must aggregate to "90+"</strong>.
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="subsection-nav">
-                        <button class="btn btn-secondary subsection-nav-btn" onclick="prevSubsection()">
-                            ← Previous: Multi-System Flows
-                        </button>
-                        <div style="color: #6c757d; font-weight: bold;">Section 6 of 6 ✓ Complete</div>
-                        <button class="btn btn-success subsection-nav-btn" onclick="nextModule()">
-                            Continue to Next Module →
-                        </button>
-                    </div>
+        <div class="scenario-box">
+            <h4>Rule 2: Dates - Year Only</h4>
+            <p>Safe Harbor allows <strong>only the year</strong> from any date. All specific dates, months, quarters, or day-level information must be removed.</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">
+                <div style="background: #f8d7da; padding: 1rem; border-radius: 6px;">
+                    <strong style="color: #721c24;">❌ Not Safe Harbor Compliant:</strong>
+                    <ul style="margin-top: 0.5rem; color: #721c24; padding-left: 1.5rem;">
+                        <li>"Admitted: 03/15/2024"</li>
+                        <li>"Birth date: March 15, 1985"</li>
+                        <li>"Service: Q1 2024"</li>
+                        <li>"Discharged: January 2024"</li>
+                    </ul>
                 </div>
+                <div style="background: #d4edda; padding: 1rem; border-radius: 6px;">
+                    <strong style="color: #155724;">✅ Safe Harbor Compliant:</strong>
+                    <ul style="margin-top: 0.5rem; color: #155724; padding-left: 1.5rem;">
+                        <li>"Admitted: 2024"</li>
+                        <li>"Birth year: 1985"</li>
+                        <li>"Service year: 2024"</li>
+                        <li>"Discharged: 2024"</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="scenario-box">
+            <h4>Rule 3: Ages Over 89 Must Be Aggregated</h4>
+            <p>Any age over 89 must be grouped into a category like "90+" rather than showing the specific age. Ages 89 and under can be shown exactly.</p>
+            
+            <table class="comparison-table" style="margin-top: 1rem;">
+                <thead>
+                    <tr>
+                        <th>Original Ages</th>
+                        <th>Safe Harbor Treatment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>23, 45, 67, 89</td>
+                        <td><span style="color: #27ae60;">✅ Show as-is:</span> 23, 45, 67, 89</td>
+                    </tr>
+                    <tr>
+                        <td>91, 93, 95</td>
+                        <td><span style="color: #27ae60;">✅ Aggregate:</span> 90+, 90+, 90+</td>
+                    </tr>
+                    <tr>
+                        <td>42, 67, 91, 35, 93, 28</td>
+                        <td><span style="color: #27ae60;">✅ Mixed:</span> 42, 67, 90+, 35, 90+, 28</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-info" style="margin-top: 1rem;">
+                <strong>Why?</strong> People over 90 are rare (~2% of population). Showing specific ages like 91 or 93 combined with other data could identify individuals.
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-warning" style="margin-top: 2rem;">
+        <strong>⚠️ Important Note:</strong> These three rules are just a starting point. Safe Harbor actually requires removing <strong>18 different types of identifiers</strong>. You'll learn the complete list, technical implementation, and code examples in Module 4: De-Identification Techniques.
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-header">
+            <div class="exercise-title">Exercise 3.6f: Safe Harbor Challenge</div>
+        </div>
+
+        <div class="question" data-question="22" data-correct="yes">
+            <div class="question-text">22. ZIP codes 331XX covering Chicago suburbs (Population: 45,000) - Can share "331XX"?</div>
+            <ul class="options">
+                <li class="option" data-answer="no" tabindex="0">No - Must use "000XX"</li>
+                <li class="option" data-answer="yes" tabindex="0">Yes - Can share "331XX"</li>
+            </ul>
+            <div class="feedback correct">
+                <strong>Correct!</strong> Population >20K meets HIPAA Safe Harbor requirements.
+            </div>
+            <div class="feedback incorrect">
+                <strong>Incorrect.</strong> Population >20K = can share first 3 digits. The correct answer is <strong>Yes</strong>.
+            </div>
+        </div>
+
+        <div class="question" data-question="23" data-correct="no">
+            <div class="question-text">23. Dataset shows "Patient admitted: 03/15/2024, discharged: 03/18/2024" - Safe Harbor compliant?</div>
+            <ul class="options">
+                <li class="option" data-answer="yes" tabindex="0">Yes - Dates alone aren't identifiable</li>
+                <li class="option" data-answer="no" tabindex="0">No - Must remove specific dates, keep only year</li>
+            </ul>
+            <div class="feedback correct">
+                <strong>Correct!</strong> Safe Harbor requires removing all dates except year. Must show only "2024" or use date ranges, not specific dates.
+            </div>
+            <div class="feedback incorrect">
+                <strong>Incorrect.</strong> Specific dates must be removed under Safe Harbor - only year can remain. The correct answer is <strong>No</strong>.
+            </div>
+        </div>
+
+        <div class="question" data-question="24" data-correct="yes">
+            <div class="question-text">24. Research dataset shows patient ages: "42, 67, 91, 35, 93, 28" - How should ages 91 and 93 be reported for Safe Harbor compliance?</div>
+            <ul class="options">
+                <li class="option" data-answer="no" tabindex="0">No change needed - actual ages are fine</li>
+                <li class="option" data-answer="yes" tabindex="0">Yes - Must aggregate to "90+" or age ranges</li>
+            </ul>
+            <div class="feedback correct">
+                <strong>Correct!</strong> Safe Harbor requires ages over 89 to be aggregated (e.g., "90+") because they're rare and potentially identifying.
+            </div>
+            <div class="feedback incorrect">
+                <strong>Incorrect.</strong> Ages over 89 must be aggregated under Safe Harbor rules. The correct answer is <strong>Yes - Must aggregate to "90+"</strong>.
+            </div>
+        </div>
+    </div>
+
+    <div class="subsection-nav">
+        <button class="btn btn-secondary subsection-nav-btn" onclick="prevSubsection()">
+            ← Previous: Multi-System Flows
+        </button>
+        <div style="color: #6c757d; font-weight: bold;">Section 6 of 6 ✓ Complete</div>
+        <button class="btn btn-success subsection-nav-btn" onclick="nextModule()">
+            Continue to Next Module →
+        </button>
+    </div>
+</div>
                 <!-- End of Safe Harbor subsection -->
 
                 <div class="content-section" style="margin-top: 2rem; padding: 1.5rem; background: #e8f4fd; border-radius: 8px;">
