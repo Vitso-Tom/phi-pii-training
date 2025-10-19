@@ -712,7 +712,7 @@ VERSION 2.3 - Module 4 with Per-Subsection Exercises (Like Module 3)
     <div class="training-container">
         <div class="header">
             <h1>PHI/PII Training v2.3</h1>
-            <p>Duration: 45-60 minutes | Target: Technical Teams</p>
+            <p>Duration: 50-65 minutes | Target: Technical Teams</p>
             
             <div class="mode-toggle">
                 <button class="mode-btn active" onclick="setMode('learn')" aria-label="Learn Mode">
@@ -1130,10 +1130,456 @@ VERSION 2.3 - Module 4 with Per-Subsection Exercises (Like Module 3)
                     <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
                         <strong style="color: #2980b9;">🔍 Current Section: 2. Database Design & API Patterns</strong>
                     </div>
-                    <div class="content-section">
-                        <h3>Database Design & API Response Implications</h3>
-                        <p>Even well-architected systems can inadvertently create PHI through table joins and API responses.</p>
+                <div class="content-section">
+                    <h3>Database Design & API Patterns: Architectural Decisions That Create PHI</h3>
+                    <p><strong>Reality for builders:</strong> Your database schema and API design decisions directly determine whether PHI is created, how it flows through your system, and where it gets exposed. Well-intentioned architectural choices - convenient table joins, comprehensive API responses, flexible GraphQL queries - can inadvertently create PHI exposure points.</p>
+                </div>
+
+                <div class="alert alert-danger">
+                    <strong>🚨 Critical Insight:</strong> Database normalization and API convenience often conflict with PHI minimization. The "perfect" schema that joins everything and the "complete" API response that returns all user data are exactly what create PHI exposure. You must design for separation.
+                </div>
+
+                <div class="content-section">
+                    <h3>🗄️ Database Schema Patterns That Create PHI</h3>
+                    
+                    <div class="scenario-box">
+                        <h4>Pattern 1: The "Convenient" User Table</h4>
+                        <p><strong>The Setup:</strong> Single users table with all information</p>
+                        
+                        <div class="code-example"><span class="comment">-- Common pattern: Everything in one place</span>
+                <span class="keyword">CREATE TABLE</span> users (
+                id SERIAL PRIMARY KEY,
+                email VARCHAR(255) UNIQUE,          <span class="comment">-- ⚠️ PII</span>
+                phone VARCHAR(20),                  <span class="comment">-- ⚠️ PII</span>
+                first_name VARCHAR(100),            <span class="comment">-- ⚠️ PII</span>
+                last_name VARCHAR(100),             <span class="comment">-- ⚠️ PII</span>
+                date_of_birth DATE,                 <span class="comment">-- ⚠️ PII</span>
+                
+                <span class="comment">-- Health-related fields in same table</span>
+                primary_diagnosis VARCHAR(255),     <span class="comment">-- ⚠️ Health data</span>
+                current_medications TEXT[],         <span class="comment">-- ⚠️ Health data</span>
+                allergies TEXT[],                   <span class="comment">-- ⚠️ Health data</span>
+                last_appointment_date DATE,         <span class="comment">-- ⚠️ Health data</span>
+                insurance_provider VARCHAR(100),    <span class="comment">-- ⚠️ Health data</span>
+                
+                created_at TIMESTAMP,
+                updated_at TIMESTAMP
+                );
+
+                <span class="comment">-- ⚠️ PROBLEM: Every query that selects from this table creates PHI</span>
+                <span class="comment">-- Even SELECT email FROM users WHERE id = 123 can't avoid PHI schema</span></div>
+                        
+                        <p style="margin-top: 1rem;"><strong>Why This is Dangerous:</strong></p>
+                        <ul>
+                            <li>Any query selecting from this table risks exposing both PII and health data</li>
+                            <li>Developers need access to email for authentication → automatically get access to diagnoses</li>
+                            <li>Analytics queries on user demographics → unintentionally pull health data</li>
+                            <li>ORM auto-generated queries often SELECT * → always returns PHI</li>
+                            <li>Database backups, exports, staging environments all contain full PHI</li>
+                            <li>Database monitoring tools (query analyzers, slow query logs) capture PHI in results</li>
+                        </ul>
                     </div>
+
+                    <div class="scenario-box">
+                        <h4>✅ BETTER Pattern: Separation of Concerns</h4>
+                        <div class="code-example"><span class="comment">-- Separate PII from health data</span>
+
+                <span class="comment">-- Table 1: Identity/Authentication (PII only, no health context)</span>
+                <span class="keyword">CREATE TABLE</span> user_identity (
+                user_id UUID PRIMARY KEY,
+                email VARCHAR(255) UNIQUE,          <span class="comment">-- PII but no health context</span>
+                phone VARCHAR(20),                  <span class="comment">-- PII but no health context</span>
+                first_name VARCHAR(100),            <span class="comment">-- PII but no health context</span>
+                last_name VARCHAR(100),             <span class="comment">-- PII but no health context</span>
+                date_of_birth DATE,                 <span class="comment">-- PII but no health context</span>
+                created_at TIMESTAMP
+                );
+
+                <span class="comment">-- Table 2: Health Records (health data, but use hashed reference)</span>
+                <span class="keyword">CREATE TABLE</span> health_records (
+                record_id UUID PRIMARY KEY,
+                patient_hash VARCHAR(64),           <span class="comment">-- ✅ Hash of user_id, not direct FK</span>
+                diagnosis_code VARCHAR(20),         <span class="comment">-- Health data, not directly linked to PII</span>
+                medications JSONB,                  <span class="comment">-- Health data</span>
+                allergies JSONB,                    <span class="comment">-- Health data</span>
+                recorded_at TIMESTAMP,
+                <span class="comment">-- NO direct foreign key to user_identity</span>
+                <span class="comment">-- Application layer maps user_id → patient_hash when needed</span>
+                );
+
+                <span class="comment">-- ✅ Benefits:</span>
+                <span class="comment">-- 1. Auth team can access user_identity without seeing health data</span>
+                <span class="comment">-- 2. Analytics on demographics doesn't touch health_records</span>
+                <span class="comment">-- 3. Health data queries don't require PII access</span>
+                <span class="comment">-- 4. Different encryption keys for each table</span>
+                <span class="comment">-- 5. Different backup/retention policies possible</span></div>
+                        
+                        <p style="margin-top: 1rem;"><strong>Architectural Benefits:</strong></p>
+                        <ul>
+                            <li>Team specialization: Identity team vs Clinical team with different access</li>
+                            <li>Compliance: Can grant analytics access to demographics without health exposure</li>
+                            <li>Encryption: Different encryption keys/methods for PII vs health data</li>
+                            <li>Retention: Can delete PII (GDPR "right to forget") while keeping anonymized health data for research</li>
+                            <li>Auditability: Separate audit logs for PII access vs health data access</li>
+                        </ul>
+                    </div>
+
+                    <div class="scenario-box">
+                        <h4>Pattern 2: Foreign Key Joins That Create PHI</h4>
+                        <p><strong>The Setup:</strong> Normalized schema with foreign keys</p>
+                        
+                        <div class="code-example"><span class="comment">-- Typical normalized design</span>
+                <span class="keyword">CREATE TABLE</span> patients (
+                patient_id SERIAL PRIMARY KEY,
+                email VARCHAR(255),                 <span class="comment">-- ⚠️ PII</span>
+                full_name VARCHAR(200)              <span class="comment">-- ⚠️ PII</span>
+                );
+
+                <span class="keyword">CREATE TABLE</span> appointments (
+                appointment_id SERIAL PRIMARY KEY,
+                patient_id INTEGER REFERENCES patients(patient_id),
+                appointment_type VARCHAR(100),      <span class="comment">-- ⚠️ Health context</span>
+                appointment_date TIMESTAMP,
+                provider_name VARCHAR(100)
+                );
+
+                <span class="comment">-- Common query pattern (creates PHI):</span>
+                <span class="keyword">SELECT</span> 
+                p.email,                            <span class="comment">-- PII</span>
+                p.full_name,                        <span class="comment">-- PII</span>
+                a.appointment_type,                 <span class="comment">-- Health data</span>
+                a.appointment_date
+                <span class="keyword">FROM</span> patients p
+                <span class="keyword">JOIN</span> appointments a ON p.patient_id = a.patient_id
+                <span class="keyword">WHERE</span> a.appointment_date > NOW();
+
+                <span class="comment">-- ⚠️ Result set = PHI (PII + health context combined)</span>
+                <span class="comment">-- This query result in logs, query cache, application memory = PHI</span></div>
+                        
+                        <p style="margin-top: 1rem;"><strong>Common Scenarios That Create PHI:</strong></p>
+                        <ul>
+                            <li><strong>Dashboard queries:</strong> "Show upcoming appointments with patient names" → JOIN creates PHI</li>
+                            <li><strong>Reminder systems:</strong> "Get email + appointment type" → JOIN creates PHI</li>
+                            <li><strong>Analytics queries:</strong> "Count appointments by type per patient" → JOIN creates PHI</li>
+                            <li><strong>Export features:</strong> "Download patient list with appointment history" → massive PHI exposure</li>
+                            <li><strong>Search functionality:</strong> "Find patients with cardiology appointments" → search results = PHI</li>
+                        </ul>
+                    </div>
+
+                    <div class="scenario-box">
+                        <h4>✅ BETTER Pattern: Application-Layer Joins with Hashing</h4>
+                        <div class="code-example"><span class="comment">-- Keep tables separate, join in application when absolutely necessary</span>
+
+                <span class="comment">-- Query 1: Get appointment IDs for date range (no PII)</span>
+                <span class="keyword">SELECT</span> 
+                patient_hash,                       <span class="comment">-- ✅ Hash, not direct ID</span>
+                appointment_type,                   <span class="comment">-- Health data but no PII</span>
+                appointment_date
+                <span class="keyword">FROM</span> appointments
+                <span class="keyword">WHERE</span> appointment_date > NOW();
+
+                <span class="comment">-- Query 2: Get patient contact info separately (PII, no health context)</span>
+                <span class="keyword">SELECT</span> email, full_name
+                <span class="keyword">FROM</span> patients
+                <span class="keyword">WHERE</span> patient_id = unhash(patient_hash);  <span class="comment">-- Application layer hashing</span>
+
+                <span class="comment">-- Application decides IF and WHEN to combine them</span>
+                <span class="comment">-- Only combine in memory for immediate use (sending reminder)</span>
+                <span class="comment">-- Never persist the combined result</span>
+                <span class="comment">-- Never log the combined result</span></div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>🌐 API Design Patterns That Create PHI</h3>
+                    
+                    <div class="scenario-box">
+                        <h4>Pattern 1: The "Kitchen Sink" API Response</h4>
+                        <p><strong>The Setup:</strong> Single endpoint returns everything about a user</p>
+                        
+                        <div class="code-example"><span class="comment">// Common pattern: Comprehensive user profile endpoint</span>
+                <span class="keyword">GET</span> /api/v1/users/{id}
+
+                <span class="comment">// Response: Everything in one place</span>
+                {
+                <span class="string">"userId"</span>: 12345,
+                <span class="string">"email"</span>: <span class="string">"sarah@email.com"</span>,        <span class="comment">// ⚠️ PII</span>
+                <span class="string">"phone"</span>: <span class="string">"+1-555-0123"</span>,            <span class="comment">// ⚠️ PII</span>
+                <span class="string">"firstName"</span>: <span class="string">"Sarah"</span>,              <span class="comment">// ⚠️ PII</span>
+                <span class="string">"lastName"</span>: <span class="string">"Johnson"</span>,             <span class="comment">// ⚠️ PII</span>
+                <span class="string">"dateOfBirth"</span>: <span class="string">"1985-03-15"</span>,       <span class="comment">// ⚠️ PII</span>
+                
+                <span class="string">"healthProfile"</span>: {
+                    <span class="string">"primaryDiagnosis"</span>: <span class="string">"Type 2 Diabetes"</span>,  <span class="comment">// ⚠️ Health data</span>
+                    <span class="string">"medications"</span>: [
+                    {<span class="string">"name"</span>: <span class="string">"Metformin"</span>, <span class="string">"dosage"</span>: <span class="string">"500mg"</span>},
+                    {<span class="string">"name"</span>: <span class="string">"Lisinopril"</span>, <span class="string">"dosage"</span>: <span class="string">"10mg"</span>}
+                    ],
+                    <span class="string">"allergies"</span>: [<span class="string">"Penicillin"</span>],
+                    <span class="string">"lastVisit"</span>: <span class="string">"2025-10-15"</span>
+                },
+                
+                <span class="string">"appointments"</span>: [
+                    {<span class="string">"date"</span>: <span class="string">"2025-11-20"</span>, <span class="string">"type"</span>: <span class="string">"Cardiology"</span>}
+                ]
+                }
+
+                <span class="comment">// ⚠️ MASSIVE PHI exposure in single response</span>
+                <span class="comment">// API logs, caching, frontend state, error tracking all contain PHI</span></div>
+                        
+                        <p style="margin-top: 1rem;"><strong>Cascading Problems:</strong></p>
+                        <ul>
+                            <li><strong>API Gateway logs:</strong> Request/response logging captures entire PHI payload</li>
+                            <li><strong>CDN/Load Balancer:</strong> Access logs may include response bodies</li>
+                            <li><strong>API caching:</strong> Redis, Memcached, CDN edge caches contain PHI</li>
+                            <li><strong>Frontend state:</strong> Redux/Vuex stores, localStorage, sessionStorage have PHI</li>
+                            <li><strong>Error tracking:</strong> If API fails, error report includes full response with PHI</li>
+                            <li><strong>Developer tools:</strong> Network tab, Redux DevTools expose PHI to anyone watching</li>
+                            <li><strong>API documentation:</strong> Swagger/OpenAPI examples might use real PHI inadvertently</li>
+                        </ul>
+                    </div>
+
+                    <div class="scenario-box">
+                        <h4>✅ BETTER Pattern: Separate Endpoints by Concern</h4>
+                        <div class="code-example"><span class="comment">// Separate endpoints for different data categories</span>
+
+                <span class="comment">// Endpoint 1: Identity/Contact (PII only, no health context)</span>
+                <span class="keyword">GET</span> /api/v1/users/{id}/contact
+                {
+                <span class="string">"email"</span>: <span class="string">"sarah@email.com"</span>,        <span class="comment">// PII but no health context</span>
+                <span class="string">"phone"</span>: <span class="string">"+1-555-0123"</span>,            <span class="comment">// PII but no health context</span>
+                <span class="string">"preferredContact"</span>: <span class="string">"email"</span>
+                }
+                <span class="comment">// ✅ Can be cached, logged more freely (no health context)</span>
+
+                <span class="comment">// Endpoint 2: Health Summary (uses hashed ID, no direct PII)</span>
+                <span class="keyword">GET</span> /api/v1/health/{patient_hash}/summary
+                {
+                <span class="string">"patientHash"</span>: <span class="string">"7a3f9c2e..."</span>,      <span class="comment">// ✅ Hash, not email/name</span>
+                <span class="string">"diagnosisCategory"</span>: <span class="string">"endocrine"</span>,  <span class="comment">// ✅ Category, not "diabetes"</span>
+                <span class="string">"medicationCount"</span>: 2,               <span class="comment">// ✅ Count, not drug names</span>
+                <span class="string">"lastVisitMonth"</span>: <span class="string">"2025-10"</span>         <span class="comment">// ✅ Month, not exact date</span>
+                }
+                <span class="comment">// ✅ Health data but no direct PII = not PHI until joined</span>
+
+                <span class="comment">// Endpoint 3: Appointments (if PII needed, separate call)</span>
+                <span class="keyword">GET</span> /api/v1/appointments?patient_hash={hash}
+                {
+                <span class="string">"appointments"</span>: [
+                    {
+                    <span class="string">"appointmentId"</span>: <span class="string">"appt_xyz"</span>,
+                    <span class="string">"dateTime"</span>: <span class="string">"2025-11-20T14:00:00Z"</span>,
+                    <span class="string">"specialty"</span>: <span class="string">"cardiology"</span>,    <span class="comment">// Health data</span>
+                    <span class="string">"status"</span>: <span class="string">"scheduled"</span>
+                    }
+                ]
+                }
+                <span class="comment">// ✅ Uses patient_hash, frontend can correlate if needed</span></div>
+                        
+                        <p style="margin-top: 1rem;"><strong>Architectural Benefits:</strong></p>
+                        <ul>
+                            <li>Can cache contact info without caching health data</li>
+                            <li>Different authentication/authorization for each endpoint</li>
+                            <li>Separate rate limiting (health endpoints more restrictive)</li>
+                            <li>Easier to audit access patterns per data type</li>
+                            <li>Can use different CSP services for different data types (with appropriate BAAs)</li>
+                        </ul>
+                    </div>
+
+                    <div class="scenario-box">
+                        <h4>Pattern 2: GraphQL Over-Fetching Risk</h4>
+                        <p><strong>The Setup:</strong> Flexible GraphQL API allowing arbitrary queries</p>
+                        
+                        <div class="code-example"><span class="comment">// GraphQL schema that allows dangerous queries</span>
+                type User {
+                id: ID!
+                email: String!                    <span class="comment"># ⚠️ PII</span>
+                firstName: String!                <span class="comment"># ⚠️ PII</span>
+                lastName: String!                 <span class="comment"># ⚠️ PII</span>
+                
+                <span class="comment"># Nested health data accessible in same query</span>
+                healthProfile: HealthProfile      <span class="comment"># ⚠️ Can be queried together</span>
+                appointments: [Appointment!]!     <span class="comment"># ⚠️ Can be queried together</span>
+                medications: [Medication!]!       <span class="comment"># ⚠️ Can be queried together</span>
+                }
+
+                <span class="comment"># Client query (creates PHI):</span>
+                query GetUserComplete {
+                user(id: "12345") {
+                    email                           <span class="comment"># PII</span>
+                    firstName                       <span class="comment"># PII</span>
+                    healthProfile {
+                    diagnoses                     <span class="comment"># Health data</span>
+                    }
+                    appointments {
+                    type                          <span class="comment"># Health data</span>
+                    date
+                    }
+                }
+                }
+
+                <span class="comment"># ⚠️ Single GraphQL query creates PHI by combining fields</span>
+                <span class="comment"># GraphQL introspection exposes entire schema to clients</span>
+                <span class="comment"># Query complexity allows deep nesting of PII + health data</span></div>
+                        
+                        <p style="margin-top: 1rem;"><strong>GraphQL-Specific Risks:</strong></p>
+                        <ul>
+                            <li><strong>Over-fetching:</strong> Clients can request PII + health data in single query</li>
+                            <li><strong>Query logging:</strong> Full GraphQL queries in logs expose field combinations</li>
+                            <li><strong>Introspection:</strong> Schema exploration reveals all available PHI fields</li>
+                            <li><strong>Complexity attacks:</strong> Deeply nested queries can join multiple PHI sources</li>
+                            <li><strong>Caching challenges:</strong> Harder to cache safely when queries are dynamic</li>
+                            <li><strong>Error responses:</strong> GraphQL errors often include field paths with PHI context</li>
+                        </ul>
+                    </div>
+
+                    <div class="scenario-box">
+                        <h4>✅ SAFER Pattern: GraphQL with Field-Level Authorization</h4>
+                        <div class="code-example"><span class="comment">// Implement field-level permissions and separate types</span>
+
+                type User {
+                id: ID!
+                email: String! <span class="keyword">@auth</span>(requires: CONTACT_ACCESS)
+                firstName: String! <span class="keyword">@auth</span>(requires: CONTACT_ACCESS)
+                
+                <span class="comment"># Cannot query health fields unless user has HEALTH_ACCESS</span>
+                <span class="comment"># AND query is explicitly authorized</span>
+                }
+
+                <span class="comment"># Separate type - cannot be queried with User in same query</span>
+                type HealthProfile <span class="keyword">@auth</span>(requires: HEALTH_ACCESS) {
+                patientHash: String!              <span class="comment"># NOT user.id</span>
+                diagnosisCategory: String         <span class="comment"># Category, not specific diagnosis</span>
+                <span class="comment"># Specific diagnosis requires additional authorization</span>
+                }
+
+                <span class="comment"># Queries are separated by design</span>
+                type Query {
+                user(id: ID!): User <span class="keyword">@auth</span>(requires: CONTACT_ACCESS)
+                
+                <span class="comment"># Health queries use different ID type (hash)</span>
+                healthProfile(patientHash: String!): HealthProfile 
+                    <span class="keyword">@auth</span>(requires: HEALTH_ACCESS)
+                }
+
+                <span class="comment"># ✅ Cannot combine PII + health in single query</span>
+                <span class="comment"># ✅ Different authorization for different data types</span>
+                <span class="comment"># ✅ Introspection can be disabled in production</span></div>
+                    </div>
+
+                    <div class="scenario-box">
+                        <h4>Pattern 3: Pagination & Filtering Exposures</h4>
+                        <p><strong>The Setup:</strong> API with flexible filtering and pagination</p>
+                        
+                        <div class="code-example"><span class="comment">// Dangerous: Flexible filters that combine PII + health context</span>
+                <span class="keyword">GET</span> /api/v1/patients?
+                email=contains:john&                <span class="comment">// ⚠️ PII filter</span>
+                diagnosis=diabetes&                 <span class="comment">// ⚠️ Health filter</span>
+                medication=metformin&               <span class="comment">// ⚠️ Health filter</span>
+                city=Boston&                        <span class="comment">// ⚠️ PII filter</span>
+                sort=lastName&
+                limit=50
+
+                <span class="comment">// Response:</span>
+                {
+                <span class="string">"results"</span>: [
+                    {
+                    <span class="string">"email"</span>: <span class="string">"john.doe@email.com"</span>,     <span class="comment">// PII</span>
+                    <span class="string">"diagnosis"</span>: <span class="string">"Type 2 Diabetes"</span>,  <span class="comment">// Health</span>
+                    <span class="string">"medication"</span>: <span class="string">"Metformin"</span>         <span class="comment">// Health</span>
+                    }
+                    <span class="comment">// ... 49 more patients</span>
+                ],
+                <span class="string">"total"</span>: 247,
+                <span class="string">"page"</span>: 1
+                }
+
+                <span class="comment">// ⚠️ Problems:</span>
+                <span class="comment">// 1. Query string in logs contains PHI search criteria</span>
+                <span class="comment">// 2. Response contains massive PHI exposure (50 patients)</span>
+                <span class="comment">// 3. Pagination state in frontend may cache PHI</span>
+                <span class="comment">// 4. URL can be shared, bookmarked with PHI in query params</span></div>
+                        
+                        <p style="margin-top: 1rem;"><strong>Pagination-Specific Risks:</strong></p>
+                        <ul>
+                            <li><strong>URL parameters:</strong> PHI in query strings gets logged everywhere (API logs, proxy logs, browser history)</li>
+                            <li><strong>Cursor-based pagination:</strong> Cursors may encode PHI to maintain position</li>
+                            <li><strong>Large result sets:</strong> Bulk export features create massive PHI exposure</li>
+                            <li><strong>Search autocomplete:</strong> Real-time search suggestions may expose PHI patterns</li>
+                            <li><strong>Filter persistence:</strong> Saved filters/searches stored with PHI criteria</li>
+                        </ul>
+                    </div>
+
+                    <div class="scenario-box">
+                        <h4>✅ SAFER Pattern: POST-Based Filtering with Constraints</h4>
+                        <div class="code-example"><span class="comment">// Better: POST request with body (not logged in URLs)</span>
+                <span class="keyword">POST</span> /api/v1/patients/search
+                Content-Type: application/json
+
+                {
+                <span class="string">"filters"</span>: {
+                    <span class="string">"diagnosisCategory"</span>: <span class="string">"endocrine"</span>,    <span class="comment">// ✅ Category, not specific</span>
+                    <span class="string">"ageRange"</span>: {<span class="string">"min"</span>: 40, <span class="string">"max"</span>: 60},  <span class="comment">// ✅ Range, not exact</span>
+                    <span class="string">"zipPrefix"</span>: <span class="string">"021"</span>                  <span class="comment">// ✅ Prefix only</span>
+                },
+                <span class="string">"pagination"</span>: {
+                    <span class="string">"limit"</span>: 20,                        <span class="comment">// ✅ Max 20, not 50+</span>
+                    <span class="string">"cursor"</span>: <span class="string">"opaque_token_xyz"</span>      <span class="comment">// ✅ Opaque, no PHI</span>
+                },
+                <span class="string">"fields"</span>: [<span class="string">"patientHash"</span>, <span class="string">"ageRange"</span>]  <span class="comment">// ✅ Explicit, no email</span>
+                }
+
+                <span class="comment">// Response: Limited, de-identified</span>
+                {
+                <span class="string">"results"</span>: [
+                    {
+                    <span class="string">"patientHash"</span>: <span class="string">"7a3f9c2e..."</span>,     <span class="comment">// ✅ Hash</span>
+                    <span class="string">"ageRange"</span>: <span class="string">"40-49"</span>,              <span class="comment">// ✅ Range</span>
+                    <span class="string">"diagnosisCategory"</span>: <span class="string">"endocrine"</span>   <span class="comment">// ✅ Category</span>
+                    }
+                ],
+                <span class="string">"nextCursor"</span>: <span class="string">"opaque_token_abc"</span>,
+                <span class="string">"hasMore"</span>: <span class="keyword">true</span>
+                }
+
+                <span class="comment">// ✅ No PII in response, generalized health data only</span></div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>🎯 Builder's Checklist: PHI-Safe API & Database Design</h3>
+                    
+                    <div class="scenario-box">
+                        <h4>Database Design Review:</h4>
+                        <ol style="padding-left: 1.5rem; line-height: 1.8;">
+                            <li><strong>Table separation:</strong> Can you separate PII tables from health data tables?</li>
+                            <li><strong>Foreign keys:</strong> Do FKs force joins that create PHI? Consider application-layer hashing instead</li>
+                            <li><strong>Query patterns:</strong> Audit common queries - do they SELECT across PII + health tables?</li>
+                            <li><strong>ORM configuration:</strong> Does ORM default to SELECT *? Can you configure explicit column selection?</li>
+                            <li><strong>Indexing strategy:</strong> Are you indexing on PHI fields? (Index contents may be logged, cached)</li>
+                            <li><strong>Database logging:</strong> Are queries logged? Do logs expose PHI in WHERE clauses?</li>
+                            <li><strong>Backup strategy:</strong> Can you backup PII separately from health data for different retention?</li>
+                        </ol>
+                        
+                        <h4 style="margin-top: 2rem;">API Design Review:</h4>
+                        <ol style="padding-left: 1.5rem; line-height: 1.8;">
+                            <li><strong>Response structure:</strong> Does single endpoint return PII + health data together?</li>
+                            <li><strong>Endpoint separation:</strong> Can you split into /contact, /health, /appointments endpoints?</li>
+                            <li><strong>Field selection:</strong> Can clients request only fields they need? (GraphQL field selection, REST field parameter)</li>
+                            <li><strong>Authorization:</strong> Different auth levels for PII vs health data endpoints?</li>
+                            <li><strong>Rate limiting:</strong> More restrictive limits for PHI-heavy endpoints?</li>
+                            <li><strong>Caching strategy:</strong> What gets cached? For how long? Is PHI in cache covered by BAA?</li>
+                            <li><strong>Logging:</strong> Are request/response bodies logged? Do logs contain PHI?</li>
+                            <li><strong>Error responses:</strong> Do 400/500 errors expose PHI in error messages?</li>
+                            <li><strong>API documentation:</strong> Are example requests/responses using real or realistic-fake PHI?</li>
+                            <li><strong>Versioning:</strong> Old API versions still exposed with less secure PHI handling?</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ REST vs GraphQL for Healthcare:</strong> REST with explicit, separated endpoints is often SAFER than GraphQL for PHI because it's easier to control what data can be combined in a single request. GraphQL flexibility = PHI risk unless you implement strict field-level authorization.
+                </div>
 
                     <div class="exercise">
                         <div class="exercise-header">
@@ -1141,44 +1587,44 @@ VERSION 2.3 - Module 4 with Per-Subsection Exercises (Like Module 3)
                         </div>
 
                         <div class="question" data-question="11" data-correct="no">
-                            <div class="question-text">11. API returns: <code>{"user_hash": "abc123", "steps_today": 8547}</code> - PHI?</div>
+                            <div class="question-text">11. API endpoint response: <code>`GET /api/v1/users/{hash}/activity` returns: `{"userHash": "abc123...", "sessionCount": 47, "avgSessionMinutes": 8.5, "lastActiveDate": "2025-10-15"}`</code> - PHI?</div>
                             <ul class="options">
                                 <li class="option" data-answer="yes" tabindex="0">Yes - PHI</li>
                                 <li class="option" data-answer="no" tabindex="0">No - Safe data</li>
                             </ul>
                             <div class="feedback correct">
-                                <strong>Correct!</strong> User hash (non-identifiable) + general fitness metrics = No PHI.
+                                <strong>Correct!</strong> User hash (non-identifiable, can't reverse to email/name) + general activity metrics (no health context) = Safe. This is good API design: hashed identifier with aggregated behavioral data. No PII exposed, no health-specific features mentioned.
                             </div>
                             <div class="feedback incorrect">
-                                <strong>Incorrect.</strong> User hash + general fitness = safe. The correct answer is <strong>No</strong>.
+                                <strong>Incorrect.</strong> Hashed user ID + general activity metrics = safe. The hash can't be reversed to identify individuals (no email, name, phone). Activity metrics don't indicate health conditions. The correct answer is <strong>No</strong>.
                             </div>
                         </div>
 
                         <div class="question" data-question="12" data-correct="no">
-                            <div class="question-text">12. API returns: <code>{"region": "northeast", "avg_heart_rate": 72, "user_count": 1847}</code> - PHI?</div>
+                            <div class="question-text">12. Analytics API: <code>`GET /api/v1/analytics/regional-health` returns: `{"region": "northeast", "avgMetric": 72.5, "userCount": 1847, "trend": "improving"}`</code> - PHI?</div>
                             <ul class="options">
                                 <li class="option" data-answer="yes" tabindex="0">Yes - PHI</li>
                                 <li class="option" data-answer="no" tabindex="0">No - Safe</li>
                             </ul>
                             <div class="feedback correct">
-                                <strong>Correct!</strong> Aggregated regional data with large user count = Safe, meets anonymization thresholds.
+                                <strong>Correct!</strong> Aggregated regional data with large user count (1,847 users) = Safe. Meets k-anonymity thresholds (k >> 5). No individual identification possible. This is the gold standard for healthcare analytics APIs: aggregate only, no individual-level data.
                             </div>
                             <div class="feedback incorrect">
-                                <strong>Incorrect.</strong> Aggregated data with no individual identifiers = safe. The correct answer is <strong>No</strong>.
+                                <strong>Incorrect.</strong> Properly aggregated data (1,847 users) with regional grouping = safe, not PHI. No individual can be identified from aggregate statistics. Even though it's health-related ("health" in endpoint name), aggregation prevents PHI creation. The correct answer is <strong>No</strong>.
                             </div>
                         </div>
 
                         <div class="question" data-question="13" data-correct="yes">
-                            <div class="question-text">13. API returns: <code>{"email": "mary@company.com", "program": "cardiac_rehab", "completion": 75%}</code> - PHI?</div>
+                            <div class="question-text">13. API endpoint: <code>`GET /api/v1/patients/{id}/dashboard` returns: `{"email": "mary@company.com", "upcomingVisits": [{"date": "2025-11-20", "type": "Cardiac Rehabilitation", "provider": "Dr. Smith"}], "activePrescriptions": 3}`</code> - PHI?</div>
                             <ul class="options">
                                 <li class="option" data-answer="no" tabindex="0">No - Safe</li>
                                 <li class="option" data-answer="yes" tabindex="0">Yes - PHI</li>
                             </ul>
                             <div class="feedback correct">
-                                <strong>Correct!</strong> Email (PII) + cardiac rehabilitation program (heart condition) = PHI.
+                                <strong>Correct!</strong> Email (PII) + "Cardiac Rehabilitation" visit (implies heart condition) = PHI. This is a classic "kitchen sink" API pattern that combines everything in one response. API logs, caching layers, frontend state, error tracking all now contain PHI. Better design: separate /contact and /health endpoints with hashed IDs.
                             </div>
                             <div class="feedback incorrect">
-                                <strong>Incorrect.</strong> Email + cardiac rehab program = PHI. The correct answer is <strong>Yes</strong>.
+                                <strong>Incorrect.</strong> Email + cardiac rehabilitation visit = PHI because it combines PII with health context (heart condition). Even though "activePrescriptions" is just a count, "Cardiac Rehabilitation" reveals health condition. This API design creates unnecessary PHI exposure. The correct answer is <strong>Yes</strong>.
                             </div>
                         </div>
                     </div>
@@ -1199,10 +1645,406 @@ VERSION 2.3 - Module 4 with Per-Subsection Exercises (Like Module 3)
                     <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
                         <strong style="color: #2980b9;">🔍 Current Section: 3. Logging & Analytics Traps</strong>
                     </div>
-                    <div class="content-section">
-                        <h3>Logging & Analytics Traps</h3>
-                        <p>Logs and analytics systems are major PHI leak sources.</p>
+                <div class="content-section">
+                    <h3>Logging & Analytics Traps: The Silent PHI Exposures</h3>
+                    <p><strong>Reality for builders:</strong> Application logs, error tracking, APM tools, and observability platforms are where PHI exposure happens most frequently - and most silently. You're debugging, optimizing performance, tracking errors... and accidentally logging PHI to systems without BAAs.</p>
+                </div>
+
+                <div class="alert alert-danger">
+                    <strong>🚨 Critical Reality:</strong> Logging is often the #1 source of unintentional PHI exposure in technical environments. Developers log verbosely during debugging and forget to remove it. Error handlers dump entire request objects. APM tools auto-capture parameters. And suddenly, PHI is in CloudWatch, Datadog, Splunk, or Sentry - systems that may not have BAAs.
+                </div>
+
+                <div class="content-section">
+                    <h3>🪵 Common Logging Patterns That Expose PHI</h3>
+                    
+                    <div class="scenario-box">
+                        <h4>Pattern 1: Verbose Debug Logging</h4>
+                        <p><strong>The Setup:</strong> Developer debugging API issues in production</p>
+                        
+                        <div class="code-example"><span class="comment">// Common mistake: Logging entire request objects</span>
+                <span class="keyword">app.post</span>(<span class="string">'/api/appointments'</span>, (req, res) => {
+                logger.debug(<span class="string">'Received appointment request:'</span>, req.body);
+                <span class="comment">// ⚠️ req.body might contain:</span>
+                <span class="comment">// {</span>
+                <span class="comment">//   "patientEmail": "sarah@email.com",</span>
+                <span class="comment">//   "appointmentType": "Cardiology Consultation",</span>
+                <span class="comment">//   "symptoms": "chest pain, shortness of breath"</span>
+                <span class="comment">// }</span>
+                
+                <span class="keyword">try</span> {
+                    <span class="keyword">const</span> result = createAppointment(req.body);
+                    logger.info(<span class="string">'Appointment created:'</span>, result);
+                    <span class="comment">// ⚠️ Result object likely contains PHI too</span>
+                    res.json(result);
+                } <span class="keyword">catch</span> (error) {
+                    logger.error(<span class="string">'Failed to create appointment:'</span>, error, req.body);
+                    <span class="comment">// ⚠️ Error logs with full request = PHI in error tracking</span>
+                }
+                });
+
+                <span class="comment">// ⚠️ All of this PHI is now in:</span>
+                <span class="comment">// - CloudWatch Logs / Cloud Logging / Azure Monitor</span>
+                <span class="comment">// - Log aggregation (Splunk, Elasticsearch, Datadog)</span>
+                <span class="comment">// - Error tracking (Sentry, Rollbar, Bugsnag)</span></div>
+                        
+                        <p style="margin-top: 1rem;"><strong>Why This is Dangerous:</strong></p>
+                        <ul>
+                            <li>Logs persist long-term (often 30-90+ days retention)</li>
+                            <li>Logs are indexed, searchable, and accessible by many team members</li>
+                            <li>Log aggregation tools sync to analytics, alerting, dashboards</li>
+                            <li>Many logging/APM tools don't have BAAs or only offer them at enterprise tier</li>
+                            <li>Logs get exported for troubleshooting, shared in Slack, attached to tickets</li>
+                        </ul>
                     </div>
+
+                    <div class="scenario-box">
+                        <h4>Pattern 2: Database Query Logging</h4>
+                        <p><strong>The Setup:</strong> ORM or database client with query logging enabled</p>
+                        
+                        <div class="code-example"><span class="comment">// Many ORMs log SQL queries by default</span>
+                <span class="comment">// Sequelize, TypeORM, Entity Framework, etc.</span>
+
+                <span class="comment">// Development config (often copied to production):</span>
+                {
+                <span class="string">"logging"</span>: <span class="keyword">true</span>,  <span class="comment">// ⚠️ Logs ALL queries</span>
+                <span class="string">"logLevel"</span>: <span class="string">"debug"</span>
+                }
+
+                <span class="comment">// Results in logs like:</span>
+                <span class="comment">// Executing: SELECT * FROM patients WHERE email = 'john@email.com'</span>
+                <span class="comment">// Executing: UPDATE medications SET dosage = '10mg', drug_name = 'Metformin' </span>
+                <span class="comment">//            WHERE patient_id = 12345</span>
+                <span class="comment">// Executing: INSERT INTO diagnoses (patient_id, icd_code, description) </span>
+                <span class="comment">//            VALUES (12345, 'E11.9', 'Type 2 Diabetes')</span>
+
+                <span class="comment">// ⚠️ PHI in query parameters, WHERE clauses, INSERT values</span></div>
+                        
+                        <p style="margin-top: 1rem;"><strong>Critical Points:</strong></p>
+                        <ul>
+                            <li>Query logging often enabled in development, accidentally left on in production</li>
+                            <li>Parameterized queries still log the parameter VALUES in many ORMs</li>
+                            <li>Database audit logs (AWS RDS logs, Cloud SQL logs, Azure SQL audit) capture queries</li>
+                            <li>Slow query logs capture full SQL with PHI in WHERE clauses</li>
+                            <li>Connection pool logs may capture authentication with connection strings containing PHI table names</li>
+                        </ul>
+                    </div>
+
+                    <div class="scenario-box">
+                        <h4>Pattern 3: APM Tool Auto-Instrumentation</h4>
+                        <p><strong>The Setup:</strong> Application Performance Monitoring with automatic tracing</p>
+                        
+                        <div class="code-example"><span class="comment">// APM tools (Datadog, New Relic, AppDynamics, Dynatrace) </span>
+                <span class="comment">// auto-instrument HTTP requests and capture:</span>
+
+                <span class="comment">// HTTP Request captured by APM:</span>
+                POST /api/prescriptions
+                Headers:
+                Authorization: Bearer eyJ...
+                X-User-Email: doctor.smith@hospital.com  <span class="comment">// ⚠️ PII</span>
+
+                Query Params:
+                patientId=12345                          <span class="comment">// ⚠️ PII</span>
+
+                Request Body:
+                {
+                <span class="string">"medication"</span>: <span class="string">"Lisinopril"</span>,             <span class="comment">// ⚠️ Health data (BP med)</span>
+                <span class="string">"dosage"</span>: <span class="string">"10mg"</span>,
+                <span class="string">"diagnosis"</span>: <span class="string">"Hypertension"</span>           <span class="comment">// ⚠️ Health data</span>
+                }
+
+                <span class="comment">// APM trace includes:</span>
+                <span class="comment">// - Full URL with query params (patientId)</span>
+                <span class="comment">// - Request headers (user email)</span>
+                <span class="comment">// - Request/response bodies (medication + diagnosis)</span>
+                <span class="comment">// - Database queries executed during request</span>
+                <span class="comment">// - External API calls made</span>
+
+                <span class="comment">// ⚠️ All of this is PHI if it combines PII + health data</span></div>
+                        
+                        <p style="margin-top: 1rem;"><strong>APM-Specific Risks:</strong></p>
+                        <ul>
+                            <li>Auto-instrumentation captures MORE than you realize (headers, bodies, queries)</li>
+                            <li>Distributed tracing follows requests across microservices, capturing PHI at each hop</li>
+                            <li>Performance profiling captures function arguments (which may contain PHI)</li>
+                            <li>Real User Monitoring (RUM) captures frontend interactions with PHI</li>
+                            <li>APM dashboards, alerts, and team collaboration features expose PHI to many users</li>
+                        </ul>
+                        
+                        <div class="alert alert-warning" style="margin-top: 1rem; font-size: 0.9rem;">
+                            <strong>⚠️ BAA Reality Check:</strong> Many APM tools (Datadog, New Relic, AppDynamics, Dynatrace) offer BAAs - but often only at Enterprise tier, with specific configuration requirements, and not for all features (e.g., RUM, synthetic monitoring may be excluded).
+                        </div>
+                    </div>
+
+                    <div class="scenario-box">
+                        <h4>Pattern 4: Error Tracking with Full Context</h4>
+                        <p><strong>The Setup:</strong> Error monitoring (Sentry, Rollbar, Bugsnag, Airbrake)</p>
+                        
+                        <div class="code-example"><span class="comment">// Typical error handler that captures too much</span>
+                <span class="keyword">try</span> {
+                <span class="keyword">const</span> prescription = <span class="keyword">await</span> createPrescription(patientData);
+                } <span class="keyword">catch</span> (error) {
+                Sentry.captureException(error, {
+                    <span class="keyword">extra</span>: {
+                    patientData: patientData,          <span class="comment">// ⚠️ Entire patient object</span>
+                    userId: req.user.id,
+                    userEmail: req.user.email,         <span class="comment">// ⚠️ PII</span>
+                    requestBody: req.body,             <span class="comment">// ⚠️ May contain PHI</span>
+                    timestamp: <span class="keyword">new</span> Date(),
+                    environment: process.env.NODE_ENV
+                    },
+                    <span class="keyword">tags</span>: {
+                    operation: <span class="string">'create_prescription'</span>,  <span class="comment">// ⚠️ Health context</span>
+                    patientId: patientData.id          <span class="comment">// ⚠️ PII</span>
+                    }
+                });
+                }
+
+                <span class="comment">// Sentry error report now contains:</span>
+                <span class="comment">// - Stack trace (may include PHI in variable names/values)</span>
+                <span class="comment">// - User email (PII)</span>
+                <span class="comment">// - Full patient data object (PHI)</span>
+                <span class="comment">// - Request context (may contain PHI)</span>
+                <span class="comment">// - Breadcrumbs (user actions leading to error - may reveal health behaviors)</span></div>
+                        
+                        <p style="margin-top: 1rem;"><strong>Error Tracking Risks:</strong></p>
+                        <ul>
+                            <li>Stack traces can contain variable values with PHI</li>
+                            <li>Breadcrumbs track user navigation (e.g., "viewed diabetes resources → clicked medication list")</li>
+                            <li>Request context captures URLs, headers, bodies with PHI</li>
+                            <li>Session replay features (LogRocket, FullStory) record entire user sessions with PHI</li>
+                            <li>Error grouping/aggregation creates patterns that infer conditions</li>
+                            <li>Team collaboration features (comments, assignments) expose errors to many users</li>
+                        </ul>
+                        
+                        <div class="alert alert-danger" style="margin-top: 1rem; font-size: 0.9rem;">
+                            <strong>🚨 Session Replay Risk:</strong> Tools like LogRocket, FullStory, Hotjar that record user sessions are EXTREMELY high risk for PHI. They capture everything users see and do - forms, content, navigation. Most do NOT offer BAAs or HIPAA compliance.
+                        </div>
+                    </div>
+
+                    <div class="scenario-box">
+                        <h4>Pattern 5: Log Aggregation & Search Platforms</h4>
+                        <p><strong>The Setup:</strong> Centralized logging (Splunk, Elasticsearch, Datadog Logs, CloudWatch Insights)</p>
+                        
+                        <div class="code-example"><span class="comment">// Logs from multiple sources aggregated into searchable platform</span>
+
+                <span class="comment">// Application logs:</span>
+                2025-10-19 14:23:15 INFO Processing appointment for sarah@email.com
+                2025-10-19 14:23:16 DEBUG Appointment type: Cardiology consultation
+                2025-10-19 14:23:17 INFO Sending reminder to +1-555-0123
+
+                <span class="comment">// Nginx/API Gateway logs:</span>
+                POST /api/prescriptions?patientId=12345&medication=Lisinopril
+                User-Agent: HealthApp/2.0 (patient-portal)
+
+                <span class="comment">// Database audit logs:</span>
+                UPDATE medications SET drug_name='Metformin', dosage='500mg' 
+                WHERE patient_id=12345
+
+                <span class="comment">// All aggregated and searchable:</span>
+                <span class="comment">// Search: "sarah@email.com" → finds appointment, medication, diagnosis</span>
+                <span class="comment">// Search: "patientId=12345" → finds all health activities</span>
+                <span class="comment">// Search: "Cardiology" → finds all cardiology patients</span>
+
+                <span class="comment">// ⚠️ Log aggregation platform becomes PHI repository</span></div>
+                        
+                        <p style="margin-top: 1rem;"><strong>Aggregation Risks:</strong></p>
+                        <ul>
+                            <li>Combines logs from multiple sources, creating PHI where individual logs might not</li>
+                            <li>Search/query capabilities make PHI easily discoverable</li>
+                            <li>Long retention periods (30-90+ days, sometimes years for compliance)</li>
+                            <li>Wide access - many team members have log search access for troubleshooting</li>
+                            <li>Alerting/dashboards expose PHI in Slack, email, PagerDuty notifications</li>
+                            <li>Log exports for analysis create PHI in CSV/JSON files on developer machines</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>🛠️ Safe vs Unsafe Logging Patterns</h3>
+                    
+                    <div class="scenario-box">
+                        <h4>❌ UNSAFE: Logging Everything</h4>
+                        <div class="code-example"><span class="comment">// Dangerous: No filtering, logs everything</span>
+                logger.info(<span class="string">'User action'</span>, {
+                userId: user.id,
+                email: user.email,                    <span class="comment">// ⚠️ PII</span>
+                action: <span class="string">'viewed_content'</span>,
+                contentTitle: <span class="string">'Managing Type 2 Diabetes'</span>,  <span class="comment">// ⚠️ Health context</span>
+                timestamp: <span class="keyword">new</span> Date(),
+                sessionData: req.session              <span class="comment">// ⚠️ May contain PHI</span>
+                });
+
+                <span class="comment">// Database logging ON for all queries</span>
+                sequelize = <span class="keyword">new</span> Sequelize(config, {
+                logging: console.log,                 <span class="comment">// ⚠️ Logs all queries with PHI</span>
+                benchmark: <span class="keyword">true</span>
+                });
+
+                <span class="comment">// APM with default configuration</span>
+                <span class="comment">// Captures all headers, bodies, query params</span></div>
+                    </div>
+
+                    <div class="scenario-box">
+                        <h4>✅ SAFER: Structured Logging with Filtering</h4>
+                        <div class="code-example"><span class="comment">// Better: Structured logging with PHI filtering</span>
+                <span class="keyword">const</span> safeLogger = {
+                info: (message, data) => {
+                    <span class="keyword">const</span> filtered = filterPHI(data);  <span class="comment">// Remove/hash PII fields</span>
+                    logger.info(message, filtered);
+                }
+                };
+
+                <span class="keyword">function</span> filterPHI(data) {
+                <span class="keyword">return</span> {
+                    userHash: data.userId ? hash(data.userId) : <span class="keyword">null</span>,  <span class="comment">// Hash, don't expose</span>
+                    action: data.action,
+                    contentCategory: categorize(data.contentTitle),  <span class="comment">// "health" not "diabetes"</span>
+                    timestamp: data.timestamp,
+                    <span class="comment">// Explicitly exclude: email, phone, names, specific diagnoses</span>
+                };
+                }
+
+                safeLogger.info(<span class="string">'User action'</span>, {
+                userId: user.id,
+                action: <span class="string">'viewed_content'</span>,
+                contentTitle: <span class="string">'Managing Type 2 Diabetes'</span>
+                });
+                <span class="comment">// Logs: { userHash: "7a3f9c...", action: "viewed_content", </span>
+                <span class="comment">//        contentCategory: "health", timestamp: "..." }</span>
+                <span class="comment">// ✅ No PII, generalized health context = no PHI</span></div>
+                    </div>
+
+                    <div class="scenario-box">
+                        <h4>✅ BEST: Production Log Strategy</h4>
+                        <div class="code-example"><span class="comment">// Gold standard: Separate log levels, strict filtering, BAA-covered tools</span>
+
+                <span class="comment">// 1. Disable verbose logging in production</span>
+                <span class="keyword">const</span> logLevel = process.env.NODE_ENV === <span class="string">'production'</span> 
+                ? <span class="string">'warn'</span>  <span class="comment">// Only warnings and errors</span>
+                : <span class="string">'debug'</span>;
+
+                <span class="comment">// 2. Never log request/response bodies in production</span>
+                <span class="keyword">app.use</span>((req, res, next) => {
+                <span class="keyword">if</span> (process.env.NODE_ENV !== <span class="string">'production'</span>) {
+                    logger.debug(<span class="string">'Request:'</span>, sanitize(req.body));
+                }
+                <span class="comment">// In production: Log only non-PHI metadata</span>
+                logger.info(<span class="string">'Request received'</span>, {
+                    method: req.method,
+                    path: req.path,  <span class="comment">// No query params with PII</span>
+                    statusCode: res.statusCode,
+                    duration: res.duration,
+                    requestId: req.id  <span class="comment">// Random ID, not user ID</span>
+                });
+                next();
+                });
+
+                <span class="comment">// 3. Configure APM to exclude sensitive data</span>
+                <span class="keyword">const</span> apm = require(<span class="string">'elastic-apm-node'</span>).start({
+                captureBody: <span class="string">'off'</span>,                    <span class="comment">// Don't capture request bodies</span>
+                captureHeaders: <span class="keyword">false</span>,                <span class="comment">// Don't capture headers</span>
+                sanitizeFieldNames: [<span class="string">'email'</span>, <span class="string">'phone'</span>, <span class="string">'ssn'</span>, <span class="string">'patient*'</span>]
+                });
+
+                <span class="comment">// 4. Disable database query logging in production</span>
+                <span class="keyword">const</span> sequelize = <span class="keyword">new</span> Sequelize(config, {
+                logging: process.env.NODE_ENV === <span class="string">'production'</span> ? <span class="keyword">false</span> : console.log
+                });
+
+                <span class="comment">// ✅ Minimal logging, no PHI, still useful for debugging</span></div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>🎯 Builder's Checklist: PHI-Safe Logging</h3>
+                    
+                    <div class="scenario-box">
+                        <h4>Before Deploying to Production:</h4>
+                        <ol style="padding-left: 1.5rem; line-height: 1.8;">
+                            <li><strong>Audit log statements:</strong> Search codebase for logger.debug, console.log, print statements
+                                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                                    <li>What objects are being logged? req.body? user objects? query results?</li>
+                                    <li>Do any logs contain email, phone, patient IDs, diagnoses, medications?</li>
+                                </ul>
+                            </li>
+                            <li><strong>Check ORM/database logging:</strong> Is query logging enabled? Are queries with PHI being logged?</li>
+                            <li><strong>Review APM configuration:</strong> What does your APM tool capture by default?
+                                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                                    <li>Request bodies? Response bodies? Headers? Query parameters?</li>
+                                    <li>Do you have proper sanitization rules configured?</li>
+                                    <li>Does your APM plan include BAA coverage?</li>
+                                </ul>
+                            </li>
+                            <li><strong>Error tracking review:</strong> What context are you sending with errors?
+                                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                                    <li>Full request objects? User objects? Database query results?</li>
+                                    <li>Are breadcrumbs capturing health-related navigation?</li>
+                                    <li>Session replay enabled? (High risk!)</li>
+                                </ul>
+                            </li>
+                            <li><strong>Verify BAA coverage:</strong> For every logging/monitoring tool:
+                                <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                                    <li>CloudWatch/Cloud Logging/Azure Monitor - covered by CSP BAA? Check specific service coverage</li>
+                                    <li>Datadog/New Relic/AppDynamics - do you have enterprise tier with BAA?</li>
+                                    <li>Sentry/Rollbar/Bugsnag - do they offer BAAs? At what tier?</li>
+                                    <li>Splunk/Elasticsearch - on-premises or cloud? BAA configured?</li>
+                                </ul>
+                            </li>
+                            <li><strong>Log retention policies:</strong> How long are logs kept? Can you demonstrate compliance with data retention limits in your DUA/BAA?</li>
+                            <li><strong>Access controls:</strong> Who has log access? Is it appropriate for their role? Audit trails for log access?</li>
+                            <li><strong>Log exports:</strong> Can team members export logs with PHI to local machines? CSV files in Downloads folders?</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ Common Justification That Doesn't Hold Up:</strong> "We need verbose logging to debug production issues" → Solution: Use feature flags to enable verbose logging temporarily for specific requests/users, with automatic expiration. Never leave verbose PHI logging on permanently.
+                </div>
+
+                <div class="content-section">
+                    <h3>🛡️ Logging Tool Categories & BAA Availability</h3>
+                    
+                    <div class="scenario-box">
+                        <table class="comparison-table" style="font-size: 0.85rem;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%;">Tool Category</th>
+                                    <th style="width: 35%;">Examples</th>
+                                    <th style="width: 40%;">BAA Availability</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>CSP Native Logs</strong></td>
+                                    <td>CloudWatch (AWS), Cloud Logging (GCP), Azure Monitor</td>
+                                    <td>✅ Typically covered by CSP BAA, but verify specific services and configuration requirements</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>APM Platforms</strong></td>
+                                    <td>Datadog, New Relic, AppDynamics, Dynatrace</td>
+                                    <td>⚠️ Enterprise tier only, with configuration requirements (disable body capture, etc.)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Log Aggregation</strong></td>
+                                    <td>Splunk, Elasticsearch, Datadog Logs, Sumo Logic</td>
+                                    <td>⚠️ Enterprise tier typically, verify on-premises vs cloud deployments</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Error Tracking</strong></td>
+                                    <td>Sentry, Rollbar, Bugsnag, Airbrake</td>
+                                    <td>⚠️ Some offer BAAs at enterprise tier, many do NOT</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Session Replay</strong></td>
+                                    <td>LogRocket, FullStory, Hotjar, Heap</td>
+                                    <td>❌ Most do NOT offer BAAs or HIPAA compliance - avoid with PHI</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <p style="margin-top: 1rem;"><strong>Golden Rule:</strong> Assume NO BAA coverage unless you've explicitly verified it in writing with your vendor account team and confirmed it covers your specific use case and plan tier.</p>
+                    </div>
+                </div>
 
                     <div class="exercise">
                         <div class="exercise-header">
@@ -1210,44 +2052,44 @@ VERSION 2.3 - Module 4 with Per-Subsection Exercises (Like Module 3)
                         </div>
 
                         <div class="question" data-question="14" data-correct="no">
-                            <div class="question-text">14. APM shows: <code>Slow query - table: user_preferences, session_id: sess_abc123</code> - PHI?</div>
+                            <div class="question-text">14. Application log entry: <code>`{"timestamp": "2025-10-19T14:23:15Z", "level": "INFO", "message": "Database query completed", "table": "user_preferences", "duration_ms": 45, "request_id": "req_abc123"}`</code> - PHI?</div>
                             <ul class="options">
                                 <li class="option" data-answer="yes" tabindex="0">Yes - PHI</li>
                                 <li class="option" data-answer="no" tabindex="0">No - Safe log</li>
                             </ul>
                             <div class="feedback correct">
-                                <strong>Correct!</strong> Session ID (non-identifiable) + user preferences (no health context) = Safe.
+                                <strong>Correct!</strong> Request ID (non-identifiable random ID) + user preferences table (no health context) + technical metadata only = Safe. No PII (no email, phone, patient ID) and no health-specific context. This is good production logging practice.
                             </div>
                             <div class="feedback incorrect">
-                                <strong>Incorrect.</strong> Session ID + user preferences = safe logging. The correct answer is <strong>No</strong>.
+                                <strong>Incorrect.</strong> This log contains only technical metadata with no PII (no email, phone, patient ID) and no health context. Request IDs are random and don't identify individuals. Table name "user_preferences" doesn't imply health data. The correct answer is <strong>No</strong>.
                             </div>
                         </div>
 
                         <div class="question" data-question="15" data-correct="yes">
-                            <div class="question-text">15. Error log: <code>API timeout for sarah@healthapp.com in insulin_dosage_calculator module</code> - PHI?</div>
+                            <div class="question-text">15. APM trace captured by Datadog: <code>`POST /api/prescriptions - User: sarah@healthapp.com - Body: {"medication": "Lisinopril", "dosage": "10mg", "diagnosis": "Hypertension"} - Response: 201 Created`</code> - PHI?</div>
                             <ul class="options">
-                                <li class="option" data-answer="no" tabindex="0">No - Technical info</li>
+                                <li class="option" data-answer="no" tabindex="0">No - Just technical monitoring</li>
                                 <li class="option" data-answer="yes" tabindex="0">Yes - PHI</li>
                             </ul>
                             <div class="feedback correct">
-                                <strong>Correct!</strong> Email (PII) + insulin dosage calculator (diabetes) = PHI in logs.
+                                <strong>Correct!</strong> Email (PII) + medication (Lisinopril = blood pressure drug) + diagnosis (Hypertension) = PHI in APM trace. APM tools with auto-instrumentation often capture this by default. Verify: 1) Does Datadog have BAA configured? 2) Is body capture disabled? 3) Are sensitive fields sanitized?
                             </div>
                             <div class="feedback incorrect">
-                                <strong>Incorrect.</strong> Email + insulin calculator = PHI. The correct answer is <strong>Yes</strong>.
+                                <strong>Incorrect.</strong> This APM trace combines email (PII) with medication and diagnosis (health data), creating PHI. Even though it's "just monitoring," the trace contains identifiable health information. APM tools often auto-capture this - you must configure sanitization rules. The correct answer is <strong>Yes</strong>.
                             </div>
-                        </div>
+                        </div>  
 
                         <div class="question" data-question="16" data-correct="no">
-                            <div class="question-text">16. System log: <code>DB connection timeout in user_authentication - user_hash: xyz789abc</code> - PHI?</div>
+                            <div class="question-text">16. Database slow query log: <code>`[2025-10-19 14:23:15] SLOW QUERY (2.3s): SELECT * FROM appointments WHERE appointment_date > '2025-10-01' AND status = 'completed' LIMIT 100`</code> - PHI?</div>
                             <ul class="options">
                                 <li class="option" data-answer="yes" tabindex="0">Yes - PHI</li>
                                 <li class="option" data-answer="no" tabindex="0">No - Safe log</li>
                             </ul>
                             <div class="feedback correct">
-                                <strong>Correct!</strong> User hash (non-identifiable) + authentication (no health context) = Safe.
+                                <strong>Correct!</strong> Query contains no PII (no names, emails, patient IDs in WHERE clause) and references only metadata (dates, status). While querying appointments table, the log itself doesn't expose identifiable patient information. However, ALWAYS review query logs carefully - if this query had `WHERE patient_email = 'john@email.com'` it WOULD be PHI.
                             </div>
                             <div class="feedback incorrect">
-                                <strong>Incorrect.</strong> User hash + authentication = safe. The correct answer is <strong>No</strong>.
+                                <strong>Incorrect.</strong> This slow query log contains only table names and non-identifying query conditions (dates, status). No PII is exposed. However, be vigilant - many query logs DO expose PHI when they include patient emails, IDs, or names in WHERE clauses or INSERT values. The correct answer is <strong>No</strong>.
                             </div>
                         </div>
                     </div>
@@ -1269,8 +2111,262 @@ VERSION 2.3 - Module 4 with Per-Subsection Exercises (Like Module 3)
                         <strong style="color: #2980b9;">🔍 Current Section: 4. The Inference Problem</strong>
                     </div>
                     <div class="content-section">
-                        <h3>The Inference Problem</h3>
-                        <p>User behavior patterns can imply health conditions - creating "inferential PHI."</p>
+                        <h3>The Inference Problem: When Behavior Reveals Health Conditions</h3>
+                        <p><strong>Critical insight for builders:</strong> Even when you never explicitly store diagnosis codes or medical conditions, user behavior patterns can reveal health information. This creates "inferential PHI" - and you're still liable under HIPAA.</p>
+                    </div>
+
+                    <div class="alert alert-danger">
+                        <strong>🚨 Wake-Up Call:</strong> "We only track anonymous usage metrics" is NOT a defense if those metrics can be correlated back to individuals and reveal health conditions. Product analytics, A/B testing, personalization engines, and recommendation systems all create this risk.
+                    </div>
+
+                    <div class="content-section">
+                        <h3>🔍 How Inference Creates PHI</h3>
+                        
+                        <div class="scenario-box">
+                            <h4>Pattern 1: Content Access Patterns</h4>
+                            <p><strong>The Setup:</strong> Health app with educational content about various conditions</p>
+                            
+                            <div class="code-example"><span class="comment">// Analytics event tracking</span>
+                    {
+                    <span class="string">"event"</span>: <span class="string">"content_viewed"</span>,
+                    <span class="string">"userId"</span>: <span class="string">"user_12345"</span>,              <span class="comment">// Internal ID (not directly PII)</span>
+                    <span class="string">"email"</span>: <span class="string">"sarah@email.com"</span>,       <span class="comment">// ⚠️ PII</span>
+                    <span class="string">"contentId"</span>: <span class="string">"depression-coping-strategies"</span>,
+                    <span class="string">"timeSpent"</span>: 420,                  <span class="comment">// 7 minutes</span>
+                    <span class="string">"returnVisits"</span>: 8                  <span class="comment">// Visited this topic 8 times</span>
+                    }
+                    <span class="comment">// ⚠️ Email + repeated depression content = inferential PHI</span>
+                    <span class="comment">// Implies mental health condition</span></div>
+                            
+                            <p style="margin-top: 1rem;"><strong>Why This is PHI:</strong></p>
+                            <ul>
+                                <li>Email address identifies the individual (PII)</li>
+                                <li>Repeated access to depression resources implies mental health condition</li>
+                                <li>Time spent + return visits strengthens the inference</li>
+                                <li>Analytics platform (Google Analytics, Mixpanel, Amplitude, etc.) now contains PHI</li>
+                                <li>Does your analytics tool have a BAA? Probably not.</li>
+                            </ul>
+                        </div>
+
+                        <div class="scenario-box">
+                            <h4>Pattern 2: Feature Usage Patterns</h4>
+                            <p><strong>The Setup:</strong> Wellness app with various health tracking features</p>
+                            
+                            <div class="code-example"><span class="comment">// Product analytics - feature usage dashboard</span>
+                    SELECT 
+                        u.email,
+                        COUNT(bg.reading_id) as blood_glucose_checks,
+                        AVG(bg.reading_value) as avg_glucose,
+                        COUNT(DISTINCT DATE(bg.timestamp)) as days_tracked
+                    FROM users u
+                    JOIN blood_glucose_readings bg ON u.user_id = bg.user_id
+                    WHERE bg.timestamp > NOW() - INTERVAL '30 days'
+                    GROUP BY u.email
+                    HAVING COUNT(bg.reading_id) > 60  <span class="comment">// 60+ readings in 30 days = 2x/day</span>
+
+                    <span class="comment">// ⚠️ Result: email + blood glucose tracking frequency = inferential PHI</span>
+                    <span class="comment">// Implies diabetes diagnosis</span></div>
+                            
+                            <p style="margin-top: 1rem;"><strong>The Inference Chain:</strong></p>
+                            <ul>
+                                <li>Users who track blood glucose 2x/day likely have diabetes</li>
+                                <li>Email identifies the individual</li>
+                                <li>Usage pattern implies diagnosis → inferential PHI created</li>
+                                <li>Product analytics dashboard, data warehouse, BI tools all contain PHI</li>
+                            </ul>
+                        </div>
+
+                        <div class="scenario-box">
+                            <h4>Pattern 3: Time-Series Behavior Analysis</h4>
+                            <p><strong>The Setup:</strong> Mental health app with mood tracking and therapy scheduling</p>
+                            
+                            <div class="code-example"><span class="comment">// User engagement analysis for retention efforts</span>
+                    {
+                    <span class="string">"userId"</span>: <span class="string">"USR_98765"</span>,
+                    <span class="string">"phone"</span>: <span class="string">"+1-555-0199"</span>,           <span class="comment">// ⚠️ PII</span>
+                    <span class="string">"behaviorPattern"</span>: {
+                        <span class="string">"loginTimes"</span>: [<span class="string">"08:00"</span>, <span class="string">"13:00"</span>, <span class="string">"18:00"</span>, <span class="string">"23:00"</span>],
+                        <span class="string">"avgSessionDuration"</span>: 15,      <span class="comment">// minutes</span>
+                        <span class="string">"moodLogFrequency"</span>: <span class="string">"4x daily"</span>,
+                        <span class="string">"crisisHotlineAccessed"</span>: 3,
+                        <span class="string">"therapistMessagesSent"</span>: 12
+                    }
+                    }
+                    <span class="comment">// ⚠️ Phone + crisis hotline access + high mood logging = inferential PHI</span>
+                    <span class="comment">// Strongly implies mental health crisis or severe depression</span></div>
+                            
+                            <p style="margin-top: 1rem;"><strong>Critical Reality:</strong></p>
+                            <ul>
+                                <li>Behavioral patterns can be MORE revealing than explicit diagnosis codes</li>
+                                <li>4x daily mood logging + crisis hotline access = clear mental health indicator</li>
+                                <li>Phone number identifies individual + behavioral pattern = PHI</li>
+                                <li>This data in product analytics, retention analysis, or ML training = PHI exposure</li>
+                            </ul>
+                        </div>
+
+                        <div class="scenario-box">
+                            <h4>Pattern 4: Personalization & Recommendation Engines</h4>
+                            <p><strong>The Setup:</strong> Health content platform with ML-powered recommendations</p>
+                            
+                            <div class="code-example"><span class="comment">// ML model training data for content recommendations</span>
+                    training_data = [
+                    {
+                        <span class="string">"user_email"</span>: <span class="string">"john@company.com"</span>,       <span class="comment">// ⚠️ PII</span>
+                        <span class="string">"viewed_articles"</span>: [
+                        <span class="string">"managing-type-2-diabetes"</span>,
+                        <span class="string">"insulin-injection-techniques"</span>,
+                        <span class="string">"low-carb-diet-plans"</span>,
+                        <span class="string">"blood-sugar-monitoring-tips"</span>
+                        ],
+                        <span class="string">"engagement_score"</span>: 0.89,
+                        <span class="string">"recommended_next"</span>: <span class="string">"diabetes-medication-guide"</span>
+                    }
+                    ]
+                    <span class="comment">// ⚠️ Email + diabetes content cluster = inferential PHI</span>
+                    <span class="comment">// ML model itself now "knows" user's condition</span></div>
+                            
+                            <p style="margin-top: 1rem;"><strong>ML/AI Specific Risks:</strong></p>
+                            <ul>
+                                <li>Training data with email/user_id + health content = PHI in ML pipeline</li>
+                                <li>Model inference logs contain identifiable data + predicted conditions</li>
+                                <li>Recommendation engine databases store user-condition correlations</li>
+                                <li>A/B testing frameworks expose PHI to analytics platforms</li>
+                                <li>Do your ML platforms (SageMaker, Vertex AI, Azure ML) have BAAs configured?</li>
+                            </ul>
+                        </div>
+
+                        <div class="scenario-box">
+                            <h4>Pattern 5: A/B Testing & Experimentation Platforms</h4>
+                            <p><strong>The Setup:</strong> Testing new UI for medication reminders</p>
+                            
+                            <div class="code-example"><span class="comment">// Optimizely / LaunchDarkly / Split.io event data</span>
+                    {
+                    <span class="string">"experiment"</span>: <span class="string">"medication_reminder_redesign"</span>,
+                    <span class="string">"userId"</span>: <span class="string">"user_54321"</span>,
+                    <span class="string">"userEmail"</span>: <span class="string">"lisa@email.com"</span>,      <span class="comment">// ⚠️ PII</span>
+                    <span class="string">"variant"</span>: <span class="string">"treatment_b"</span>,
+                    <span class="string">"metadata"</span>: {
+                        <span class="string">"medicationCategory"</span>: <span class="string">"insulin"</span>,   <span class="comment">// ⚠️ Health data</span>
+                        <span class="string">"reminderFrequency"</span>: <span class="string">"2x_daily"</span>
+                    },
+                    <span class="string">"conversionEvent"</span>: <span class="string">"reminder_acknowledged"</span>
+                    }
+                    <span class="comment">// ⚠️ Email + insulin reminders = inferential PHI in A/B test platform</span></div>
+                            
+                            <p style="margin-top: 1rem;"><strong>Experimentation Risks:</strong></p>
+                            <ul>
+                                <li>A/B testing platforms (Optimizely, LaunchDarkly, etc.) typically DON'T have BAAs</li>
+                                <li>Experiment metadata often includes health context</li>
+                                <li>User segmentation by condition creates PHI</li>
+                                <li>Conversion funnels reveal condition-specific behaviors</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="content-section">
+                        <h3>🛠️ Safe vs Unsafe Inference Patterns</h3>
+                        
+                        <div class="scenario-box">
+                            <h4>❌ UNSAFE: Individual-Level Tracking with Identifiers</h4>
+                            <div class="code-example"><span class="comment">// Dangerous analytics implementation</span>
+                    analytics.track(<span class="string">"Feature Used"</span>, {
+                    userId: currentUser.id,
+                    email: currentUser.email,              <span class="comment">// ⚠️ PII</span>
+                    feature: <span class="string">"blood_glucose_tracker"</span>,  <span class="comment">// ⚠️ Health context</span>
+                    frequency: <span class="string">"daily"</span>,
+                    duration: 30                           <span class="comment">// days of use</span>
+                    });
+
+                    <span class="comment">// ⚠️ Creates inferential PHI: email + BG tracking = diabetes inference</span></div>
+                        </div>
+
+                        <div class="scenario-box">
+                            <h4>✅ SAFER: Aggregated Analytics Without Identifiers</h4>
+                            <div class="code-example"><span class="comment">// Safer: Aggregate first, no individual tracking</span>
+                    <span class="comment">// Server-side aggregation BEFORE sending to analytics</span>
+                    <span class="keyword">const</span> aggregatedMetrics = {
+                    feature: <span class="string">"health_tracking"</span>,           <span class="comment">// Generic category</span>
+                    activeUsers: 1247,                     <span class="comment">// Count, not individuals</span>
+                    avgSessionDuration: 8.5,               <span class="comment">// Minutes - aggregate</span>
+                    totalSessions: 15832,
+                    dateRange: <span class="string">"2025-10"</span>                  <span class="comment">// Month only</span>
+                    };
+
+                    analytics.track(<span class="string">"Feature Usage Summary"</span>, aggregatedMetrics);
+                    <span class="comment">// ✅ No individual identifiers, aggregated data = no PHI</span></div>
+                        </div>
+
+                        <div class="scenario-box">
+                            <h4>✅ BEST: Hashed Identifiers + Feature Anonymization</h4>
+                            <div class="code-example"><span class="comment">// Best practice: Hash user ID, generalize features</span>
+                    <span class="keyword">const</span> safeUserId = sha256(currentUser.id + SECRET_SALT);
+
+                    analytics.track(<span class="string">"Feature Used"</span>, {
+                    userHash: safeUserId.substring(0, 16),  <span class="comment">// Truncated hash - consistent but not reversible</span>
+                    featureCategory: <span class="string">"health_monitoring"</span>,  <span class="comment">// Generic, not "blood_glucose"</span>
+                    engagementLevel: <span class="string">"high"</span>,               <span class="comment">// Not specific frequency</span>
+                    cohortMonth: <span class="string">"2025-10"</span>                 <span class="comment">// Temporal grouping only</span>
+                    });
+
+                    <span class="comment">// ✅ Useful for product analytics, but can't identify individuals or infer conditions</span></div>
+                        </div>
+                    </div>
+
+                    <div class="content-section">
+                        <h3>🎯 Builder's Checklist: Preventing Inferential PHI</h3>
+                        
+                        <div class="scenario-box">
+                            <h4>Before Implementing Analytics, A/B Tests, or ML Features:</h4>
+                            <ol style="padding-left: 1.5rem; line-height: 1.8;">
+                                <li><strong>Identify PII in your data:</strong> What fields identify individuals? (email, phone, user_id that maps to PII?)</li>
+                                <li><strong>Identify health context:</strong> What behaviors or content imply health conditions?</li>
+                                <li><strong>Map the correlation:</strong> Can PII be correlated with health behaviors? If yes → inferential PHI risk</li>
+                                <li><strong>Choose safe patterns:</strong>
+                                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                                        <li>Option A: Aggregate data, no individual tracking</li>
+                                        <li>Option B: Hash identifiers, generalize features</li>
+                                        <li>Option C: Separate pipelines - PII analysis separate from health behavior analysis</li>
+                                    </ul>
+                                </li>
+                                <li><strong>Verify BAA coverage:</strong> Does your analytics platform have a BAA if you're tracking individual-level health-related behavior?</li>
+                                <li><strong>Review ML pipelines:</strong> Training data, model inference logs, recommendation engines - all need scrutiny</li>
+                                <li><strong>Audit third-party tools:</strong> Google Analytics, Mixpanel, Amplitude, Segment, A/B testing platforms - what data are you sending them?</li>
+                                <li><strong>Document decisions:</strong> If challenged in audit, can you explain why your analytics don't create PHI?</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Special Warning for Product & Analytics Teams:</strong> "Anonymous user IDs" are NOT anonymous if they can be joined back to PII tables. "We don't store diagnoses" is NOT a defense if user behavior reveals conditions. Inference = PHI exposure, period.
+                    </div>
+
+                    <div class="content-section">
+                        <h3>📊 Real-World Example: Safe Product Analytics</h3>
+                        
+                        <div class="scenario-box">
+                            <h4>Goal: Understand feature adoption without creating PHI</h4>
+                            
+                            <p><strong>❌ Unsafe Approach:</strong></p>
+                            <div class="code-example"><span class="comment">// Tracks individuals with health context</span>
+                    SELECT email, feature_name, usage_count
+                    FROM user_events
+                    WHERE feature_name LIKE <span class="string">'%health%'</span>
+                    <span class="comment">// ⚠️ Email + health feature usage = inferential PHI</span></div>
+                            
+                            <p style="margin-top: 1.5rem;"><strong>✅ Safe Approach:</strong></p>
+                            <div class="code-example"><span class="comment">// Aggregate by cohorts, no individual tracking</span>
+                    SELECT 
+                        feature_category,                    <span class="comment">// "monitoring" not "glucose"</span>
+                        user_cohort,                         <span class="comment">// "2025-Q3 signups"</span>
+                        COUNT(DISTINCT user_hash) as users,  <span class="comment">// Hashed IDs</span>
+                        AVG(usage_count) as avg_usage,
+                        PERCENTILE(usage_count, 0.5) as median
+                    FROM anonymized_events
+                    WHERE feature_category = <span class="string">'health_tracking'</span>
+                    GROUP BY feature_category, user_cohort
+                    HAVING COUNT(DISTINCT user_hash) >= 20   <span class="comment">// k-anonymity threshold</span>
+                    <span class="comment">// ✅ Useful metrics, but no individual identification or condition inference</span></div>
+                        </div>
                     </div>
 
                     <div class="exercise">
@@ -1278,45 +2374,45 @@ VERSION 2.3 - Module 4 with Per-Subsection Exercises (Like Module 3)
                             <div class="exercise-title">Exercise 3.4d: Inference Challenge</div>
                         </div>
 
-                        <div class="question" data-question="17" data-correct="no">
-                            <div class="question-text">17. Analytics: "Wellness section accessed 1,247 times by 89 unique users this month" - PHI?</div>
-                            <ul class="options">
-                                <li class="option" data-answer="yes" tabindex="0">Yes - Inferential PHI</li>
-                                <li class="option" data-answer="no" tabindex="0">No - Safe aggregated</li>
-                            </ul>
-                            <div class="feedback correct">
-                                <strong>Correct!</strong> Aggregated data with no individual identifiers = Safe.
-                            </div>
-                            <div class="feedback incorrect">
-                                <strong>Incorrect.</strong> Properly aggregated data = safe. The correct answer is <strong>No</strong>.
-                            </div>
-                        </div>
+                <div class="question" data-question="17" data-correct="no">
+                    <div class="question-text">17. Product analytics dashboard shows: "Health Tracking feature accessed 1,247 times by 89 unique users this month" - PHI?</div>
+                    <ul class="options">
+                        <li class="option" data-answer="yes" tabindex="0">Yes - Inferential PHI</li>
+                        <li class="option" data-answer="no" tabindex="0">No - Safe aggregated</li>
+                    </ul>
+                    <div class="feedback correct">
+                        <strong>Correct!</strong> Properly aggregated data with no individual identifiers = Safe. The metric shows feature usage at a population level (89 users) without revealing which individuals used it or what specific conditions they might have. This is the gold standard for product analytics in healthcare.
+                    </div>
+                    <div class="feedback incorrect">
+                        <strong>Incorrect.</strong> Aggregated data with no individual identification = safe, not inferential PHI. The key is that you can't identify which 89 specific users accessed the feature. If the data showed "sarah@email.com accessed diabetes tracking 15 times," THAT would be inferential PHI. The correct answer is <strong>No</strong>.
+                    </div>
+                </div>
 
-                        <div class="question" data-question="18" data-correct="yes">
-                            <div class="question-text">18. Analytics: "tom@email.com clicked 'Depression Resources' 8 times this month" - PHI?</div>
-                            <ul class="options">
-                                <li class="option" data-answer="no" tabindex="0">No - Just usage</li>
-                                <li class="option" data-answer="yes" tabindex="0">Yes - Inferential PHI</li>
-                            </ul>
-                            <div class="feedback correct">
-                                <strong>Correct!</strong> Email (PII) + depression resources pattern implies mental health condition = PHI.
-                            </div>
-                            <div class="feedback incorrect">
-                                <strong>Incorrect.</strong> Email + depression resources usage = inferential PHI. The correct answer is <strong>Yes</strong>.
-                            </div>
+                    <div class="question" data-question="18" data-correct="yes">
+                        <div class="question-text">18. Analytics event: `{"email": "tom@email.com", "event": "viewed_content", "article": "managing-depression-symptoms", "viewCount": 8, "timeSpentMinutes": 47}` - PHI?</div>
+                        <ul class="options">
+                            <li class="option" data-answer="no" tabindex="0">No - Just content analytics</li>
+                            <li class="option" data-answer="yes" tabindex="0">Yes - Inferential PHI</li>
+                        </ul>
+                        <div class="feedback correct">
+                            <strong>Correct!</strong> Email (PII) + repeated depression content engagement (8 views, 47 minutes) = inferential PHI. The behavioral pattern implies mental health condition. This data in Google Analytics, Mixpanel, Amplitude, or any analytics platform without a BAA creates PHI exposure.
                         </div>
+                        <div class="feedback incorrect">
+                            <strong>Incorrect.</strong> Email + depression content engagement pattern = inferential PHI because it implies a mental health condition. Even though no diagnosis code is stored, the repeated behavior (8 views, 47 minutes) creates a strong inference. The correct answer is <strong>Yes</strong>.
+                        </div>
+                    </div>
 
-                        <div class="question" data-question="19" data-correct="yes">
-                            <div class="question-text">19. "Patient_ID A12B3 opens app at 8 AM, 1 PM, 6 PM daily, then visits 'Blood Sugar Log'" - PHI?</div>
+                                                <div class="question" data-question="19" data-correct="yes">
+                            <div class="question-text">19. ML training data: `{"userId": "A12B3", "phone": "+1-555-0123", "features_used": ["blood_glucose_log", "insulin_tracker", "carb_counter"], "usage_frequency": "multiple_daily", "days_active": 87}` - PHI?</div>
                             <ul class="options">
-                                <li class="option" data-answer="no" tabindex="0">No - Just usage</li>
+                                <li class="option" data-answer="no" tabindex="0">No - Just usage patterns</li>
                                 <li class="option" data-answer="yes" tabindex="0">Yes - Inferential PHI</li>
                             </ul>
                             <div class="feedback correct">
-                                <strong>Correct!</strong> Patient ID + regular blood sugar logging pattern implies diabetes = PHI.
+                                <strong>Correct!</strong> Phone number (PII) + blood glucose/insulin tracking pattern = inferential PHI (implies diabetes diagnosis). ML training data, model inference logs, and recommendation engines all contain PHI if they include identifiable information + health behavior patterns. Verify your ML platform (SageMaker, Vertex AI, Azure ML) has proper BAA coverage.
                             </div>
                             <div class="feedback incorrect">
-                                <strong>Incorrect.</strong> Patient ID + blood sugar pattern = inferential PHI. The correct answer is <strong>Yes</strong>.
+                                <strong>Incorrect.</strong> Phone + regular blood glucose/insulin tracking = inferential PHI because it strongly implies diabetes. Multiple daily use of these specific features over 87 days creates a clear health condition inference. The correct answer is <strong>Yes</strong>.
                             </div>
                         </div>
                     </div>
@@ -1338,9 +2434,242 @@ VERSION 2.3 - Module 4 with Per-Subsection Exercises (Like Module 3)
                         <strong style="color: #2980b9;">🔍 Current Section: 5. Multi-System Data Flows</strong>
                     </div>
                     <div class="content-section">
-                        <h3>Multi-System Data Flows</h3>
-                        <p>PHI often emerges at system boundaries where "safe" data from different systems combines.</p>
-                    </div>
+    <h3>Multi-System Data Flows: Where PHI Emerges at Integration Points</h3>
+    <p><strong>Reality for builders:</strong> Modern healthcare applications rarely exist in isolation. You're constantly integrating CRMs, EHRs (Electronic Health Records), billing systems, scheduling tools, analytics platforms, and patient portals. PHI often emerges at these integration boundaries where "safe" data from different systems combines.</p>
+</div>
+
+<div class="content-section">
+    <h3>🔗 Common Integration Patterns That Create PHI</h3>
+    
+    <div class="scenario-box">
+        <h4>Pattern 1: CRM + EHR/Practice Management System</h4>
+        <p><strong>The Setup:</strong></p>
+        <ul>
+            <li><strong>CRM (Salesforce, HubSpot, custom):</strong> Stores contact info - names, emails, phone numbers, addresses</li>
+            <li><strong>EHR/Practice Management (Epic, Cerner, Athena, NextGen):</strong> Stores appointments, diagnoses, procedures, medications</li>
+        </ul>
+        
+        <p style="margin-top: 1rem;"><strong>❌ Where PHI Gets Created:</strong></p>
+        <div class="code-example"><span class="comment">// API endpoint that joins CRM + EHR data</span>
+GET /api/patients/{id}/complete-profile
+
+Response:
+{
+  <span class="string">"name"</span>: <span class="string">"Sarah Johnson"</span>,          <span class="comment">// From CRM</span>
+  <span class="string">"email"</span>: <span class="string">"sarah.j@email.com"</span>,    <span class="comment">// From CRM</span>
+  <span class="string">"phone"</span>: <span class="string">"555-0123"</span>,             <span class="comment">// From CRM</span>
+  <span class="string">"lastAppointment"</span>: <span class="string">"Cardiology"</span>, <span class="comment">// From EHR - ⚠️ PHI!</span>
+  <span class="string">"nextVisit"</span>: <span class="string">"2025-11-15"</span>        <span class="comment">// From EHR - ⚠️ PHI!</span>
+}</div>
+        
+        <p style="margin-top: 1rem;"><strong>🎯 Why This Matters:</strong></p>
+        <ul>
+            <li>CRM data alone = PII (identifiable but no health context)</li>
+            <li>EHR appointment type alone = just healthcare info (not identifiable)</li>
+            <li>Combined in one response = PHI (PII + health context)</li>
+            <li>Your API logs, frontend state, analytics tracking all now contain PHI</li>
+        </ul>
+    </div>
+
+    <div class="scenario-box">
+        <h4>Pattern 2: Billing System + Patient Portal</h4>
+        <p><strong>The Setup:</strong></p>
+        <ul>
+            <li><strong>Billing system:</strong> Stores charges, insurance claims, procedure codes (CPT codes)</li>
+            <li><strong>Patient portal:</strong> Displays bills and payment history to patients</li>
+        </ul>
+        
+        <p style="margin-top: 1rem;"><strong>❌ Where PHI Gets Created:</strong></p>
+        <div class="code-example"><span class="comment">// Email notification triggered by billing system</span>
+To: john.smith@email.com
+Subject: Your Recent Bill
+
+Dear John,
+
+Your recent visit for <span class="string">"99213 - Office Visit, Moderate Complexity"</span>
+resulted in a balance of $250.
+
+Procedure: <span class="string">"Diabetes Management - Follow-up"</span>
+Date of Service: 10/15/2025
+
+<span class="comment">// ⚠️ Email + procedure code + diagnosis = PHI in email system</span></div>
+        
+        <p style="margin-top: 1rem;"><strong>🎯 Critical for Builders:</strong></p>
+        <ul>
+            <li>Procedure codes (CPT codes like 99213) often reveal diagnoses</li>
+            <li>Email system (Gmail, Outlook, SendGrid, etc.) now contains PHI</li>
+            <li>Does your email service provider have a BAA? Is the email encrypted?</li>
+            <li>Are email logs and delivery tracking tools covered by BAAs?</li>
+        </ul>
+    </div>
+
+    <div class="scenario-box">
+        <h4>Pattern 3: Analytics Platform + Operational Data</h4>
+        <p><strong>The Setup:</strong></p>
+        <ul>
+            <li><strong>Operational databases:</strong> User accounts, session data, application logs</li>
+            <li><strong>Analytics/BI tools (Tableau, Looker, Power BI, custom dashboards):</strong> Aggregate data for business insights</li>
+        </ul>
+        
+        <p style="margin-top: 1rem;"><strong>❌ Where PHI Gets Created:</strong></p>
+        <div class="code-example"><span class="comment">// ETL pipeline aggregating user behavior</span>
+SELECT 
+    u.email,
+    u.user_id,
+    COUNT(a.appointment_id) as total_appointments,
+    MAX(a.appointment_type) as last_appointment_type,
+    AVG(a.wait_time_minutes) as avg_wait
+FROM users u
+JOIN appointments a ON u.user_id = a.user_id
+GROUP BY u.email, u.user_id
+
+<span class="comment">// ⚠️ Result set contains: email + appointment types = PHI</span>
+<span class="comment">// Now your analytics warehouse, dashboards, and BI tools contain PHI</span></div>
+        
+        <p style="margin-top: 1rem;"><strong>🎯 Builder Checklist:</strong></p>
+        <ul>
+            <li>Does your analytics platform (Tableau/Looker/Power BI) have a BAA?</li>
+            <li>Is your data warehouse (Snowflake/BigQuery/Redshift) configured with proper BAA coverage?</li>
+            <li>Are you de-identifying data BEFORE it enters the analytics pipeline?</li>
+            <li>Hash user IDs, remove emails, aggregate appointment types to categories</li>
+        </ul>
+    </div>
+
+    <div class="scenario-box">
+        <h4>Pattern 4: Third-Party Integrations (Payment, Scheduling, SMS)</h4>
+        <p><strong>The Setup:</strong></p>
+        <ul>
+            <li><strong>Payment processors (Stripe, Square, PayPal):</strong> Handle credit card transactions</li>
+            <li><strong>Scheduling tools (Calendly, Acuity, custom):</strong> Book appointments</li>
+            <li><strong>SMS/notification services (Twilio, SendGrid):</strong> Send appointment reminders</li>
+        </ul>
+        
+        <p style="margin-top: 1rem;"><strong>❌ Where PHI Gets Created:</strong></p>
+        <div class="code-example"><span class="comment">// SMS reminder via Twilio API</span>
+POST /api/sms/send
+{
+  <span class="string">"to"</span>: <span class="string">"+1-555-0123"</span>,              <span class="comment">// PII - phone number</span>
+  <span class="string">"message"</span>: <span class="string">"Hi Sarah, reminder: Your cardiology appointment is tomorrow at 2pm"</span>
+                                   <span class="comment">// ⚠️ Phone + cardiology = PHI</span>
+}
+
+<span class="comment">// Payment processor metadata</span>
+{
+  <span class="string">"customer_email"</span>: <span class="string">"sarah@email.com"</span>,
+  <span class="string">"description"</span>: <span class="string">"Office visit - diabetes follow-up"</span>
+                                           <span class="comment">// ⚠️ Email + diagnosis = PHI</span>
+}</div>
+        
+        <p style="margin-top: 1rem;"><strong>🎯 Critical Questions:</strong></p>
+        <ul>
+            <li>Does Twilio/SendGrid have a BAA for SMS? (They offer it, but you must explicitly enable it)</li>
+            <li>Does Stripe have a BAA? (They don't typically need one for payments, but if you put diagnosis info in transaction descriptions, you've created PHI)</li>
+            <li>Are you sending PHI to services without BAAs? Even in metadata or transaction descriptions?</li>
+        </ul>
+    </div>
+</div>
+
+<div class="content-section">
+    <h3>🛠️ Architectural Patterns: Safe vs Unsafe Integration</h3>
+    
+    <div class="scenario-box">
+        <h4>❌ UNSAFE Pattern: Direct Data Joining at API Layer</h4>
+        <div class="code-example"><span class="comment">// Dangerous: Single API endpoint combines everything</span>
+<span class="keyword">app.get</span>(<span class="string">'/api/patient-dashboard/:id'</span>, <span class="keyword">async</span> (req, res) => {
+  <span class="keyword">const</span> crmData = <span class="keyword">await</span> CRM.getContact(req.params.id);
+  <span class="keyword">const</span> ehrData = <span class="keyword">await</span> EHR.getAppointments(req.params.id);
+  
+  <span class="comment">// ⚠️ Creating PHI by combining PII + health data</span>
+  res.json({
+    name: crmData.name,           <span class="comment">// PII</span>
+    email: crmData.email,         <span class="comment">// PII</span>
+    appointments: ehrData.visits  <span class="comment">// Health data → Combined = PHI!</span>
+  });
+});</div>
+        
+        <p style="margin-top: 1rem;"><strong>Problems:</strong></p>
+        <ul>
+            <li>API logs contain PHI</li>
+            <li>Frontend state management contains PHI</li>
+            <li>Browser dev tools, error tracking (Sentry/Bugsnag), APM tools all capture PHI</li>
+            <li>Any caching layer (Redis, CDN) now contains PHI</li>
+        </ul>
+    </div>
+
+    <div class="scenario-box">
+        <h4>✅ SAFER Pattern: Separation with Client-Side Joining</h4>
+        <div class="code-example"><span class="comment">// Safer: Keep data separate, let client join if needed</span>
+<span class="keyword">app.get</span>(<span class="string">'/api/contacts/:id'</span>, <span class="keyword">async</span> (req, res) => {
+  <span class="keyword">const</span> contact = <span class="keyword">await</span> CRM.getContact(req.params.id);
+  res.json(contact);  <span class="comment">// Only PII, no health context</span>
+});
+
+<span class="keyword">app.get</span>(<span class="string">'/api/appointments/:patientHash'</span>, <span class="keyword">async</span> (req, res) => {
+  <span class="comment">// Use hashed patient ID, not email/name</span>
+  <span class="keyword">const</span> appointments = <span class="keyword">await</span> EHR.getAppointments(req.params.patientHash);
+  res.json(appointments);  <span class="comment">// Health data but no direct PII</span>
+});
+
+<span class="comment">// Client-side: Join only in memory, never persist combined data</span></div>
+        
+        <p style="margin-top: 1rem;"><strong>Benefits:</strong></p>
+        <ul>
+            <li>Backend logs don't contain PHI (separate endpoints)</li>
+            <li>Can cache contact info safely (no health context)</li>
+            <li>Health data uses hashed identifiers, not emails/names</li>
+            <li>Still functional for user experience, but architecturally safer</li>
+        </ul>
+    </div>
+
+    <div class="scenario-box">
+        <h4>✅ BEST Pattern: De-identification Layer</h4>
+        <div class="code-example"><span class="comment">// Best: De-identify before any cross-system data flow</span>
+<span class="keyword">app.get</span>(<span class="string">'/api/analytics/patient-flow'</span>, <span class="keyword">async</span> (req, res) => {
+  <span class="keyword">const</span> rawData = <span class="keyword">await</span> fetchFromMultipleSystems();
+  
+  <span class="comment">// De-identify BEFORE combining</span>
+  <span class="keyword">const</span> deidentified = rawData.map(record => ({
+    patientHash: hash(record.patientId),        <span class="comment">// Hash identifier</span>
+    ageRange: getAgeRange(record.age),          <span class="comment">// 30-40 instead of 37</span>
+    zipPrefix: record.zip.substring(0, 3),      <span class="comment">// 021** instead of 02138</span>
+    appointmentCategory: categorize(record.appointmentType),  <span class="comment">// "Specialist" vs "Cardiology"</span>
+    month: record.date.substring(0, 7)          <span class="comment">// 2025-10 instead of 2025-10-15</span>
+  }));
+  
+  res.json(deidentified);  <span class="comment">// ✅ Useful for analytics, but not PHI</span>
+});</div>
+        
+        <p style="margin-top: 1rem;"><strong>Gold Standard:</strong></p>
+        <ul>
+            <li>Analytics get useful data without PHI exposure</li>
+            <li>Can use tools without BAAs (no PHI = no BAA required)</li>
+            <li>Reduces compliance burden across entire data pipeline</li>
+            <li>Still provides valuable business insights</li>
+        </ul>
+    </div>
+</div>
+
+<div class="content-section">
+    <h3>🎯 Builder's Checklist for Multi-System Integrations</h3>
+    
+    <div class="scenario-box">
+        <h4>Before Building Any Integration, Ask:</h4>
+        <ol style="padding-left: 1.5rem; line-height: 1.8;">
+            <li><strong>Data inventory:</strong> What PII exists in System A? What health data exists in System B?</li>
+            <li><strong>Combination points:</strong> Where do they combine? APIs? ETL jobs? Event streams? Frontend?</li>
+            <li><strong>Data flow:</strong> Map the entire flow - which systems touch the combined data?</li>
+            <li><strong>BAA coverage:</strong> Does EVERY system in the flow have appropriate BAA coverage?</li>
+            <li><strong>Logging:</strong> What gets logged at integration points? API gateways? Message queues? Error tracking?</li>
+            <li><strong>Caching:</strong> Are you caching combined data? Where? Is that covered by BAA?</li>
+            <li><strong>Can we de-identify?</strong> Do we NEED identifiable data combined, or can we hash/aggregate first?</li>
+            <li><strong>Frontend exposure:</strong> Is combined PHI visible in browser dev tools, network tab, or local storage?</li>
+        </ol>
+    </div>
+</div>
+
+<div class="alert alert-warning">
+    <strong>⚠️ Special Warning for Microservices Architectures:</strong> Every microservice boundary is a potential PHI creation point. Service A has PII, Service B has health data, Service C combines them → Service C now handles PHI and needs appropriate safeguards, logging controls, and BAA coverage for all its dependencies.
+</div>
 
                     <div class="exercise">
                         <div class="exercise-header">
@@ -1348,30 +2677,30 @@ VERSION 2.3 - Module 4 with Per-Subsection Exercises (Like Module 3)
                         </div>
 
                         <div class="question" data-question="20" data-correct="no">
-                            <div class="question-text">20. CRM exports contacts separately, scheduling exports time slots separately (no mixing) - PHI?</div>
+                            <div class="question-text">20. Analytics dashboard pulls data from two separate systems: User database (emails, names) exports to CSV, and Appointment database (dates, types) exports to different CSV. CSVs are analyzed separately, never joined. PHI created?</div>
                             <ul class="options">
                                 <li class="option" data-answer="yes" tabindex="0">Yes - Multi-system PHI</li>
                                 <li class="option" data-answer="no" tabindex="0">No - Systems separate</li>
                             </ul>
                             <div class="feedback correct">
-                                <strong>Correct!</strong> When systems truly operate separately with no data combination, PHI is not created.
+                                <strong>Correct!</strong> When systems truly operate separately with no data combination, PHI is not created. PII in one CSV and health data in another CSV = safe as long as they're never joined or correlated.
                             </div>
                             <div class="feedback incorrect">
-                                <strong>Incorrect.</strong> Separate systems with no combination = no PHI. The correct answer is <strong>No</strong>.
+                                <strong>Incorrect.</strong> Separate systems with no combination = no PHI. The key is that the CSVs are analyzed separately and never joined. If they were joined (even by user_id), THEN PHI would be created. The correct answer is <strong>No</strong>.
                             </div>
                         </div>
 
                         <div class="question" data-question="21" data-correct="yes">
-                            <div class="question-text">21. CRM sends: "Hi John, your cardiology appointment reminder" to john.smith@email.com - PHI?</div>
+                            <div class="question-text">21. API endpoint `/api/patient-summary` returns: `{"email": "john@email.com", "lastVisit": "Cardiology clinic", "nextAppointment": "2025-11-20"}` - PHI?</div>
                             <ul class="options">
                                 <li class="option" data-answer="no" tabindex="0">No - Systems separate</li>
                                 <li class="option" data-answer="yes" tabindex="0">Yes - Multi-system PHI</li>
                             </ul>
                             <div class="feedback correct">
-                                <strong>Correct!</strong> Email (PII from CRM) + cardiology appointment (health from EHR) = PHI when combined.
+                                <strong>Correct!</strong> Email (PII) + cardiology clinic visit (health data) = PHI when combined in a single API response. This means API logs, error tracking, caching layers, and frontend state all now contain PHI and need appropriate safeguards.
                             </div>
                             <div class="feedback incorrect">
-                                <strong>Incorrect.</strong> Email + cardiology appointment = multi-system PHI. The correct answer is <strong>Yes</strong>.
+                                <strong>Incorrect.</strong> The API endpoint combines PII (email) with health information (cardiology clinic visit) in a single response, creating PHI. Even though the data may come from separate backend systems, combining them at the API layer creates PHI. The correct answer is <strong>Yes</strong>.
                             </div>
                         </div>
                     </div>
