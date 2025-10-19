@@ -1,0 +1,3404 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2025 Tom Smolinsky
+Code licensed under the MIT License. See LICENSE-MIT.
+Content licensed under CC BY 4.0. See LICENSE-CC-BY-4.0.
+VERSION 2.3 - Module 4 with Per-Subsection Exercises (Like Module 3)
+-->
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Security-Policy"
+      content="default-src 'self';
+               img-src 'self' data:;
+               style-src 'self' 'unsafe-inline';
+               script-src 'self' 'unsafe-inline';
+               base-uri 'none';
+               form-action 'none';
+               frame-ancestors 'self' https://www.vitsotech.com;
+               upgrade-insecure-requests">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHI/PII Training v2.3 - Per-Subsection Exercises</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .training-container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .mode-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .mode-btn {
+            padding: 0.5rem 1.5rem;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .mode-btn.active {
+            background: white;
+            color: #3498db;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+            margin-top: 1rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #2ecc71;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .content-area {
+            padding: 2rem;
+            min-height: 400px;
+        }
+
+        .module {
+            display: none;
+        }
+
+        .module.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .module-header {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #3498db;
+        }
+
+        .module-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .learning-objectives {
+            background: #e8f4fd;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .learning-objectives h3 {
+            color: #2980b9;
+            margin-bottom: 1rem;
+        }
+
+        .objectives-list {
+            list-style: none;
+        }
+
+        .objectives-list li {
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .objectives-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .content-section {
+            margin: 2rem 0;
+        }
+
+        .content-section h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .content-section p {
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            color: #555;
+        }
+
+        .formula-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 1.5rem 0;
+            color: #856404;
+        }
+
+        .code-example {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            line-height: 1.4;
+        }
+
+        .code-example .comment {
+            color: #95a5a6;
+        }
+
+        .code-example .keyword {
+            color: #3498db;
+        }
+
+        .code-example .string {
+            color: #e74c3c;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            font-size: 0.9rem;
+        }
+
+        .comparison-table th {
+            background: #3498db;
+            color: white;
+            padding: 0.8rem;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .comparison-table td {
+            padding: 0.8rem;
+            border: 1px solid #dee2e6;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .exercise {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .exercise-header {
+            background: #e9ecef;
+            margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+            padding: 1rem 1.5rem;
+            border-radius: 6px 6px 0 0;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .exercise-title {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+
+        .question {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            position: relative;
+        }
+
+        .question.correct-answered {
+            border-left: 4px solid #28a745;
+        }
+
+        .question.incorrect-answered {
+            border-left: 4px solid #dc3545;
+        }
+
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #2c3e50 !important;
+        }
+
+        .options {
+            list-style: none;
+        }
+
+        .option {
+            margin: 0.5rem 0;
+            padding: 0.8rem;
+            background: #f8f9fa !important;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #2c3e50 !important;
+        }
+
+        .option:hover:not(.disabled) {
+            background: #e9ecef !important;
+            border-color: #3498db;
+        }
+
+        .option.selected {
+            background: #d4edda !important;
+            border-color: #28a745;
+            color: #155724 !important;
+        }
+
+        .option.correct {
+            background: #d4edda !important;
+            border-color: #28a745;
+            color: #155724 !important;
+        }
+
+        .option.incorrect {
+            background: #f8d7da !important;
+            border-color: #dc3545;
+            color: #721c24 !important;
+        }
+
+        .option.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: #d4edda !important;
+            border: 1px solid #c3e6cb;
+            color: #155724 !important;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da !important;
+            border: 1px solid #f5c6cb;
+            color: #721c24 !important;
+        }
+
+        .scenario-box {
+            background: #e8f4fd;
+            border-left: 4px solid #3498db;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .scenario-box h4 {
+            color: #2980b9;
+            margin-bottom: 1rem;
+        }
+
+        .timeline {
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #3498db;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin: 1rem 0;
+            padding-left: 50px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 14px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #3498db;
+        }
+
+        .timeline-content {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #2980b9;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .module-nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .module-nav-item {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #bdc3c7;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .module-nav-item.active {
+            background: #3498db;
+            transform: scale(1.3);
+        }
+
+        .module-nav-item.completed {
+            background: #27ae60;
+        }
+
+        .completion-certificate {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+
+        .certificate-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        #userName:hover {
+            opacity: 0.8;
+            transform: scale(1.02);
+        }
+
+        .score-display {
+            background: white;
+            color: #2c3e50;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .cert-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .answer-key {
+            margin-top: 2rem;
+        }
+
+        .answer-item {
+            background: white;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 6px;
+            color: #2c3e50;
+            text-align: left;
+        }
+
+        .answer-item.correct {
+            border-left: 4px solid #28a745;
+        }
+
+        .answer-item.incorrect {
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            border-left: 4px solid;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border-color: #17a2b8;
+            color: #0c5460;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .module-subsection {
+            display: none;
+        }
+
+        .module-subsection.active {
+            display: block !important;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .module-section-btn {
+            font-size: 0.85rem;
+            padding: 0.6rem 1rem;
+            margin: 0.2rem;
+        }
+
+        .module-section-btn.active {
+            background: #3498db !important;
+            color: white !important;
+        }
+
+        .module-section-btn.viewed::after {
+            content: ' ✓';
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .subsection-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-top: 3px solid #3498db;
+        }
+
+        .subsection-nav-btn {
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+        }
+
+        #license-footer {
+            margin: 16px 24px 28px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        #license-footer a {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .content-area {
+                padding: 1rem;
+            }
+            
+            .navigation {
+                padding: 1rem;
+            }
+            
+            .btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
+            }
+            
+            .mode-toggle {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .cert-actions {
+                flex-direction: column;
+            }
+
+            .subsection-nav {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .subsection-nav-btn {
+                width: 100%;
+            }
+
+            .comparison-table {
+                font-size: 0.75rem;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 0.5rem;
+            }
+        }
+
+        /* Accessibility */
+        .btn:focus,
+        .option:focus,
+        .module-nav-item:focus {
+            outline: 3px solid #3498db;
+            outline-offset: 2px;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .training-container {
+                box-shadow: none;
+            }
+            
+            .header, .navigation, #license-footer {
+                display: none;
+            }
+            
+            .completion-certificate {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="training-container">
+        <div class="header">
+            <h1>PHI/PII Training v2.3</h1>
+            <p>Duration: 50-65 minutes | Target: Technical Teams</p>
+            
+            <div class="mode-toggle">
+                <button class="mode-btn active" onclick="setMode('learn')" aria-label="Learn Mode">
+                    📚 Learn Mode
+                </button>
+                <button class="mode-btn" onclick="setMode('assessment')" aria-label="Assessment Mode">
+                    ✏️ Assessment Mode
+                </button>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+                <div class="progress-text" id="progressText">0%</div>
+            </div>
+            
+            <div class="module-nav" id="moduleNav" role="navigation" aria-label="Module navigation"></div>
+        </div>
+
+        <div class="content-area">
+            <!-- Module 0: Introduction -->
+            <div class="module active" id="module-0">
+                <div class="module-header">
+                    <div class="module-title">Welcome to PHI/PII Training</div>
+                    <p>This interactive training will help you understand and properly handle Protected Health Information (PHI) and Personally Identifiable Information (PII) in technical workflows.</p>
+                </div>
+
+                <div class="learning-objectives">
+                    <h3>By the end of this training, you will be able to:</h3>
+                    <ul class="objectives-list">
+                        <li>Define PHI and PII in technical contexts</li>
+                        <li>Identify common leak points in tech workflows</li>
+                        <li>Apply proper handling and de-identification procedures</li>
+                        <li>Execute incident response procedures</li>
+                        <li>Use approved tools and methods safely</li>
+                    </ul>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>Training Modes:</strong>
+                    <ul style="margin: 0.5rem 0 0 1.5rem;">
+                        <li><strong>Learn Mode:</strong> Change answers anytime, get immediate feedback</li>
+                        <li><strong>Assessment Mode:</strong> Answers lock after submission</li>
+                    </ul>
+                </div>
+
+                <div class="alert alert-success">
+                    <strong>🆕 New in v2.2:</strong> Module 4 restructured with comprehensive BAA section - understanding both vendor BAAs and your obligations as a Business Associate!
+                </div>
+
+                <div style="background: #e8f4fd; padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0; border-left: 4px solid #3498db;">
+                    <h3 style="color: #2980b9; margin-bottom: 1rem;">👤 Enter Your Name for Certificate</h3>
+                    <p style="margin-bottom: 1rem; color: #555;">Your name will appear on your completion certificate.</p>
+                    <input 
+                        type="text" 
+                        id="userNameInput" 
+                        placeholder="Enter your full name" 
+                        style="width: 100%; padding: 0.8rem; border: 2px solid #3498db; border-radius: 6px; font-size: 1rem; font-family: inherit;"
+                        oninput="updateUserName(this.value)"
+                        aria-label="Enter your name for certificate">
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #666;"><em>You can change this anytime by clicking your name on the certificate.</em></p>
+                </div>
+            </div>
+
+            <!-- Module 1: PHI/PII Definitions -->
+            <div class="module" id="module-1">
+                <div class="module-header">
+                    <div class="module-title">Module 1: PHI/PII Definitions & Clear-Cut Cases</div>
+                    <p>Duration: 12-15 minutes</p>
+                </div>
+
+                <div class="content-section">
+                    <h3>What is PII?</h3>
+                    <p><strong>Personally Identifiable Information (PII)</strong> is any data that could reasonably identify a specific individual. Think of it as data that could be used to "pick someone out of a crowd."</p>
+                    
+                    <div class="scenario-box">
+                        <h4>Common PII Examples:</h4>
+                        <ul>
+                            <li>Full names</li>
+                            <li>Email addresses</li>
+                            <li>Phone numbers</li>
+                            <li>Social Security numbers</li>
+                            <li>IP addresses (in some contexts)</li>
+                            <li>Device IDs tied to individuals</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>What is PHI?</h3>
+                    <p><strong>Protected Health Information (PHI)</strong> is PII that exists in a healthcare context.</p>
+                    
+                    <div class="formula-box">
+                        PHI = PII + Health Context
+                    </div>
+
+                    <div class="scenario-box">
+                        <h4>PHI Examples:</h4>
+                        <ul>
+                            <li>Patient name + diagnosis</li>
+                            <li>Email address + medication list</li>
+                            <li>Phone number + appointment type</li>
+                            <li>Even health data alone can be PHI if it could identify someone</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="exercise">
+                    <div class="exercise-header">
+                        <div class="exercise-title">Interactive Exercise 1.1: Data Classification Challenge</div>
+                        <p>For each data element, select whether it's PHI, PII, Both, or Neither.</p>
+                    </div>
+
+                    <div class="question" data-question="1" data-correct="b">
+                        <div class="question-text">1. "John Smith" (name only)</div>
+                        <ul class="options">
+                            <li class="option" data-answer="a" tabindex="0">a) PHI</li>
+                            <li class="option" data-answer="b" tabindex="0">b) PII</li>
+                            <li class="option" data-answer="c" tabindex="0">c) Both</li>
+                            <li class="option" data-answer="d" tabindex="0">d) Neither</li>
+                        </ul>
+                        <div class="feedback correct">
+                            <strong>Correct!</strong> A name alone can identify a person, making it PII, but there's no health context to make it PHI.
+                        </div>
+                        <div class="feedback incorrect">
+                            <strong>Incorrect.</strong> A name alone can identify a person, making it PII, but there's no health context to make it PHI. The correct answer is <strong>b) PII</strong>.
+                        </div>
+                    </div>
+
+                    <div class="question" data-question="2" data-correct="c">
+                        <div class="question-text">2. "John Smith diagnosed with hypertension"</div>
+                        <ul class="options">
+                            <li class="option" data-answer="a" tabindex="0">a) PHI</li>
+                            <li class="option" data-answer="b" tabindex="0">b) PII</li>
+                            <li class="option" data-answer="c" tabindex="0">c) Both</li>
+                            <li class="option" data-answer="d" tabindex="0">d) Neither</li>
+                        </ul>
+                        <div class="feedback correct">
+                            <strong>Correct!</strong> The name makes it PII, and the health condition (hypertension) adds health context, making it PHI as well.
+                        </div>
+                        <div class="feedback incorrect">
+                            <strong>Incorrect.</strong> The name makes it PII, and the health condition (hypertension) adds health context, making it PHI as well. The correct answer is <strong>c) Both</strong>.
+                        </div>
+                    </div>
+
+                    <div class="question" data-question="3" data-correct="c">
+                        <div class="question-text">3. "Patient ID 12345 - glucose reading 120 mg/dL"</div>
+                        <ul class="options">
+                            <li class="option" data-answer="a" tabindex="0">a) PHI</li>
+                            <li class="option" data-answer="b" tabindex="0">b) PII</li>
+                            <li class="option" data-answer="c" tabindex="0">c) Both</li>
+                            <li class="option" data-answer="d" tabindex="0">d) Neither</li>
+                        </ul>
+                        <div class="feedback correct">
+                            <strong>Correct!</strong> Patient ID is PII (identifies an individual), and glucose reading adds health context, making it PHI.
+                        </div>
+                        <div class="feedback incorrect">
+                            <strong>Incorrect.</strong> Patient ID is PII (identifies an individual), and glucose reading adds health context, making it PHI. The correct answer is <strong>c) Both</strong>.
+                        </div>
+                    </div>
+                </div>
+
+               
+                <div class="alert alert-warning">
+                    <strong>Don't worry if you got some of those wrong!</strong> Questions 2 and 3 were intentionally tricky - many experienced developers and healthcare professionals miss these initially. The key lesson here is that PHI/PII classification can be surprisingly nuanced and non-obvious.
+                </div>
+
+                <div class="content-section">
+                    <h3>Critical Insight: PHI Cannot Exist Without PII</h3>
+                    <p>Here's a fundamental principle that will help you in every situation:</p>
+                    
+                    <div class="formula-box">
+                        No PII = No PHI (Even with health data)
+                    </div>
+
+                    <div class="scenario-box">
+                        <h4>Examples:</h4>
+                        <ul>
+                            <li><strong>❌ PHI:</strong> "Patient glucose reading: 120 mg/dL" (anonymous health data = NOT PHI)</li>
+                            <li><strong>✅ PHI:</strong> "John Smith glucose reading: 120 mg/dL" (PII + health data = PHI)</li>
+                            <li><strong>❌ PHI:</strong> "Diabetes medication dosage: 10mg" (anonymous health data = NOT PHI)</li>
+                            <li><strong>✅ PHI:</strong> "john@email.com diabetes medication dosage: 10mg" (PII + health data = PHI)</li>
+                        </ul>
+                    </div>
+
+                    <p><strong>Why this matters for developers:</strong> You can work with health data safely as long as it's truly de-identified and contains no PII. The risk comes when identifiable information gets combined with health context.</p>
+                </div>
+
+                <div class="content-section" style="margin-top: 2rem; padding: 1.5rem; background: #e8f4fd; border-radius: 8px;">
+                    <h3>🎯 Module 1 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>PII = Identifiable:</strong> Any data that can reasonably identify a specific individual</li>
+                        <li><strong>PHI = PII + Health Context:</strong> When identifiable information combines with health-related data</li>
+                        <li><strong>Context Matters:</strong> The same data can be safe or PHI depending on what it's combined with</li>
+                        <li><strong>Technical Examples:</strong> Patient IDs, email addresses, and even device IDs can be PII</li>
+                        <li><strong>Health Context:</strong> Medications, diagnoses, appointment types, and health program enrollment all create PHI</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Module 2: Common Leak Points -->
+            <div class="module" id="module-2">
+                <div class="module-header">
+                    <div class="module-title">Module 2: Common Leak Points in Tech Workflows</div>
+                    <p>Duration: 15-18 minutes</p>
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>Reality Check:</strong> PHI leaks rarely happen because someone maliciously exposes data. They happen because of everyday technical practices that seem harmless but create exposure points.
+                </div>
+
+                <div class="content-section">
+                    <h3>Top 5 Leak Points in Tech Companies</h3>
+                    
+                    <div class="scenario-box">
+                        <h4>1. Code Repositories</h4>
+                        <ul>
+                            <li>Hardcoded connection strings with patient DB access</li>
+                            <li>Sample data with real PHI in test files</li>
+                            <li>Git commits with debug output containing PHI</li>
+                            <li>Accidentally pushing to public repos</li>
+                        </ul>
+                    </div>
+
+                    <div class="scenario-box">
+                        <h4>2. AI Tools Without BAAs</h4>
+                        <ul>
+                            <li>Using ChatGPT, Claude, or other public AI with PHI</li>
+                            <li>Copying patient data into code completion tools</li>
+                            <li>Feeding PHI to AI for data analysis or debugging</li>
+                        </ul>
+                    </div>
+
+                    <div class="scenario-box">
+                        <h4>3. Development Environments</h4>
+                        <ul>
+                            <li>Copying production PHI to local dev/test environments</li>
+                            <li>Storing PHI in IDE scratch files or temporary folders</li>
+                            <li>Browser dev tools capturing PHI in network requests</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="exercise">
+                    <div class="exercise-header">
+                        <div class="exercise-title">Interactive Exercise 2.1: Leak Point Identification</div>
+                        <p>For each scenario, identify if PHI exposure has occurred and select the correct action.</p>
+                    </div>
+
+                    <div class="question" data-question="4" data-correct="b">
+                        <div class="question-text">4. You're debugging an API error and find this in logs: <code>ERROR: Payment failed for sarah.jones@email.com - insulin prescription ID 789</code></div>
+                        <ul class="options">
+                            <li class="option" data-answer="a" tabindex="0">a) Just a technical error log - no PHI</li>
+                            <li class="option" data-answer="b" tabindex="0">b) PHI exposure - email + medication reveals diabetes</li>
+                            <li class="option" data-answer="c" tabindex="0">c) Only PII exposure - no health info</li>
+                            <li class="option" data-answer="d" tabindex="0">d) Safe because internal logs only</li>
+                        </ul>
+                        <div class="feedback correct">
+                            <strong>Correct!</strong> Email (PII) + insulin prescription (reveals diabetes) = PHI exposure in logs.
+                        </div>
+                        <div class="feedback incorrect">
+                            <strong>Incorrect.</strong> Email (PII) + insulin prescription (reveals diabetes) = PHI exposure. "Internal only" doesn't matter. The correct answer is <strong>b)</strong>.
+                        </div>
+                    </div>
+
+                    <div class="question" data-question="5" data-correct="c">
+                        <div class="question-text">5. Your teammate asks: "Can I use ChatGPT to debug this database query for patient medication records?"</div>
+                        <ul class="options">
+                            <li class="option" data-answer="a" tabindex="0">a) Yes, if you anonymize the data first</li>
+                            <li class="option" data-answer="b" tabindex="0">b) Yes, ChatGPT is secure enough</li>
+                            <li class="option" data-answer="c" tabindex="0">c) No, never use public AI with PHI-related code/data</li>
+                            <li class="option" data-answer="d" tabindex="0">d) Yes, but only SQL without data</li>
+                        </ul>
+                        <div class="feedback correct">
+                            <strong>Correct!</strong> Public AI tools have no BAA. Never share PHI-related code or queries with public AI.
+                        </div>
+                        <div class="feedback incorrect">
+                            <strong>Incorrect.</strong> Public AI tools have no BAA. Never share PHI-related queries. The correct answer is <strong>c)</strong>.
+                        </div>
+                    </div>
+
+                    <div class="question" data-question="6" data-correct="c">
+                        <div class="question-text">6. You find "test_data.csv" on dev server: <code>john.smith@email.com,diabetes,insulin,2024-01-15</code></div>
+                        <ul class="options">
+                            <li class="option" data-answer="a" tabindex="0">a) Delete it - obviously test data</li>
+                            <li class="option" data-answer="b" tabindex="0">b) Leave it - dev server means synthetic</li>
+                            <li class="option" data-answer="c" tabindex="0">c) Report immediately - appears to be PHI</li>
+                            <li class="option" data-answer="d" tabindex="0">d) Move to secure folder first</li>
+                        </ul>
+                        <div class="feedback correct">
+                            <strong>Correct!</strong> Never assume data is "test" without verification. Report immediately for investigation.
+                        </div>
+                        <div class="feedback incorrect">
+                            <strong>Incorrect.</strong> Never assume data is "test." This requires immediate investigation. The correct answer is <strong>c)</strong>.
+                        </div>
+                    </div>
+
+                    <div class="question" data-question="7" data-correct="b">
+                        <div class="question-text">7. Code review shows: <code>// TODO: Replace hardcoded connection mysql://user:pass@db.hospital.com/patient_records</code></div>
+                        <ul class="options">
+                            <li class="option" data-answer="a" tabindex="0">a) Note TODO, approve - won't go to prod</li>
+                            <li class="option" data-answer="b" tabindex="0">b) Reject immediately - DB credentials + PHI exposed</li>
+                            <li class="option" data-answer="c" tabindex="0">c) Approve but ask for env variables</li>
+                            <li class="option" data-answer="d" tabindex="0">d) Just a comment, safe to approve</li>
+                        </ul>
+                        <div class="feedback correct">
+                            <strong>Correct!</strong> Hardcoded PHI database credentials create immediate violations. Reject immediately.
+                        </div>
+                        <div class="feedback incorrect">
+                            <strong>Incorrect.</strong> Hardcoded PHI database credentials are immediate violations. The correct answer is <strong>b)</strong>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End of Module 2 -->
+
+            <!-- Module 3: Context Scenarios with Subsections -->
+            <div class="module" id="module-3">
+                <div class="module-header">
+                    <div class="module-title">Module 3: When "Safe" Data Becomes PHI</div>
+                    <p>Duration: 20-25 minutes | Advanced Technical Scenarios</p>
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>Expert-Level Content:</strong> This module covers subtle cases. Complete all 6 subsections to continue.
+                    <ul style="margin-top: 0.5rem; padding-left: 2rem;">
+                        <li>Green checkmark (<span style="color: #27ae60;">✓</span>) appears after viewing each section</li>
+                        <li>NEXT button enables after all sections completed</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <h4 style="color: #856404; margin-bottom: 0.5rem;">📋 Quick Navigation - Click Any Section:</h4>
+                        <p style="color: #856404; font-size: 0.9rem; margin-bottom: 0.5rem;">Use buttons below OR scroll to bottom for Next/Previous buttons</p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
+                            <button class="btn btn-secondary module-section-btn active viewed" data-section="intro">1. Basic Context</button>
+                            <button class="btn btn-secondary module-section-btn" data-section="database">2. Database & API</button>
+                            <button class="btn btn-secondary module-section-btn" data-section="logging">3. Logging</button>
+                            <button class="btn btn-secondary module-section-btn" data-section="inference">4. Inference</button>
+                            <button class="btn btn-secondary module-section-btn" data-section="systems">5. Multi-System</button>
+                            <button class="btn btn-secondary module-section-btn" data-section="safeharbor">6. Safe Harbor</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subsection: Intro -->
+                <div class="module-subsection active" id="subsection-intro">
+                    <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
+                        <strong style="color: #2980b9;">🔍 Current Section: 1. Basic Context Rules</strong>
+                    </div>
+                    <div class="content-section">
+                        <h3>The Context Transformation Rule</h3>
+                        <p>Data that seems safe individually can become PHI when combined with other information.</p>
+                    </div>
+
+                    <div class="exercise">
+                        <div class="exercise-header">
+                            <div class="exercise-title">Exercise 3.1a: Context Detective</div>
+                        </div>
+
+                        <div class="question" data-question="8" data-correct="no">
+                            <div class="question-text">8. General wellness newsletter about sleep tips to mike@email.com - PHI?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="yes" tabindex="0">Yes</li>
+                                <li class="option" data-answer="no" tabindex="0">No</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> General wellness content has no specific health context. Email is PII but no PHI.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> General wellness content has no specific health diagnosis or condition. The correct answer is <strong>No</strong>.
+                            </div>
+                        </div>
+
+                        <div class="question" data-question="9" data-correct="yes">
+                            <div class="question-text">9. "Hi Lisa, daily reminder to take your Metformin at 8 AM" to lisa.chen@email.com - PHI?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="no" tabindex="0">No</li>
+                                <li class="option" data-answer="yes" tabindex="0">Yes</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> Email + name (PII) + Metformin (diabetes medication) = PHI.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Email + name + Metformin reveals diabetes. The correct answer is <strong>Yes</strong>.
+                            </div>
+                        </div>
+
+                        <div class="question" data-question="10" data-correct="yes">
+                            <div class="question-text">10. "Welcome! Your blood pressure monitoring program starts soon" to sarah.johnson@email.com - PHI?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="no" tabindex="0">No</li>
+                                <li class="option" data-answer="yes" tabindex="0">Yes</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> Email + BP monitoring program implies hypertension diagnosis = PHI.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Email + BP monitoring program implies hypertension. The correct answer is <strong>Yes</strong>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="subsection-nav">
+                        <div></div>
+                        <div style="color: #6c757d; font-weight: bold;">Section 1 of 6</div>
+                        <button class="btn btn-primary subsection-nav-btn" onclick="nextSubsection()">
+                            Next Section: Database & API →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Subsection: Database -->
+                <div class="module-subsection" id="subsection-database">
+                    <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
+                        <strong style="color: #2980b9;">🔍 Current Section: 2. Database Design & API Patterns</strong>
+                    </div>
+                    <div class="content-section">
+                        <h3>Database Design & API Response Implications</h3>
+                        <p>Even well-architected systems can inadvertently create PHI through table joins and API responses.</p>
+                    </div>
+
+                    <div class="exercise">
+                        <div class="exercise-header">
+                            <div class="exercise-title">Exercise 3.2b: API Design Challenge</div>
+                        </div>
+
+                        <div class="question" data-question="11" data-correct="no">
+                            <div class="question-text">11. API returns: <code>{"user_hash": "abc123", "steps_today": 8547}</code> - PHI?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="yes" tabindex="0">Yes - PHI</li>
+                                <li class="option" data-answer="no" tabindex="0">No - Safe data</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> User hash (non-identifiable) + general fitness metrics = No PHI.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> User hash + general fitness = safe. The correct answer is <strong>No</strong>.
+                            </div>
+                        </div>
+
+                        <div class="question" data-question="12" data-correct="no">
+                            <div class="question-text">12. API returns: <code>{"region": "northeast", "avg_heart_rate": 72, "user_count": 1847}</code> - PHI?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="yes" tabindex="0">Yes - PHI</li>
+                                <li class="option" data-answer="no" tabindex="0">No - Safe</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> Aggregated regional data with large user count = Safe, meets anonymization thresholds.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Aggregated data with no individual identifiers = safe. The correct answer is <strong>No</strong>.
+                            </div>
+                        </div>
+
+                        <div class="question" data-question="13" data-correct="yes">
+                            <div class="question-text">13. API returns: <code>{"email": "mary@company.com", "program": "cardiac_rehab", "completion": 75%}</code> - PHI?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="no" tabindex="0">No - Safe</li>
+                                <li class="option" data-answer="yes" tabindex="0">Yes - PHI</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> Email (PII) + cardiac rehabilitation program (heart condition) = PHI.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Email + cardiac rehab program = PHI. The correct answer is <strong>Yes</strong>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="subsection-nav">
+                        <button class="btn btn-secondary subsection-nav-btn" onclick="prevSubsection()">
+                            ← Previous: Basic Context
+                        </button>
+                        <div style="color: #6c757d; font-weight: bold;">Section 2 of 6</div>
+                        <button class="btn btn-primary subsection-nav-btn" onclick="nextSubsection()">
+                            Next: Logging & Analytics →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Subsection: Logging -->
+                <div class="module-subsection" id="subsection-logging">
+                    <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
+                        <strong style="color: #2980b9;">🔍 Current Section: 3. Logging & Analytics Traps</strong>
+                    </div>
+                    <div class="content-section">
+                        <h3>Logging & Analytics Traps</h3>
+                        <p>Logs and analytics systems are major PHI leak sources.</p>
+                    </div>
+
+                    <div class="exercise">
+                        <div class="exercise-header">
+                            <div class="exercise-title">Exercise 3.3c: Logging Safety Challenge</div>
+                        </div>
+
+                        <div class="question" data-question="14" data-correct="no">
+                            <div class="question-text">14. APM shows: <code>Slow query - table: user_preferences, session_id: sess_abc123</code> - PHI?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="yes" tabindex="0">Yes - PHI</li>
+                                <li class="option" data-answer="no" tabindex="0">No - Safe log</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> Session ID (non-identifiable) + user preferences (no health context) = Safe.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Session ID + user preferences = safe logging. The correct answer is <strong>No</strong>.
+                            </div>
+                        </div>
+
+                        <div class="question" data-question="15" data-correct="yes">
+                            <div class="question-text">15. Error log: <code>API timeout for sarah@healthapp.com in insulin_dosage_calculator module</code> - PHI?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="no" tabindex="0">No - Technical info</li>
+                                <li class="option" data-answer="yes" tabindex="0">Yes - PHI</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> Email (PII) + insulin dosage calculator (diabetes) = PHI in logs.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Email + insulin calculator = PHI. The correct answer is <strong>Yes</strong>.
+                            </div>
+                        </div>
+
+                        <div class="question" data-question="16" data-correct="no">
+                            <div class="question-text">16. System log: <code>DB connection timeout in user_authentication - user_hash: xyz789abc</code> - PHI?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="yes" tabindex="0">Yes - PHI</li>
+                                <li class="option" data-answer="no" tabindex="0">No - Safe log</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> User hash (non-identifiable) + authentication (no health context) = Safe.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> User hash + authentication = safe. The correct answer is <strong>No</strong>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="subsection-nav">
+                        <button class="btn btn-secondary subsection-nav-btn" onclick="prevSubsection()">
+                            ← Previous: Database & API
+                        </button>
+                        <div style="color: #6c757d; font-weight: bold;">Section 3 of 6</div>
+                        <button class="btn btn-primary subsection-nav-btn" onclick="nextSubsection()">
+                            Next: Inference Problem →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Subsection: Inference -->
+                <div class="module-subsection" id="subsection-inference">
+                    <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
+                        <strong style="color: #2980b9;">🔍 Current Section: 4. The Inference Problem</strong>
+                    </div>
+                    <div class="content-section">
+                        <h3>The Inference Problem</h3>
+                        <p>User behavior patterns can imply health conditions - creating "inferential PHI."</p>
+                    </div>
+
+                    <div class="exercise">
+                        <div class="exercise-header">
+                            <div class="exercise-title">Exercise 3.4d: Inference Challenge</div>
+                        </div>
+
+                        <div class="question" data-question="17" data-correct="no">
+                            <div class="question-text">17. Analytics: "Wellness section accessed 1,247 times by 89 unique users this month" - PHI?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="yes" tabindex="0">Yes - Inferential PHI</li>
+                                <li class="option" data-answer="no" tabindex="0">No - Safe aggregated</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> Aggregated data with no individual identifiers = Safe.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Properly aggregated data = safe. The correct answer is <strong>No</strong>.
+                            </div>
+                        </div>
+
+                        <div class="question" data-question="18" data-correct="yes">
+                            <div class="question-text">18. Analytics: "tom@email.com clicked 'Depression Resources' 8 times this month" - PHI?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="no" tabindex="0">No - Just usage</li>
+                                <li class="option" data-answer="yes" tabindex="0">Yes - Inferential PHI</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> Email (PII) + depression resources pattern implies mental health condition = PHI.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Email + depression resources usage = inferential PHI. The correct answer is <strong>Yes</strong>.
+                            </div>
+                        </div>
+
+                        <div class="question" data-question="19" data-correct="yes">
+                            <div class="question-text">19. "Patient_ID A12B3 opens app at 8 AM, 1 PM, 6 PM daily, then visits 'Blood Sugar Log'" - PHI?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="no" tabindex="0">No - Just usage</li>
+                                <li class="option" data-answer="yes" tabindex="0">Yes - Inferential PHI</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> Patient ID + regular blood sugar logging pattern implies diabetes = PHI.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Patient ID + blood sugar pattern = inferential PHI. The correct answer is <strong>Yes</strong>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="subsection-nav">
+                        <button class="btn btn-secondary subsection-nav-btn" onclick="prevSubsection()">
+                            ← Previous: Logging & Analytics
+                        </button>
+                        <div style="color: #6c757d; font-weight: bold;">Section 4 of 6</div>
+                        <button class="btn btn-primary subsection-nav-btn" onclick="nextSubsection()">
+                            Next: Multi-System Flows →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Subsection: Multi-System -->
+                <div class="module-subsection" id="subsection-systems">
+                    <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
+                        <strong style="color: #2980b9;">🔍 Current Section: 5. Multi-System Data Flows</strong>
+                    </div>
+                    <div class="content-section">
+                        <h3>Multi-System Data Flows</h3>
+                        <p>PHI often emerges at system boundaries where "safe" data from different systems combines.</p>
+                    </div>
+
+                    <div class="exercise">
+                        <div class="exercise-header">
+                            <div class="exercise-title">Exercise 3.5e: Multi-System Challenge</div>
+                        </div>
+
+                        <div class="question" data-question="20" data-correct="no">
+                            <div class="question-text">20. CRM exports contacts separately, scheduling exports time slots separately (no mixing) - PHI?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="yes" tabindex="0">Yes - Multi-system PHI</li>
+                                <li class="option" data-answer="no" tabindex="0">No - Systems separate</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> When systems truly operate separately with no data combination, PHI is not created.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Separate systems with no combination = no PHI. The correct answer is <strong>No</strong>.
+                            </div>
+                        </div>
+
+                        <div class="question" data-question="21" data-correct="yes">
+                            <div class="question-text">21. CRM sends: "Hi John, your cardiology appointment reminder" to john.smith@email.com - PHI?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="no" tabindex="0">No - Systems separate</li>
+                                <li class="option" data-answer="yes" tabindex="0">Yes - Multi-system PHI</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> Email (PII from CRM) + cardiology appointment (health from EHR) = PHI when combined.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Email + cardiology appointment = multi-system PHI. The correct answer is <strong>Yes</strong>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="subsection-nav">
+                        <button class="btn btn-secondary subsection-nav-btn" onclick="prevSubsection()">
+                            ← Previous: Inference Problem
+                        </button>
+                        <div style="color: #6c757d; font-weight: bold;">Section 5 of 6</div>
+                        <button class="btn btn-primary subsection-nav-btn" onclick="nextSubsection()">
+                            Next: HIPAA Safe Harbor →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Subsection: Safe Harbor -->
+                <div class="module-subsection" id="subsection-safeharbor">
+                    <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
+                        <strong style="color: #2980b9;">🔍 Current Section: 6. HIPAA Safe Harbor (Final Section)</strong>
+                    </div>
+                    <div class="content-section">
+                        <h3>HIPAA Safe Harbor: The ZIP Code Rule</h3>
+                        <p><strong>The Rule:</strong> Only share first 3 digits of ZIP codes if combined population ≥20,000 people.</p>
+                    </div>
+
+                    <div class="exercise">
+                        <div class="exercise-header">
+                            <div class="exercise-title">Exercise 3.6f: Safe Harbor Challenge</div>
+                        </div>
+
+                        <div class="question" data-question="22" data-correct="yes">
+                            <div class="question-text">22. ZIP codes 331XX covering Chicago suburbs (Population: 45,000) - Can share "331XX"?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="no" tabindex="0">No - Must use "000XX"</li>
+                                <li class="option" data-answer="yes" tabindex="0">Yes - Can share "331XX"</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> Population >20K meets HIPAA Safe Harbor requirements.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Population >20K = can share first 3 digits. The correct answer is <strong>Yes</strong>.
+                            </div>
+                        </div>
+
+                        <div class="question" data-question="23" data-correct="no">
+                            <div class="question-text">23. Dataset shows "Patient admitted: 03/15/2024, discharged: 03/18/2024" - Safe Harbor compliant?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="yes" tabindex="0">Yes - Dates alone aren't identifiable</li>
+                                <li class="option" data-answer="no" tabindex="0">No - Must remove specific dates, keep only year</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> Safe Harbor requires removing all dates except year. Must show only "2024" or use date ranges, not specific dates.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Specific dates must be removed under Safe Harbor - only year can remain. The correct answer is <strong>No</strong>.
+                            </div>
+                        </div>
+
+                        <div class="question" data-question="24" data-correct="yes">
+                            <div class="question-text">24. Research dataset shows patient ages: "42, 67, 91, 35, 93, 28" - How should ages 91 and 93 be reported for Safe Harbor compliance?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="no" tabindex="0">No change needed - actual ages are fine</li>
+                                <li class="option" data-answer="yes" tabindex="0">Yes - Must aggregate to "90+" or age ranges</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> Safe Harbor requires ages over 89 to be aggregated (e.g., "90+") because they're rare and potentially identifying.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Ages over 89 must be aggregated under Safe Harbor rules. The correct answer is <strong>Yes - Must aggregate to "90+"</strong>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="subsection-nav">
+                        <button class="btn btn-secondary subsection-nav-btn" onclick="prevSubsection()">
+                            ← Previous: Multi-System Flows
+                        </button>
+                        <div style="color: #6c757d; font-weight: bold;">Section 6 of 6 ✓ Complete</div>
+                        <button class="btn btn-success subsection-nav-btn" onclick="nextModule()">
+                            Continue to Next Module →
+                        </button>
+                    </div>
+                </div>
+                <!-- End of Safe Harbor subsection -->
+
+                <div class="content-section" style="margin-top: 2rem; padding: 1.5rem; background: #e8f4fd; border-radius: 8px;">
+                    <h3>🎯 Module 3 Key Takeaways</h3>
+                    <ul>
+                        <li><strong>Context Creates PHI:</strong> Safe data becomes PHI when combined</li>
+                        <li><strong>System Boundaries:</strong> PHI emerges where systems integrate</li>
+                        <li><strong>Inference Counts:</strong> Behavioral patterns can imply health conditions</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Module 4: Handling & Protection WITH SUBSECTIONS -->
+            <div class="module" id="module-4">
+                <div class="module-header">
+                    <div class="module-title">Module 4: Handling, Protection & Technical Compliance</div>
+                    <p>Duration: 20-25 minutes</p>
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>Technical Deep-Dive:</strong> This module covers core principles, de-identification techniques, and BAA obligations. Each subsection includes practice exercises.
+                    <ul style="margin-top: 0.5rem; padding-left: 2rem;">
+                        <li>Green checkmark (✓) appears after viewing each section</li>
+                        <li>Answer exercises to reinforce learning</li>
+                    </ul>
+                </div>
+
+                <div class="content-section">
+                    <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <h4 style="color: #856404; margin-bottom: 0.5rem;">📋 Quick Navigation - Click Any Section:</h4>
+                        <p style="color: #856404; font-size: 0.9rem; margin-bottom: 0.5rem;">Use buttons below OR scroll to bottom for Next/Previous buttons</p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
+                            <button class="btn btn-secondary module-section-btn active viewed" data-section="m4-principles" data-module="4">1. Core Principles</button>
+                            <button class="btn btn-secondary module-section-btn" data-section="m4-deidentification" data-module="4">2. De-Identification</button>
+                            <button class="btn btn-secondary module-section-btn" data-section="m4-baa" data-module="4">3. BAA Understanding</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subsection 4a: Core Principles -->
+                <div class="module-subsection active" id="subsection-m4-principles">
+                    <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
+                        <strong style="color: #2980b9;">🔍 Current Section: 1. Core Principles (~3 min)</strong>
+                    </div>
+
+                   <div class="content-section">
+    <h3>The Three Foundational Principles</h3>
+    <p>These principles guide every technical decision when working with PHI:</p>
+
+    <div class="scenario-box">
+        <h4>Principle 1: Minimize Access & Storage</h4>
+        <p><strong>What this means in practice:</strong></p>
+        <ul>
+            <li><strong>RBAC (Role-Based Access Control):</strong> Only grant access to PHI based on job function necessity</li>
+            <li><strong>Just-in-time access:</strong> Temporary, time-limited access with approval workflows</li>
+            <li><strong>No local storage:</strong> Never download PHI to laptops, personal drives, or development machines</li>
+        </ul>
+        
+        <div style="background: #f8d7da; padding: 1rem; border-radius: 6px; margin-top: 1rem; border-left: 4px solid #dc3545;">
+            <strong style="color: #721c24;">❌ Common Violations:</strong>
+            <ul style="margin-top: 0.5rem; color: #721c24;">
+                <li>Downloading production database to laptop for "quick analysis"</li>
+                <li>Copying PHI to personal drives for "backup"</li>
+                <li>Leaving PHI in IDE scratch files or browser dev tools cache</li>
+                <li>Giving all developers permanent production access "just in case"</li>
+            </ul>
+        </div>
+
+        <p style="margin-top: 1rem;"><strong>🎯 Why it matters for developers:</strong> Every copy of PHI creates a new attack surface and compliance obligation. The fewer places PHI exists, the easier it is to secure and audit.</p>
+    </div>
+
+    <div class="scenario-box">
+        <h4>Principle 2: Use Approved Tools Only</h4>
+        <p><strong>What this means in practice:</strong></p>
+        <ul>
+            <li><strong>AI Tools:</strong> Must have Business Associate Agreements (BAAs)</li>
+            <li><strong>Cloud Services:</strong> AWS, Azure, GCP - verify BAA coverage per service</li>
+            <li><strong>Monitoring Tools:</strong> APM, logging, analytics - all need BAAs if touching PHI</li>
+        </ul>
+        
+        <div style="background: #f8d7da; padding: 1rem; border-radius: 6px; margin-top: 1rem; border-left: 4px solid #dc3545;">
+            <strong style="color: #721c24;">❌ Common Violations:</strong>
+            <ul style="margin-top: 0.5rem; color: #721c24;">
+                <li>Using personal ChatGPT for debugging healthcare code</li>
+                <li>GitHub Copilot individual tier (no BAA) instead of enterprise</li>
+                <li>Personal Dropbox for sharing test data</li>
+                <li>Screenshot tools that upload to cloud without BAA</li>
+            </ul>
+        </div>
+
+        <div class="alert alert-warning" style="margin-top: 1rem; font-size: 0.9rem;">
+            <strong>⚠️ Critical Distinction: Enterprise vs Individual Tiers</strong><br>
+            Many tools offer both - only enterprise tiers typically include BAAs!
+        </div>
+    </div>
+
+    <div class="scenario-box">
+        <h4>Principle 3: De-identify for Development</h4>
+        <p><strong>What this means in practice:</strong></p>
+        <ul>
+            <li><strong>Synthetic data generation:</strong> Use libraries like Faker to create realistic but fake data</li>
+            <li><strong>Proper de-identification:</strong> Remove all 18 HIPAA identifiers, not just names</li>
+            <li><strong>Test data generators:</strong> Build tools to create production-like test data</li>
+        </ul>
+        
+        <div style="background: #f8d7da; padding: 1rem; border-radius: 6px; margin-top: 1rem; border-left: 4px solid #dc3545;">
+            <strong style="color: #721c24;">❌ Common Violations:</strong>
+            <ul style="margin-top: 0.5rem; color: #721c24;">
+                <li>"Just changing the names" but keeping real addresses, dates, diagnosis codes</li>
+                <li>Using production data from 2 years ago assuming it's "old enough"</li>
+                <li>Hashing identifiers but keeping them linkable to other datasets</li>
+                <li>Thinking "test" data is automatically safe without verification</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+                    <div class="exercise">
+                        <div class="exercise-header">
+                            <div class="exercise-title">Exercise 4.1a: Core Principles Application</div>
+                        </div>
+
+                        <div class="question" data-question="25" data-correct="c">
+                            <div class="question-text">25. You're setting up your local development environment. Your teammate suggests: "Just copy the production patient database to your laptop for testing - it's faster than creating fake data." What's the correct action?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="a" tabindex="0">a) Copy it if you encrypt your laptop</li>
+                                <li class="option" data-answer="b" tabindex="0">b) Copy only a small subset of patients</li>
+                                <li class="option" data-answer="c" tabindex="0">c) Refuse - never store production PHI locally, use synthetic data</li>
+                                <li class="option" data-answer="d" tabindex="0">d) Copy it but delete after testing</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> Core principle: Never store PHI locally without approval. Always use synthetic/de-identified data for development.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Minimize access & storage principle: Never store production PHI locally. Use synthetic data instead. The correct answer is <strong>c)</strong>.
+                            </div>
+                        </div>
+
+                        <div class="question" data-question="26" data-correct="b">
+                            <div class="question-text">26. You need to share patient visit logs with the analytics team for dashboard development. The logs contain timestamps, session IDs, and page views. What's the safest approach?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="a" tabindex="0">a) Share full logs - they're just technical data</li>
+                                <li class="option" data-answer="b" tabindex="0">b) Hash patient identifiers before sharing, remove any PHI</li>
+                                <li class="option" data-answer="c" tabindex="0">c) Share only with team members who signed NDAs</li>
+                                <li class="option" data-answer="d" tabindex="0">d) Encrypt the log files before sending</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> Minimize access principle: De-identify data before sharing. Hash identifiers and remove PHI to create safe analytics data.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Minimize access requires de-identification before sharing. Hash identifiers and remove PHI. The correct answer is <strong>b)</strong>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="subsection-nav">
+                        <div></div>
+                        <div style="color: #6c757d; font-weight: bold;">Section 1 of 3</div>
+                        <button class="btn btn-primary subsection-nav-btn" onclick="nextModule4Subsection()">
+                            Next: De-Identification Techniques →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Subsection 4b: De-Identification (content from v2.1) -->
+                <div class="module-subsection" id="subsection-m4-deidentification">
+                    <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
+                        <strong style="color: #2980b9;">🔍 Current Section: 2. De-Identification Techniques (~10-12 min)</strong>
+                    </div>
+
+                    <div class="content-section">
+                        <h3>🔒 De-Identification Techniques for Developers</h3>
+                        <p>De-identification is removing or obscuring PHI from datasets while preserving utility for development, testing, and analytics. Understanding these techniques is critical for technical teams.</p>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>Critical Distinction:</strong> Properly de-identified data is NOT PHI under HIPAA. This allows you to work with realistic healthcare data without PHI compliance requirements.
+                    </div>
+
+                    <div class="content-section">
+                        <h3>HIPAA Safe Harbor: The 18 Identifiers</h3>
+                        <p>Under HIPAA's Safe Harbor method, you must remove these 18 identifier types to de-identify data:</p>
+                        
+                        <div class="scenario-box">
+                            <h4>The 18 Protected Identifiers</h4>
+                            <ol style="padding-left: 2rem; line-height: 1.8;">
+                                <li><strong>Names</strong> - All names of individuals</li>
+                                <li><strong>Geographic subdivisions</strong> smaller than state (except first 3 digits of ZIP if population >20K)</li>
+                                <li><strong>Dates</strong> - All dates except year (birth, admission, discharge, death)</li>
+                                <li><strong>Telephone numbers</strong></li>
+                                <li><strong>Fax numbers</strong></li>
+                                <li><strong>Email addresses</strong></li>
+                                <li><strong>Social Security numbers</strong></li>
+                                <li><strong>Medical record numbers</strong></li>
+                                <li><strong>Health plan beneficiary numbers</strong></li>
+                                <li><strong>Account numbers</strong></li>
+                                <li><strong>Certificate/license numbers</strong></li>
+                                <li><strong>Vehicle identifiers</strong> (VIN, license plates)</li>
+                                <li><strong>Device identifiers and serial numbers</strong></li>
+                                <li><strong>URLs</strong></li>
+                                <li><strong>IP addresses</strong></li>
+                                <li><strong>Biometric identifiers</strong> (fingerprints, voiceprints)</li>
+                                <li><strong>Full-face photos and comparable images</strong></li>
+                                <li><strong>Any other unique identifying number, characteristic, or code</strong></li>
+                            </ol>
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <strong>⚠️ Common Mistake:</strong> Developers often think removing just names is enough. You must remove ALL 18 identifier types to meet Safe Harbor requirements!
+                        </div>
+                    </div>
+
+                    <div class="content-section">
+                        <h3>Technical De-Identification Methods</h3>
+                        <p>Three primary techniques for de-identifying data in technical systems:</p>
+                        
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Method</th>
+                                    <th>What It Does</th>
+                                    <th>When To Use</th>
+                                    <th>Reversible?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Hashing</strong></td>
+                                    <td>One-way transformation to fixed-length string</td>
+                                    <td>Need consistency (same input = same output) but no reversal</td>
+                                    <td>❌ No</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Encryption</strong></td>
+                                    <td>Two-way transformation using a key</td>
+                                    <td>Need to retrieve original value later</td>
+                                    <td>✅ Yes (with key)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tokenization</strong></td>
+                                    <td>Replace with random token, store mapping separately</td>
+                                    <td>Need reversibility + format preservation</td>
+                                    <td>✅ Yes (with vault)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="content-section">
+                        <h3>Practical Code Examples</h3>
+                        
+                        <div class="scenario-box">
+                            <h4>1. Hashing for Consistent De-Identification</h4>
+                            <p><strong>Use Case:</strong> Logging user activity without exposing email addresses</p>
+                            
+                            <div class="code-example"><span class="comment"># Python - SHA-256 hashing</span>
+<span class="keyword">import</span> hashlib
+
+<span class="keyword">def</span> hash_patient_id(patient_id):
+    <span class="comment"># Add secret salt to prevent rainbow table attacks</span>
+    salt = <span class="string">"your-secret-salt-here"</span>
+    combined = f<span class="string">"{salt}{patient_id}"</span>
+    <span class="keyword">return</span> hashlib.sha256(combined.encode()).hexdigest()
+
+<span class="comment"># Example usage</span>
+email = <span class="string">"john.smith@email.com"</span>
+hashed = hash_patient_id(email)
+<span class="keyword">print</span>(f<span class="string">"Hashed: {hashed[:16]}..."</span>)
+<span class="comment"># Output: "7a3f9c2e4b1d8f6a..."</span>
+
+<span class="comment"># Use in logs</span>
+logger.info(f<span class="string">"User {hashed[:16]} accessed diabetes module"</span>)
+<span class="comment"># ✅ Safe: No PII in logs, consistent for analytics</span></div>
+                            
+                            <div class="alert alert-success" style="font-size: 0.9rem;">
+                                <strong>✅ Pros:</strong> Fast, consistent, irreversible<br>
+                                <strong>❌ Cons:</strong> Can't recover original, vulnerable to brute force without salting
+                            </div>
+                        </div>
+
+                        <div class="scenario-box">
+                            <h4>2. Encryption for Reversible Protection</h4>
+                            <p><strong>Use Case:</strong> Storing PHI that needs to be decrypted for authorized use</p>
+                            
+                            <div class="code-example"><span class="comment">// JavaScript - AES encryption</span>
+<span class="keyword">const</span> crypto = require(<span class="string">'crypto'</span>);
+
+<span class="keyword">function</span> encryptPHI(plaintext, key) {
+    <span class="keyword">const</span> iv = crypto.randomBytes(16);
+    <span class="keyword">const</span> cipher = crypto.createCipheriv(
+        <span class="string">'aes-256-cbc'</span>, Buffer.from(key), iv
+    );
+    
+    <span class="keyword">let</span> encrypted = cipher.update(plaintext, <span class="string">'utf8'</span>, <span class="string">'hex'</span>);
+    encrypted += cipher.final(<span class="string">'hex'</span>);
+    
+    <span class="keyword">return</span> { iv: iv.toString(<span class="string">'hex'</span>), data: encrypted };
+}
+
+<span class="comment">// Example</span>
+<span class="keyword">const</span> ssn = <span class="string">"123-45-6789"</span>;
+<span class="keyword">const</span> key = crypto.randomBytes(32);
+<span class="keyword">const</span> encrypted = encryptPHI(ssn, key);
+<span class="comment">// ✅ Safe: Can decrypt with key when needed</span></div>
+                            
+                            <div class="alert alert-success" style="font-size: 0.9rem;">
+                                <strong>✅ Pros:</strong> Reversible with key, industry standard<br>
+                                <strong>❌ Cons:</strong> Key management complexity, performance overhead
+                            </div>
+                        </div>
+
+                        <div class="scenario-box">
+                            <h4>3. Tokenization for Format Preservation</h4>
+                            <p><strong>Use Case:</strong> Testing with SSN/credit card processing logic</p>
+                            
+                            <div class="code-example"><span class="comment"># Python - Format-preserving tokenization</span>
+<span class="keyword">import</span> random
+
+<span class="keyword">class</span> TokenVault:
+    <span class="keyword">def</span> __init__(self):
+        self.vault = {}
+    
+    <span class="keyword">def</span> tokenize_ssn(self, ssn):
+        <span class="keyword">if</span> ssn <span class="keyword">in</span> self.vault:
+            <span class="keyword">return</span> self.vault[ssn]
+        
+        <span class="comment"># Generate token with same format: XXX-XX-XXXX</span>
+        token = f<span class="string">"{random.randint(100,999)}-"</span> + \
+                f<span class="string">"{random.randint(10,99)}-"</span> + \
+                f<span class="string">"{random.randint(1000,9999)}"</span>
+        
+        self.vault[ssn] = token
+        <span class="keyword">return</span> token
+
+<span class="comment"># Example</span>
+vault = TokenVault()
+real_ssn = <span class="string">"123-45-6789"</span>
+token = vault.tokenize_ssn(real_ssn)
+<span class="keyword">print</span>(f<span class="string">"Token: {token}"</span>)  <span class="comment"># Output: "847-23-4891"</span>
+<span class="comment"># ✅ Looks real, works in tests, not actual PHI</span></div>
+                            
+                            <div class="alert alert-success" style="font-size: 0.9rem;">
+                                <strong>✅ Pros:</strong> Format preserved, reversible, works with validation<br>
+                                <strong>❌ Cons:</strong> Requires secure token vault, additional infrastructure
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-section">
+                        <h3>K-Anonymity: Beyond Individual De-Identification</h3>
+                        <p><strong>K-anonymity</strong> ensures any individual in a dataset cannot be distinguished from at least k-1 others based on quasi-identifiers (age, ZIP, gender).</p>
+                        
+                        <div class="scenario-box">
+                            <h4>How K-Anonymity Works (k=3 example)</h4>
+                            
+                            <table class="comparison-table" style="font-size: 0.85rem;">
+                                <thead>
+                                    <tr>
+                                        <th>❌ Not K-Anonymous</th>
+                                        <th>✅ K-Anonymous (k=3)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            Age: 47, ZIP: 02138, Diabetes<br>
+                                            Age: 52, ZIP: 02139, Asthma<br>
+                                            Age: 31, ZIP: 02140, Hypertension
+                                        </td>
+                                        <td>
+                                            Age: 40-50, ZIP: 021**, Diabetes<br>
+                                            Age: 40-50, ZIP: 021**, Asthma<br>
+                                            Age: 40-50, ZIP: 021**, Hypertension
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <p style="margin-top: 1rem;"><strong>Key Technique:</strong> Generalization (age ranges) + Suppression (ZIP truncation) create groups of similar records.</p>
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <strong>⚠️ Limitation:</strong> K-anonymity alone doesn't guarantee privacy! Attackers may infer attributes if all k records share the same sensitive value (homogeneity attack).
+                        </div>
+                    </div>
+
+                    <div class="content-section">
+                        <h3>Common De-Identification Mistakes</h3>
+                        
+                        <div class="scenario-box" style="border-left-color: #e74c3c;">
+                            <h4>❌ Mistake #1: Incomplete Identifier Removal</h4>
+                            <div class="code-example"><span class="comment">// Bad: Only removed name and email</span>
+{
+    <span class="string">"patient_id"</span>: <span class="string">"P-12345"</span>,       <span class="comment">// ❌ Still identifiable</span>
+    <span class="string">"birthdate"</span>: <span class="string">"1985-03-15"</span>,   <span class="comment">// ❌ Full date</span>
+    <span class="string">"zip"</span>: <span class="string">"02138"</span>,             <span class="comment">// ❌ Full ZIP</span>
+    <span class="string">"diagnosis"</span>: <span class="string">"Type 2 Diabetes"</span>
+}
+
+<span class="comment">// Good: All identifiers addressed</span>
+{
+    <span class="string">"patient_hash"</span>: <span class="string">"7a3f9c2e..."</span>, <span class="comment">// ✅ Hashed ID</span>
+    <span class="string">"birth_year"</span>: <span class="string">"1985"</span>,         <span class="comment">// ✅ Year only</span>
+    <span class="string">"zip"</span>: <span class="string">"021**"</span>,              <span class="comment">// ✅ First 3 digits</span>
+    <span class="string">"diagnosis"</span>: <span class="string">"Type 2 Diabetes"</span><span class="comment">// ✅ Health data OK without PII</span>
+}</div>
+                        </div>
+
+                        <div class="scenario-box" style="border-left-color: #e74c3c;">
+                            <h4>❌ Mistake #2: Weak Hashing Without Salt</h4>
+                            <div class="code-example"><span class="comment">// Bad: No salt - vulnerable to rainbow tables</span>
+hashed = md5(patient_email)  <span class="comment">// ❌ Pre-computable</span>
+
+<span class="comment">// Good: Salted hash with strong algorithm</span>
+salt = <span class="string">"complex-random-salt"</span>
+hashed = sha256(salt + patient_email)  <span class="comment">// ✅ Much harder to reverse</span></div>
+                        </div>
+
+                        <div class="scenario-box" style="border-left-color: #e74c3c;">
+                            <h4>❌ Mistake #3: Re-identification Through Data Linkage</h4>
+                            <p><strong>Scenario:</strong> Even "de-identified" datasets can be re-identified when combined:</p>
+                            <ul>
+                                <li>Dataset A: {age: 47, ZIP: 02138, diagnosis: diabetes}</li>
+                                <li>Dataset B: {name: John Smith, age: 47, ZIP: 02138}</li>
+                                <li><strong style="color: #e74c3c;">Risk:</strong> Join on age+ZIP → re-identify John = diabetes</li>
+                            </ul>
+                            <p><strong>Solution:</strong> Use k-anonymity (k≥5) and never share datasets that could be linked!</p>
+                        </div>
+                    </div>
+
+                    <div class="content-section" style="margin-top: 2rem; padding: 1.5rem; background: #e8f4fd; border-radius: 8px;">
+                        <h3>🎯 De-Identification Key Takeaways</h3>
+                        <ul>
+                            <li><strong>Safe Harbor = Remove All 18 Identifiers:</strong> Not just names and emails</li>
+                            <li><strong>Choose Right Method:</strong> Hashing (one-way), Encryption (reversible), Tokenization (format-preserving)</li>
+                            <li><strong>Always Salt Hashes:</strong> Prevent rainbow table attacks</li>
+                            <li><strong>K-Anonymity for Datasets:</strong> Ensure groups of k≥5 similar records</li>
+                            <li><strong>Watch Re-identification:</strong> Consider data linkage attacks</li>
+                            <li><strong>Test with Synthetic Data:</strong> Generate realistic but fake data for development</li>
+                        </ul>
+                    </div>
+
+                    <div class="exercise">
+                        <div class="exercise-header">
+                            <div class="exercise-title">Exercise 4.1b: De-Identification Techniques</div>
+                        </div>
+
+                        <div class="question" data-question="27" data-correct="b">
+                            <div class="question-text">27. You need to create a test dataset with 1,000 patient records for load testing. Which approach?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="a" tabindex="0">a) Copy production data and remove names only</li>
+                                <li class="option" data-answer="b" tabindex="0">b) Generate synthetic data with realistic patterns but no real patient info</li>
+                                <li class="option" data-answer="c" tabindex="0">c) Hash all identifiers from production data</li>
+                                <li class="option" data-answer="d" tabindex="0">d) Use production data but aggregate to k=5</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> Always generate synthetic data for development/testing. Even with hashing or aggregation, using production data creates risks.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Always generate synthetic data for development/testing rather than using production data. The correct answer is <strong>b)</strong>.
+                            </div>
+                        </div>
+
+                        <div class="question" data-question="28" data-correct="c">
+                            <div class="question-text">28. For analytics dashboard showing user activity, which de-identification method is best for consistent user tracking without exposing PHI?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="a" tabindex="0">a) Encryption with shared key</li>
+                                <li class="option" data-answer="b" tabindex="0">b) Tokenization with format preservation</li>
+                                <li class="option" data-answer="c" tabindex="0">c) SHA-256 hashing with salt (same user = same hash)</li>
+                                <li class="option" data-answer="d" tabindex="0">d) Random UUID per session (different each time)</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> Hashing provides consistency (same input = same output) for analytics while being irreversible and protecting PHI.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Hashing provides the right balance: consistent for tracking but irreversible to protect PHI. The correct answer is <strong>c)</strong>.
+                            </div>
+                        </div>
+
+                        <div class="question" data-question="29" data-correct="b">
+                            <div class="question-text">29. You're preparing a research dataset. Original data shows ages: "23, 45, 67, 89, 91, 34, 52, 93". Which ages must be aggregated under HIPAA Safe Harbor?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="a" tabindex="0">a) All ages must be converted to ranges</li>
+                                <li class="option" data-answer="b" tabindex="0">b) Only ages 91 and 93 - aggregate to "90+"</li>
+                                <li class="option" data-answer="c" tabindex="0">c) Only age 89 needs aggregation</li>
+                                <li class="option" data-answer="d" tabindex="0">d) No aggregation needed - ages are not identifiers</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> Safe Harbor requires ages over 89 to be aggregated (e.g., "90+") because they're rare and potentially identifying.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> HIPAA Safe Harbor requires ages >89 to be aggregated. The correct answer is <strong>b) Only ages 91 and 93</strong>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="subsection-nav">
+                        <button class="btn btn-secondary subsection-nav-btn" onclick="prevModule4Subsection()">
+                            ← Previous: Core Principles
+                        </button>
+                        <div style="color: #6c757d; font-weight: bold;">Section 2 of 3</div>
+                        <button class="btn btn-primary subsection-nav-btn" onclick="nextModule4Subsection()">
+                            Next: BAA Understanding →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Subsection 4c: BAA Understanding (NEW) -->
+                <div class="module-subsection" id="subsection-m4-baa">
+                    <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
+                        <strong style="color: #2980b9;">🔍 Current Section: 3. BAA Understanding for Technical Teams (~8-10 min) 🆕</strong>
+                    </div>
+
+                    <div class="content-section">
+                        <h3>⚖️ What Techies Get Wrong About BAAs</h3>
+                        <p><strong>Business Associate Agreements (BAAs)</strong> are contracts required under HIPAA, but technical teams often misunderstand what they actually mean for day-to-day work.</p>
+                    </div>
+
+                    <div class="alert alert-danger">
+                        <strong>🚨 Critical: You Need to Understand TWO Sides of BAAs</strong>
+                        <ul style="margin-top: 0.5rem; padding-left: 2rem;">
+                            <li><strong>Downstream:</strong> BAAs with vendors (Cloud Service Providers [AWS, GCP, Azure], Logging Platforms [Splunk, Cloudwatch,Datadog]) and their limitations</li>
+                            <li><strong>Upstream:</strong> YOUR obligations as a Business Associate to covered entities</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-section">
+                        <h3>Part 1: Vendor BAAs (Downstream) - What Coverage Actually Means</h3>
+                        
+                        <div class="scenario-box" style="border-left-color: #e74c3c;">
+                            <h4>❌ Myth #1: "We have a BAA with AWS = PHI anywhere in AWS is fine"</h4>
+                            <p><strong>Reality:</strong> BAAs are often <em>service-specific</em>. Your BAA might cover S3 and RDS, but NOT CloudWatch Logs, Elasticsearch, or third-party integrations.</p>
+                            <p><strong>What you must check:</strong></p>
+                            <ul>
+                                <li>Which specific AWS services are in-scope?</li>
+                                <li>Are there configuration requirements? (e.g., encryption at rest)</li>
+                                <li>What about logs sent to CloudWatch? Are they covered?</li>
+                                <li>Can you use AWS Lambda with PHI? Check the BAA.</li>
+                            </ul>
+                        </div>
+
+                        <div class="scenario-box" style="border-left-color: #e74c3c;">
+                            <h4>❌ Myth #2: "The vendor has HIPAA certification = we're covered"</h4>
+                            <p><strong>Reality:</strong> There's no such thing as "HIPAA certified." Vendors can be "HIPAA compliant," but YOU still need a signed BAA and proper technical controls.</p>
+                            <p><strong>What you must verify:</strong></p>
+                            <ul>
+                                <li>Do we have a <em>signed</em> BAA on file? (Not just vendor claiming compliance)</li>
+                                <li>Does it cover our specific use case? (Development? Production? Both?)</li>
+                                <li>Are WE implementing required technical safeguards on our end?</li>
+                            </ul>
+                        </div>
+
+                        <div class="scenario-box" style="border-left-color: #e74c3c;">
+                            <h4>❌ Myth #3: "A BAA means the vendor is responsible if something goes wrong"</h4>
+                            <p><strong>Reality:</strong> BAAs create <em>shared responsibility</em>. The vendor handles their infrastructure security, but YOU are responsible for:</p>
+                            <ul>
+                                <li>How you configure the service</li>
+                                <li>What data you put into it</li>
+                                <li>Access controls you implement</li>
+                                <li>Your application's security</li>
+                            </ul>
+                            <p><strong>Example:</strong> AWS has a BAA, but if you store PHI in an S3 bucket with public read access, that's YOUR breach, not Amazon's.</p>
+                        </div>
+                    </div>
+
+                    <div class="content-section" style="margin-top: 3rem;">
+                        <h3>Part 2: YOUR Role as a Business Associate (Upstream) - Your Obligations</h3>
+                        
+                        <div class="alert alert-warning">
+                            <strong>⚠️ Most Overlooked Fact:</strong> If you're building software for a hospital, clinic, or health system, <em>your company is likely a Business Associate</em> under HIPAA. This means YOU have direct legal obligations.
+                        </div>
+
+                        <div class="scenario-box">
+                            <h4>Understanding the Compliance Chain</h4>
+                            <div class="code-example">Covered Entity (Hospital/Clinic)
+    ↓ [BAA - defines OUR obligations]
+YOUR COMPANY (Business Associate)
+    ↓ [BAA with vendor - their obligations]
+AWS/Datadog/Other Vendors (Sub-processor)</div>
+                        </div>
+
+                        <div class="content-section">
+                            <h3>What "Being a Business Associate" Means for Technical Teams</h3>
+                            
+                            <div class="scenario-box">
+                                <h4>1. Technical Safeguards Are YOUR Responsibility</h4>
+                                <p>Your BAA with the covered entity requires you to implement:</p>
+                                <ul>
+                                    <li><strong>Encryption:</strong> PHI at rest and in transit</li>
+                                    <li><strong>Access Controls:</strong> Role-based access, audit logs</li>
+                                    <li><strong>Audit Trails:</strong> Who accessed what PHI and when</li>
+                                    <li><strong>Secure Development:</strong> No PHI in dev/test without de-identification</li>
+                                    <li><strong>Incident Response:</strong> Report breaches within contractual timeframe (often 24-72 hours)</li>
+                                </ul>
+                            </div>
+
+                            <div class="scenario-box">
+                                <h4>2. Your Technical Decisions Impact Compliance</h4>
+                                <p><strong>Questions you must answer:</strong></p>
+                                <ul>
+                                    <li>Does this architecture meet OUR BA obligations?</li>
+                                    <li>Can we demonstrate technical safeguards in an audit?</li>
+                                    <li>What happens if we have a security incident?</li>
+                                    <li>Do we have proper logging to support incident investigation?</li>
+                                    <li>Are we using vendors with proper BAAs in place?</li>
+                                </ul>
+                            </div>
+
+                            <div class="scenario-box" style="border-left-color: #e74c3c;">
+                                <h4>❌ What NOT to Assume</h4>
+                                <ul>
+                                    <li><strong>❌ "Legal handles compliance"</strong> → Technical teams implement the actual controls</li>
+                                    <li><strong>❌ "Production is compliant, so dev is fine"</strong> → Development environments need same protections or de-identified data</li>
+                                    <li><strong>❌ "We can fix it if there's a breach"</strong> → Breaches must be reported immediately, can result in penalties and loss of trust</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-section" style="margin-top: 3rem;">
+                        <h3>🛠️ Technical Questions Checklist for ANY New Tool/Service</h3>
+                        
+                        <div class="scenario-box">
+                            <h4>Before Using Any Tool with PHI, Ask:</h4>
+                            <table class="comparison-table" style="font-size: 0.9rem;">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 40%;">Question</th>
+                                        <th>Why It Matters</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>1. Do we have a signed BAA?</strong></td>
+                                        <td>No BAA = cannot use with PHI, period</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>2. What services does BAA cover?</strong></td>
+                                        <td>May only cover specific features/tiers</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>3. What configuration is required?</strong></td>
+                                        <td>Encryption, private networks, access controls</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>4. Where does data get stored?</strong></td>
+                                        <td>Geographic/regulatory requirements</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>5. What happens to our data when contract ends?</strong></td>
+                                        <td>Data deletion obligations under BA agreement</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>6. How do we fulfill OUR obligations?</strong></td>
+                                        <td>Your BA agreement with covered entity</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="content-section">
+                        <h3>🎯 Real-World Scenario: Evaluating a New Tool</h3>
+                        
+                        <div class="scenario-box" style="background: #fff3cd; border-left-color: #ffc107;">
+                            <h4>Scenario: Developer wants to use Datadog for application monitoring</h4>
+                            
+                            <p><strong>❌ Wrong Approach:</strong></p>
+                            <p style="font-style: italic;">"Datadog is HIPAA compliant, so I'll just add it to our stack."</p>
+                            
+                            <p style="margin-top: 1.5rem;"><strong>✅ Right Approach - Technical Questions:</strong></p>
+                            <ol style="padding-left: 1.5rem; margin-top: 0.5rem; line-height: 1.8;">
+                                <li>☑️ Does our company have a signed BAA with Datadog?</li>
+                                <li>☑️ Does our Datadog plan tier include BAA coverage? (often enterprise-only)</li>
+                                <li>☑️ What will our application logs contain?
+                                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                                        <li>If PHI → Need BAA + proper configuration</li>
+                                        <li>If only hashed IDs with no PHI → May not need BAA</li>
+                                    </ul>
+                                </li>
+                                <li>☑️ Does Datadog APM tracing capture request parameters? (Could expose PHI)</li>
+                                <li>☑️ What's our retention policy? Does it align with our BA obligations?</li>
+                                <li>☑️ How do we ensure our dev team doesn't accidentally log PHI?</li>
+                                <li>☑️ If we have an incident, how do we pull audit logs from Datadog to fulfill our reporting obligations?</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="content-section" style="margin-top: 2rem; padding: 1.5rem; background: #e8f4fd; border-radius: 8px;">
+                        <h3>🎯 BAA Key Takeaways</h3>
+                        <ul>
+                            <li><strong>Two-Way Obligations:</strong> Vendor BAAs (downstream) AND your BA obligations (upstream)</li>
+                            <li><strong>Service-Specific Coverage:</strong> BAAs often don't cover all services/features</li>
+                            <li><strong>No "HIPAA Certification":</strong> Verify signed BAA, don't trust marketing claims</li>
+                            <li><strong>Shared Responsibility:</strong> Vendor secures infrastructure, YOU secure configuration and usage</li>
+                            <li><strong>Technical Teams Implement Controls:</strong> Legal signs BAA, but YOU make it real</li>
+                            <li><strong>Always Ask Questions:</strong> Use technical checklist before any new tool</li>
+                        </ul>
+                    </div>
+
+                    <div class="exercise">
+                        <div class="exercise-header">
+                            <div class="exercise-title">Exercise 4.1c: BAA Understanding & Application</div>
+                        </div>
+
+                        <div class="question" data-question="30" data-correct="c">
+                            <div class="question-text">30. Production API serving actual patient medication data is failing - need to debug immediately to meet SLA. Which approach?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="a" tabindex="0">a) Copy production logs to ChatGPT for analysis</li>
+                                <li class="option" data-answer="b" tabindex="0">b) Use synthetic data with BAA-approved AI</li>
+                                <li class="option" data-answer="c" tabindex="0">c) Debug using approved internal tools only with proper access controls</li>
+                                <li class="option" data-answer="d" tabindex="0">d) Ask colleague to use their personal AI tools</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> When debugging production systems with actual PHI, only use approved internal tools with proper access controls and audit trails.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> Production PHI requires approved internal tools with proper access controls. The correct answer is <strong>c)</strong>.
+                            </div>
+                        </div>
+
+                        <div class="question" data-question="31" data-correct="d">
+                            <div class="question-text">31. Your company has a BAA with AWS. You want to use AWS Lambda to process patient appointment reminders. What must you verify before implementation?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="a" tabindex="0">a) Nothing - BAA covers all AWS services</li>
+                                <li class="option" data-answer="b" tabindex="0">b) Just that Lambda is encrypted</li>
+                                <li class="option" data-answer="c" tabindex="0">c) Only that our security team approves</li>
+                                <li class="option" data-answer="d" tabindex="0">d) That Lambda is specifically covered in our BAA and meets configuration requirements</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> BAAs are service-specific. You must verify Lambda is explicitly covered and understand any required configurations (encryption, VPC, logs).
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> BAAs are service-specific - verify Lambda is explicitly covered. The correct answer is <strong>d)</strong>.
+                            </div>
+                        </div>
+
+                        <div class="question" data-question="32" data-correct="b">
+                            <div class="question-text">32. A vendor claims their monitoring tool is "HIPAA compliant and certified." As a technical lead, what's your response?</div>
+                            <ul class="options">
+                                <li class="option" data-answer="a" tabindex="0">a) Great! Start integration immediately</li>
+                                <li class="option" data-answer="b" tabindex="0">b) Verify: Do WE have a signed BAA? What configuration is required? What's covered?</li>
+                                <li class="option" data-answer="c" tabindex="0">c) Check if they have SOC 2 certification</li>
+                                <li class="option" data-answer="d" tabindex="0">d) As long as legal approved, technical team can proceed</li>
+                            </ul>
+                            <div class="feedback correct">
+                                <strong>Correct!</strong> "HIPAA certified" doesn't exist. Always verify signed BAA, understand coverage, and confirm technical requirements.
+                            </div>
+                            <div class="feedback incorrect">
+                                <strong>Incorrect.</strong> No such thing as "HIPAA certified." Must verify signed BAA and technical requirements. The correct answer is <strong>b)</strong>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="subsection-nav">
+                        <button class="btn btn-secondary subsection-nav-btn" onclick="prevModule4Subsection()">
+                            ← Previous: De-Identification
+                        </button>
+                        <div style="color: #6c757d; font-weight: bold;">Section 3 of 3 ✓ Complete</div>
+                        <button class="btn btn-success subsection-nav-btn" onclick="nextModule()">
+                            Complete Module 4 → Continue
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Exercise 4.1 - After all subsections -->
+                <div class="module-subsection" id="subsection-m4-exercise" style="display: none;">
+                    <!-- This subsection removed in v2.3 - exercises moved to individual subsections -->
+                </div>
+            </div>
+
+            <!-- Module 5: Incident Response -->
+            <div class="module" id="module-5">
+                <div class="module-header">
+                    <div class="module-title">Module 5: Incident Response & Mistakes</div>
+                    <p>Duration: 8-10 minutes</p>
+                </div>
+
+                <div class="alert alert-danger">
+                    <strong>Golden Rule:</strong> Never try to "quietly fix" a PHI exposure. Always report immediately.
+                </div>
+
+                <div class="content-section">
+                    <h3>Incident Response Timeline</h3>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <h4>Step 1: DISCOVER (0-30 min)</h4>
+                                <ul>
+                                    <li>Stop ongoing exposure</li>
+                                    <li>Preserve evidence (don't delete)</li>
+                                    <li>Notify manager and security team</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <h4>Step 2: CONTAIN (30 min-2 hrs)</h4>
+                                <ul>
+                                    <li>Determine scope and timeline</li>
+                                    <li>Document exposure method</li>
+                                    <li>Identify who had access</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <h4>Step 3: REPORT (2-24 hrs)</h4>
+                                <ul>
+                                    <li>Internal: Security, Legal, Compliance</li>
+                                    <li>External: May require regulatory notification</li>
+                                    <li>Timeline: 24-72 hours for most regulations</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercise">
+                    <div class="exercise-header">
+                        <div class="exercise-title">Incident Response Scenarios</div>
+                        <p>You discover yesterday's backup script uploaded patient emails + appointment types to shared Google Drive (50 people have access).</p>
+                    </div>
+
+                    <div class="question" data-question="33" data-correct="c">
+                        <div class="question-text">33. Your immediate action?</div>
+                        <ul class="options">
+                            <li class="option" data-answer="a" tabindex="0">a) Delete file and hope no one noticed</li>
+                            <li class="option" data-answer="b" tabindex="0">b) Move to private folder and assess</li>
+                            <li class="option" data-answer="c" tabindex="0">c) Stop backup processes and report immediately</li>
+                            <li class="option" data-answer="d" tabindex="0">d) Check if anyone downloaded first</li>
+                        </ul>
+                        <div class="feedback correct">
+                            <strong>Correct!</strong> Stop ongoing exposure immediately and report. Never handle PHI incidents quietly.
+                        </div>
+                        <div class="feedback incorrect">
+                            <strong>Incorrect.</strong> Stop exposure and report immediately. The correct answer is <strong>c)</strong>.
+                        </div>
+                    </div>
+
+                    <div class="question" data-question="34" data-correct="b">
+                        <div class="question-text">34. During investigation, you find PHI in application logs from 2 weeks ago. What should you do with the logs?</div>
+                        <ul class="options">
+                            <li class="option" data-answer="a" tabindex="0">a) Delete the logs immediately to eliminate the exposure</li>
+                            <li class="option" data-answer="b" tabindex="0">b) Preserve logs as evidence and notify security team</li>
+                            <li class="option" data-answer="c" tabindex="0">c) Manually edit logs to remove PHI, then save</li>
+                            <li class="option" data-answer="d" tabindex="0">d) Move logs to encrypted folder and continue investigation alone</li>
+                        </ul>
+                        <div class="feedback correct">
+                            <strong>Correct!</strong> Never delete or modify evidence. Preserve everything and let security/compliance teams determine proper handling.
+                        </div>
+                        <div class="feedback incorrect">
+                            <strong>Incorrect.</strong> Evidence must be preserved unmodified for investigation. The correct answer is <strong>b)</strong>.
+                        </div>
+                    </div>
+
+                    <div class="question" data-question="35" data-correct="a">
+                        <div class="question-text">35. You accidentally sent an email with patient diagnosis to wrong recipient (another patient). Who do you contact first?</div>
+                        <ul class="options">
+                            <li class="option" data-answer="a" tabindex="0">a) Your manager and IT security immediately</li>
+                            <li class="option" data-answer="b" tabindex="0">b) Send follow-up email asking recipient to delete it</li>
+                            <li class="option" data-answer="c" tabindex="0">c) Contact the email recipient to apologize first</li>
+                            <li class="option" data-answer="d" tabindex="0">d) Wait to see if recipient responds before escalating</li>
+                        </ul>
+                        <div class="feedback correct">
+                            <strong>Correct!</strong> Immediately escalate to management and security. They will coordinate proper response including patient notification and documentation.
+                        </div>
+                        <div class="feedback incorrect">
+                            <strong>Incorrect.</strong> Never try to handle PHI breaches yourself. Escalate immediately to management and security. The correct answer is <strong>a)</strong>.
+                        </div>
+                    </div>
+
+                    <div class="question" data-question="36" data-correct="c">
+                        <div class="question-text">36. While reviewing old Slack messages, you find PHI was shared in a public channel 6 months ago. What now?</div>
+                        <ul class="options">
+                            <li class="option" data-answer="a" tabindex="0">a) Too old to matter - no action needed</li>
+                            <li class="option" data-answer="b" tabindex="0">b) Delete the Slack message and move on</li>
+                            <li class="option" data-answer="c" tabindex="0">c) Report immediately regardless of when it occurred</li>
+                            <li class="option" data-answer="d" tabindex="0">d) Document it yourself for next week's team meeting</li>
+                        </ul>
+                        <div class="feedback correct">
+                            <strong>Correct!</strong> PHI incidents must be reported immediately regardless of when they occurred. Timeline matters for compliance reporting.
+                        </div>
+                        <div class="feedback incorrect">
+                            <strong>Incorrect.</strong> Report all PHI exposures immediately, no matter how old. The correct answer is <strong>c)</strong>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module 6: GenAI -->
+<div class="module" id="module-6">
+    <div class="module-header">
+        <div class="module-title">Module 6: Generative AI in Healthcare Workflows</div>
+        <p>Duration: 12-15 minutes</p>
+    </div>
+
+    <div class="alert alert-warning">
+        <strong>Critical Reality:</strong> AI tools are transforming development workflows, but most popular AI assistants have NO Business Associate Agreements and cannot be used with PHI.
+    </div>
+
+    <div class="content-section">
+        <h3>🤖 The AI Tool Landscape: What Developers Need to Know</h3>
+        <p>Generative AI has become essential for modern development, but healthcare developers face unique constraints. Understanding which tools you can use <b>and how to use them safely</b> is critical.</p>
+    </div>
+
+    <div class="content-section">
+        <h3>Understanding the Three Categories of AI Tools</h3>
+        
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Category</th>
+                    <th style="width: 35%;">Examples</th>
+                    <th style="width: 20%;">BAA Available?</th>
+                    <th style="width: 20%;">Safe for PHI?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Public/Consumer AI</strong></td>
+                    <td>ChatGPT Free/Plus, Claude.ai, Gemini, Perplexity (personal accounts)</td>
+                    <td><span style="color: #e74c3c;">❌ No</span></td>
+                    <td><span style="color: #e74c3c;">❌ Never</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Enterprise AI Platforms</strong></td>
+                    <td>ChatGPT Enterprise, Claude for Enterprise, Azure OpenAI</td>
+                    <td><span style="color: #27ae60;">✅ Yes (if configured)</span></td>
+                    <td><span style="color: #f39c12;">⚠️ Only with BAA + proper setup</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Development AI Tools</strong></td>
+                    <td>GitHub Copilot, Cursor, JetBrains AI, Tabnine, Codeium</td>
+                    <td><span style="color: #f39c12;">⚠️ Varies by tier</span></td>
+                    <td><span style="color: #f39c12;">⚠️ Depends on version + config</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="content-section">
+        <h3>🛠️ Development AI Tools: The Tricky Middle Ground</h3>
+        <p>Code completion and AI coding assistants present unique challenges because they operate <em>inside your development environment</em>, seeing your code, comments, variable names, and potentially sensitive data.</p>
+        
+        <div class="scenario-box">
+            <h4>Common Development AI Tools & Their PHI Risks</h4>
+            
+            <div style="margin: 1rem 0;">
+                <strong style="color: #2980b9;">GitHub Copilot</strong>
+                <ul>
+                    <li><strong>Individual/Pro:</strong> ❌ No BAA - data may be used for training</li>
+                    <li><strong>Business/Enterprise:</strong> ⚠️ BAA available, but requires proper configuration</li>
+                    <li><strong>Risk:</strong> Sends code context to cloud for suggestions</li>
+                </ul>
+            </div>
+
+            <div style="margin: 1rem 0;">
+                <strong style="color: #2980b9;">Cursor AI</strong>
+                <ul>
+                    <li><strong>Free/Pro:</strong> ❌ No BAA available</li>
+                    <li><strong>Business:</strong> ⚠️ Check with your organization - BAA status varies</li>
+                    <li><strong>Risk:</strong> Full codebase access, can read open files and project structure</li>
+                </ul>
+            </div>
+
+            <div style="margin: 1rem 0;">
+                <strong style="color: #2980b9;">JetBrains AI Assistant</strong>
+                <ul>
+                    <li><strong>Individual:</strong> ❌ No BAA</li>
+                    <li><strong>Enterprise:</strong> ⚠️ Potential BAA available - verify with IT</li>
+                    <li><strong>Risk:</strong> Code completion sees variable names, function signatures, comments</li>
+                </ul>
+            </div>
+
+            <div style="margin: 1rem 0;">
+                <strong style="color: #2980b9;">Tabnine</strong>
+                <ul>
+                    <li><strong>Cloud versions:</strong> ❌ Typically no BAA for standard tiers</li>
+                    <li><strong>Self-hosted Enterprise:</strong> ✅ Can be configured safely (runs on your infrastructure)</li>
+                    <li><strong>Advantage:</strong> Offers true local-only options</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h3>⚠️ What AI Tools Can "See" in Your Development Environment</h3>
+        
+        <div class="scenario-box" style="border-left-color: #e74c3c;">
+            <h4>❌ Common Dangerous Exposures</h4>
+            
+            <div class="code-example">
+<span class="comment">// AI sees this entire file when providing suggestions:</span>
+
+<span class="keyword">const</span> patientData = {
+    email: <span class="string">"sarah.jones@email.com"</span>,  <span class="comment">// ❌ PII visible to AI</span>
+    diagnosis: <span class="string">"Type 2 Diabetes"</span>,      <span class="comment">// ❌ Health data visible</span>
+    medications: [<span class="string">"Metformin"</span>, <span class="string">"Insulin"</span>] <span class="comment">// ❌ PHI context visible</span>
+};
+
+<span class="comment">// Even variable names expose PHI context:</span>
+<span class="keyword">function</span> getPatientInsulinDosage(patientId) { <span class="comment">// ❌ Function name reveals health context</span>
+    <span class="keyword">return</span> database.query(
+        <span class="string">"SELECT dosage FROM diabetes_treatments WHERE patient_id = ?"</span>,
+        [patientId]  <span class="comment">// ❌ Query structure reveals PHI schema</span>
+    );
+}</div>
+            
+            <p style="margin-top: 1rem; color: #721c24;"><strong>What the AI learns from this code:</strong></p>
+            <ul style="color: #721c24;">
+                <li>Your database schema for patient health data</li>
+                <li>Field names and relationships</li>
+                <li>Business logic around medication and diagnoses</li>
+                <li>API structures for accessing PHI</li>
+                <li>Even with generic IDs, the context reveals healthcare operations</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h3>✅ Best Practices for Using AI Development Tools Safely</h3>
+        
+        <div class="scenario-box">
+            <h4>Strategy 1: Environment Separation</h4>
+            <p><strong>Create PHI-free development zones</strong></p>
+            <ul>
+                <li>✅ Use AI tools ONLY in non-production, de-identified environments</li>
+                <li>✅ Disable AI assistants when working on repositories with real PHI</li>
+                <li>✅ Create separate IDE profiles: "Healthcare (AI Off)" vs "General Development (AI On)"</li>
+                <li>✅ Use synthetic data generators for all development and testing</li>
+            </ul>
+            
+            <div class="code-example">
+<span class="comment">// ✅ Safe for AI tools - synthetic data, generic context</span>
+
+<span class="keyword">const</span> testUser = {
+    id: generateUUID(),           <span class="comment">// ✅ Random, not real</span>
+    email: faker.internet.email(), <span class="comment">// ✅ Synthetic</span>
+    metadata: { enrolled: <span class="keyword">true</span> }  <span class="comment">// ✅ No health context</span>
+};
+
+<span class="keyword">function</span> processUserAction(userId, action) {
+    <span class="comment">// ✅ Generic naming, no PHI context revealed</span>
+    <span class="keyword">return</span> dataService.update(userId, action);
+}</div>
+        </div>
+
+        <div class="scenario-box">
+            <h4>Strategy 2: Configuration & Access Control</h4>
+            <p><strong>Lock down AI tool access to sensitive repos</strong></p>
+            <ul>
+                <li>✅ Use <code>.gitignore</code>-style rules to exclude PHI-containing files from AI indexing</li>
+                <li>✅ Configure IDE to disable AI features in specific project directories</li>
+                <li>✅ Set up workspace-level AI settings, not just user preferences</li>
+                <li>✅ Require manual opt-in for AI on healthcare projects (never auto-enable)</li>
+            </ul>
+            
+            <div class="code-example">
+<span class="comment">// Example: .cursorignore or IDE settings</span>
+
+<span class="comment"># Exclude from AI assistant context</span>
+**/patient_data/**
+**/phi_exports/**
+**/*patient*.sql
+**/*medical*.json
+**/prod_configs/**
+.env.production</div>
+        </div>
+
+        <div class="scenario-box">
+            <h4>Strategy 3: Code Review & Awareness</h4>
+            <p><strong>Build organizational safeguards</strong></p>
+            <ul>
+                <li>✅ Include "AI tool usage" in code review checklists</li>
+                <li>✅ Document which repos/projects allow AI assistance</li>
+                <li>✅ Train team on recognizing PHI exposure through AI suggestions</li>
+                <li>✅ Implement pre-commit hooks to detect potential PHI before it reaches AI tools</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h3>🎯 Decision Tree: Can I Use This AI Tool?</h3>
+        
+        <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0;">
+            <h4 style="color: #856404; margin-bottom: 1rem;">Before Using ANY AI Tool, Ask:</h4>
+            
+            <div style="margin: 1rem 0; padding: 1rem; background: white; border-radius: 6px;">
+                <strong>Question 1: Will this tool access ANY of the following?</strong>
+                <ul style="margin-top: 0.5rem; padding-left: 2rem">
+                    <li>Code that processes patient data</li>
+                    <li>Database schemas with PHI fields</li>
+                    <li>API endpoints serving health information</li>
+                    <li>Configuration files with production credentials</li>
+                    <li>Test data that might contain real PHI</li>
+                </ul>
+                <p style="margin-top: 0.5rem;"><strong>If YES →</strong> Continue to Question 2<br>
+                <strong>If NO →</strong> Safe to use (with normal security practices)</p>
+            </div>
+
+            <div style="margin: 1rem 0; padding: 1rem; background: white; border-radius: 6px;">
+                <strong>Question 2: Does your organization have a signed BAA with this tool?</strong>
+                <p style="margin-top: 0.5rem;"><strong>If NO →</strong> ❌ CANNOT USE with healthcare code<br>
+                <strong>If YES →</strong> Continue to Question 3</p>
+            </div>
+
+            <div style="margin: 1rem 0; padding: 1rem; background: white; border-radius: 6px;">
+                <strong>Question 3: Is the tool properly configured per BAA requirements?</strong>
+                <ul style="margin-top: 0.5rem;">
+                    <li>✓ Enterprise tier with data isolation enabled?</li>
+                    <li>✓ Training data opt-out configured?</li>
+                    <li>✓ Audit logging enabled?</li>
+                    <li>✓ Geographic data residency requirements met?</li>
+                </ul>
+                <p style="margin-top: 0.5rem;"><strong>If ALL YES →</strong> ✅ MAY use per organizational policy<br>
+                <strong>If ANY NO →</strong> ❌ CANNOT USE until properly configured</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <h3>📋 Organizational Policy Recommendations</h3>
+        
+        <div class="scenario-box">
+            <h4>What Your Organization Should Define</h4>
+            <table class="comparison-table" style="font-size: 0.9rem;">
+                <thead>
+                    <tr>
+                        <th>Policy Area</th>
+                        <th>Key Questions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Approved Tools</strong></td>
+                        <td>
+                            • Which AI tools have BAAs?<br>
+                            • What tiers/versions are approved?<br>
+                            • How often is this list updated?
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Repository Classification</strong></td>
+                        <td>
+                            • Which repos contain PHI/healthcare logic?<br>
+                            • How are they tagged/labeled?<br>
+                            • Different rules for frontend vs backend?
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Developer Workflow</strong></td>
+                        <td>
+                            • How to request AI tool access?<br>
+                            • Mandatory training requirements?<br>
+                            • Consequences for policy violations?
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incident Response</strong></td>
+                        <td>
+                            • What if PHI is accidentally sent to AI?<br>
+                            • Reporting process?<br>
+                            • Remediation steps?
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="content-section" style="margin-top: 2rem; padding: 1.5rem; background: #e8f4fd; border-radius: 8px;">
+        <h3>🎯 Module 6 Key Takeaways</h3>
+        <ul>
+            <li><strong>Not All AI Tools Are Equal:</strong> Consumer vs Enterprise vs Development tools have different BAA availability</li>
+            <li><strong>AI Sees Your Context:</strong> Code completion tools access variable names, comments, file structure, and database schemas</li>
+            <li><strong>Enterprise ≠ Automatic Safety:</strong> Even with BAAs, tools must be properly configured</li>
+            <li><strong>Development Tools Are High Risk:</strong> Cursor, Copilot, JetBrains AI operate inside your codebase</li>
+            <li><strong>Separation Is Key:</strong> Use AI only in non-PHI environments with synthetic data</li>
+            <li><strong>When In Doubt, Ask:</strong> Check with IT/Security before using any new AI tool on healthcare projects</li>
+        </ul>
+    </div>
+
+    <div class="exercise">
+        <div class="exercise-header">
+            <div class="exercise-title">Exercise 6.1: GenAI Safety & Compliance</div>
+        </div>
+
+        <div class="question" data-question="37" data-correct="d">
+            <div class="question-text">37. You're debugging a query issue and want to ask ChatGPT: "Debug this: SELECT patient_name, diagnosis FROM patients WHERE id = 12345" - Is this safe?</div>
+            <ul class="options">
+                <li class="option" data-answer="a" tabindex="0">a) Safe - it's just SQL syntax with no actual data</li>
+                <li class="option" data-answer="b" tabindex="0">b) Safe if you remove the patient ID number first</li>
+                <li class="option" data-answer="c" tabindex="0">c) Safe if you anonymize table names to generic_table</li>
+                <li class="option" data-answer="d" tabindex="0">d) Unsafe - query reveals PHI structure and identifiers</li>
+            </ul>
+            <div class="feedback correct">
+                <strong>Correct!</strong> The query structure reveals PHI schema (patient_name, diagnosis fields), table relationships, and patient ID format. This exposes your healthcare data model to a public AI without a BAA.
+            </div>
+            <div class="feedback incorrect">
+                <strong>Incorrect.</strong> The query reveals PHI structure (patient_name, diagnosis fields), table relationships, and ID formats. Even without real data, this exposes your healthcare data model. The correct answer is <strong>d)</strong>.
+            </div>
+        </div>
+
+        <div class="question" data-question="38" data-correct="a">
+            <div class="question-text">38. You ask public ChatGPT: "What are best practices for HIPAA compliance in API design?" (sharing no company code or PHI) - Is this safe?</div>
+            <ul class="options">
+                <li class="option" data-answer="a" tabindex="0">a) Safe - general knowledge question with no PHI or proprietary information</li>
+                <li class="option" data-answer="b" tabindex="0">b) Unsafe - HIPAA topic implies PHI work</li>
+                <li class="option" data-answer="c" tabindex="0">c) Unsafe - must use BAA-approved AI only for any healthcare topics</li>
+                <li class="option" data-answer="d" tabindex="0">d) Safe only if using personal email, not work email</li>
+            </ul>
+            <div class="feedback correct">
+                <strong>Correct!</strong> Asking general knowledge questions about compliance, security best practices, or healthcare regulations is safe when you share no PHI, company data, code, or proprietary information. This is like reading a HIPAA compliance guide.
+            </div>
+            <div class="feedback incorrect">
+                <strong>Incorrect.</strong> General knowledge questions with no PHI, company data, or proprietary information are safe. This is like asking about publicly available compliance information. The correct answer is <strong>a)</strong>.
+            </div>
+        </div>
+
+        <div class="question" data-question="39" data-correct="c">
+            <div class="question-text">39. Your team wants to enable GitHub Copilot for a repository containing patient appointment scheduling logic. The code uses synthetic test data but has real database schema and PHI field names. What's required?</div>
+            <ul class="options">
+                <li class="option" data-answer="a" tabindex="0">a) GitHub Copilot Individual is fine - test data is synthetic</li>
+                <li class="option" data-answer="b" tabindex="0">b) Any paid Copilot tier is acceptable since no real PHI exists</li>
+                <li class="option" data-answer="c" tabindex="0">c) Must use GitHub Copilot Enterprise with BAA and verify proper configuration</li>
+                <li class="option" data-answer="d" tabindex="0">d) Copilot is safe as long as developers don't commit PHI to the repo</li>
+            </ul>
+            <div class="feedback correct">
+                <strong>Correct!</strong> Even with synthetic data, real PHI database schemas, field names, and healthcare business logic constitute proprietary healthcare system information. Copilot Enterprise with proper BAA and configuration is required for healthcare repositories.
+            </div>
+            <div class="feedback incorrect">
+                <strong>Incorrect.</strong> Database schemas and PHI field structures are sensitive even without real data. Healthcare repos require Copilot Enterprise with proper BAA. The correct answer is <strong>c)</strong>.
+            </div>
+        </div>
+
+        <div class="question" data-question="40" data-correct="a">
+            <div class="question-text">40. While working, you accidentally paste "Patient sarah@email.com insulin dosage: 10mg" into ChatGPT before realizing your mistake. What should you do?</div>
+            <ul class="options">
+                <li class="option" data-answer="a" tabindex="0">a) Immediately stop, close ChatGPT, and report to IT security/compliance</li>
+                <li class="option" data-answer="b" tabindex="0">b) Delete the message from ChatGPT and continue working</li>
+                <li class="option" data-answer="c" tabindex="0">c) Edit the message to remove identifiers, then submit a corrected version</li>
+                <li class="option" data-answer="d" tabindex="0">d) Log out of ChatGPT and delete your account</li>
+            </ul>
+            <div class="feedback correct">
+                <strong>Correct!</strong> This is a reportable PHI exposure incident. Stop immediately, preserve evidence (don't delete), and escalate to IT security. They will coordinate proper response, documentation, and determine if regulatory notification is required.
+            </div>
+            <div class="feedback incorrect">
+                <strong>Incorrect.</strong> Accidental PHI exposure to unauthorized systems must be reported immediately as a security incident. Never try to "fix it quietly." The correct answer is <strong>a)</strong>.
+            </div>
+        </div>
+    </div>
+</div>
+
+            <!-- Module 7: Completion -->
+            <div class="module" id="module-7">
+                <div class="module-header">
+                    <div class="module-title">Training Complete!</div>
+                </div>
+
+                <div class="completion-certificate" id="completionCertificate">
+                    <div style="text-align: center; margin-bottom: 0.5rem;">
+                        <div style="display: inline-block; padding: 0.3rem 1.5rem; background: rgba(255,255,255,0.2); border-radius: 8px; font-weight: bold; font-size: 1rem; letter-spacing: 2px;">
+                            VITSO
+                        </div>
+                        <div style="font-size: 0.7rem; margin-top: 0.2rem; opacity: 0.9;">Healthcare Technology Compliance Training</div>
+                    </div>
+                    <div style="text-align: center; margin-bottom: 0.5rem; font-size: 1.5rem; color: rgba(255,255,255,0.8);">★ ★ ★</div>
+                    <div style="font-size: 3rem; margin-bottom: 0.5rem;">🏆</div>
+                    <h2 style="margin-bottom: 0.5rem;">Certificate of Completion</h2>
+                    <p style="margin: 0.8rem 0; font-size: 1rem;">This certifies that</p>
+                    <p id="userName" 
+                       style="font-size: 1.8rem; margin: 0.5rem 0; cursor: pointer; text-decoration: underline; text-decoration-style: dotted; transition: all 0.3s ease; font-weight: bold; letter-spacing: 1px;" 
+                       onclick="editUserName()"
+                       title="Click to edit your name">
+                       Participant
+                    </p>
+                    <p style="margin: 0.8rem 0; font-size: 1rem;"><span id="completionStatus">has successfully completed</span> the</p>
+                    <h3 style="margin: 0.5rem 0; font-size: 1.3rem; font-weight: bold;">PHI/PII Identification & Handling Training v2.3<br>for Technical Teams</h3>
+                    
+                    <div class="score-display" id="finalScore"></div>
+                    
+                    <div style="margin: 1rem 0; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                        <p style="margin: 0.3rem 0; font-size: 0.9rem;"><strong>Digital Badge:</strong> PHI/PII Technical Compliance v2.3</p>
+                        <p style="margin: 0.3rem 0; font-size: 0.9rem;"><strong>Date of Completion:</strong> <span id="certDate"></span></p>
+                        <p style="margin: 0.3rem 0; font-size: 0.9rem;"><strong>Training Mode:</strong> <span id="certMode"></span></p>
+                        <p style="margin: 0.3rem 0; font-size: 0.9rem;"><strong>Certificate Validity:</strong> 12 months</p>
+                    </div>
+                    
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid rgba(255,255,255,0.3);">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; max-width: 600px; margin: 0 auto;">
+                            <div style="text-align: center;">
+                                <div style="border-bottom: 2px solid white; padding: 0.3rem; margin-bottom: 0.3rem;">
+                                    <span style="font-style: italic; font-family: 'Brush Script MT', cursive; font-size: 1.2rem;">Tom Smolinsky</span>
+                                </div>
+                                <p style="font-size: 0.8rem; margin: 0; font-weight: bold;">Tom Smolinsky, CISSP</p>
+                                <p style="font-size: 0.75rem; margin: 0; opacity: 0.9;">Training Administrator</p>
+                                <p style="font-size: 0.75rem; margin: 0; opacity: 0.9;">VITSO Healthcare Compliance</p>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="border-bottom: 2px solid white; padding: 0.3rem; margin-bottom: 0.3rem;">
+                                    <span id="certDate2"></span>
+                                </div>
+                                <p style="font-size: 0.8rem; margin: 0; font-weight: bold;">Date</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 1rem; font-size: 1.5rem; color: rgba(255,255,255,0.8);">★ ★ ★</div>
+                    
+                    <div class="cert-actions">
+                        <button class="btn btn-success" onclick="printCertificate()">🖨️ Print Certificate</button>
+                        <button class="btn btn-secondary" onclick="resetTraining()">🔄 Retry Training</button>
+                    </div>
+                    
+                    <div style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 6px; font-size: 0.9rem;">
+                        <strong>💡 Tip:</strong> Use your browser's "Print" dialog to save as PDF, then email or store the certificate for your records.
+                    </div>
+                </div>
+
+                <div class="answer-key" id="answerKey" style="page-break-before: always;">
+                    <h3 style="text-align: center; color: #2c3e50; margin-bottom: 1.5rem;">📊 Your Answer Review</h3>
+                    <div id="answerKeyContent"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="btn btn-secondary" id="prevBtn" onclick="previousModule()" disabled>← Previous</button>
+            <div>
+                <span>Module </span>
+                <span id="currentModuleDisplay">1</span>
+                <span> of </span>
+                <span id="totalModules">8</span>
+            </div>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextModule()">Next →</button>
+        </div>
+    
+        <footer id="license-footer">
+            Code licensed under the <a href="LICENSE.HTML">MIT License</a>. Content licensed under
+            <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. © 2025 VITSO - Tom Smolinsky, CISSP
+        </footer>
+    </div>
+
+    <script>
+        // ===== STATE MANAGEMENT =====
+        const state = {
+            currentModule: 0,
+            mode: 'learn',
+            answers: {},
+            completedModules: new Set(),
+            startTime: Date.now(),
+            userName: '',
+            module3Sections: new Set(['intro']),
+            module4Sections: new Set(['m4-principles'])
+        };
+
+        // Correct answers - 40 QUESTIONS (Module 4 now has 8 questions across 3 subsections)
+        const correctAnswers = {
+            1: 'b', 2: 'c', 3: 'c', 4: 'b', 5: 'c', 6: 'c', 7: 'b',
+            8: 'no', 9: 'yes', 10: 'yes', 11: 'no', 12: 'no', 13: 'yes',
+            14: 'no', 15: 'yes', 16: 'no', 17: 'no', 18: 'yes', 19: 'yes',
+            20: 'no', 21: 'yes', 22: 'yes', 23: 'no', 24: 'yes',
+            25: 'c', 26: 'b', 27: 'b', 28: 'c', 29: 'b',
+            30: 'c', 31: 'd', 32: 'b',
+            33: 'c', 34: 'b', 35: 'a', 36: 'c',
+            37: 'd', 38: 'a', 39: 'c', 40: 'a'
+        };
+
+        const allModule3Sections = ['intro', 'database', 'logging', 'inference', 'systems', 'safeharbor'];
+        const allModule4Sections = ['m4-principles', 'm4-deidentification', 'm4-baa'];
+
+        // ===== INITIALIZATION =====
+        function init() {
+            setupModuleNavigation();
+            updateDisplay();
+            setupEventListeners();
+            loadUserName();
+        }
+
+        function setupEventListeners() {
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' && state.currentModule < getTotalModules() - 1) {
+                    nextModule();
+                } else if (e.key === 'ArrowLeft' && state.currentModule > 0) {
+                    previousModule();
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('option')) {
+                    handleQuestionClick(e);
+                } else if (e.target.classList.contains('module-nav-item')) {
+                    const index = parseInt(e.target.dataset.module);
+                    if (!isNaN(index)) showModule(index);
+                } else if (e.target.classList.contains('module-section-btn')) {
+                    const section = e.target.dataset.section;
+                    const module = e.target.dataset.module;
+                    if (module === '4') {
+                        showModule4Subsection(section);
+                    } else {
+                        showSubsection(section);
+                    }
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && e.target.classList.contains('option')) {
+                    handleQuestionClick(e);
+                }
+            });
+        }
+
+        function setupModuleNavigation() {
+            const nav = document.getElementById('moduleNav');
+            const totalMods = getTotalModules();
+            nav.innerHTML = '';
+            
+            for (let i = 0; i < totalMods; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'module-nav-item';
+                if (i === 0) dot.classList.add('active');
+                dot.dataset.module = i;
+                dot.setAttribute('tabindex', '0');
+                dot.setAttribute('aria-label', `Go to module ${i + 1}`);
+                nav.appendChild(dot);
+            }
+        }
+
+        function getTotalModules() {
+            return document.querySelectorAll('.module').length;
+        }
+
+        // ===== USER NAME MANAGEMENT =====
+        function updateUserName(name) {
+            state.userName = name.trim();
+            const certName = document.getElementById('userName');
+            if (certName) {
+                certName.textContent = state.userName || 'Participant';
+            }
+        }
+
+        function editUserName() {
+            const currentName = state.userName || '';
+            const newName = prompt('Enter your name for the certificate:', currentName);
+            if (newName !== null) {
+                updateUserName(newName);
+                const input = document.getElementById('userNameInput');
+                if (input) {
+                    input.value = newName;
+                }
+            }
+        }
+
+        function loadUserName() {
+            const input = document.getElementById('userNameInput');
+            if (input && input.value) {
+                updateUserName(input.value);
+            }
+        }
+
+        // ===== MODE MANAGEMENT =====
+        function setMode(mode) {
+            state.mode = mode;
+            
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+            
+            const msg = document.createElement('div');
+            msg.className = mode === 'learn' ? 'alert alert-info' : 'alert alert-warning';
+            msg.innerHTML = mode === 'learn' 
+                ? '<strong>Learn Mode:</strong> You can change answers anytime.'
+                : '<strong>Assessment Mode:</strong> Answers lock after submission.';
+            msg.style.position = 'fixed';
+            msg.style.top = '80px';
+            msg.style.left = '50%';
+            msg.style.transform = 'translateX(-50%)';
+            msg.style.zIndex = '9999';
+            msg.style.maxWidth = '90%';
+            document.body.appendChild(msg);
+            
+            setTimeout(() => msg.remove(), 3000);
+        }
+
+        // ===== QUESTION HANDLING =====
+        function handleQuestionClick(event) {
+            const option = event.target;
+            const question = option.closest('.question');
+            const questionId = parseInt(question.dataset.question);
+            const selectedAnswer = option.dataset.answer;
+            const correctAnswer = question.dataset.correct;
+            
+            if (state.mode === 'assessment' && state.answers[questionId]) {
+                return;
+            }
+            
+            state.answers[questionId] = selectedAnswer;
+            
+            question.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected', 'correct', 'incorrect');
+                if (state.mode === 'assessment' && state.answers[questionId]) {
+                    opt.classList.add('disabled');
+                }
+            });
+            
+            option.classList.add('selected');
+            
+            const isCorrect = selectedAnswer === correctAnswer;
+            if (isCorrect) {
+                option.classList.add('correct');
+                question.classList.add('correct-answered');
+                question.classList.remove('incorrect-answered');
+                showFeedback(question, true);
+            } else {
+                option.classList.add('incorrect');
+                question.classList.add('incorrect-answered');
+                question.classList.remove('correct-answered');
+                showFeedback(question, false);
+                
+                question.querySelectorAll('.option').forEach(opt => {
+                    if (opt.dataset.answer === correctAnswer) {
+                        opt.classList.add('correct');
+                    }
+                });
+            }
+            
+            updateProgress();
+        }
+
+        function showFeedback(question, isCorrect) {
+            question.querySelectorAll('.feedback').forEach(fb => fb.style.display = 'none');
+            const feedback = question.querySelector(`.feedback.${isCorrect ? 'correct' : 'incorrect'}`);
+            if (feedback) feedback.style.display = 'block';
+        }
+
+        // ===== MODULE 3 SUBSECTION HANDLING =====
+        function showSubsection(sectionId) {
+            document.querySelectorAll('#module-3 .module-subsection').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.getElementById(`subsection-${sectionId}`).classList.add('active');
+            
+            document.querySelectorAll('#module-3 .module-section-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            const activeBtn = document.querySelector(`#module-3 [data-section="${sectionId}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+            
+            if (state.currentModule === 3) {
+                state.module3Sections.add(sectionId);
+                updateModule3Progress();
+            }
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextSubsection() {
+            const currentIndex = allModule3Sections.findIndex(s => 
+                document.getElementById(`subsection-${s}`).classList.contains('active')
+            );
+            
+            if (currentIndex < allModule3Sections.length - 1) {
+                showSubsection(allModule3Sections[currentIndex + 1]);
+            }
+        }
+
+        function prevSubsection() {
+            const currentIndex = allModule3Sections.findIndex(s => 
+                document.getElementById(`subsection-${s}`).classList.contains('active')
+            );
+            
+            if (currentIndex > 0) {
+                showSubsection(allModule3Sections[currentIndex - 1]);
+            }
+        }
+
+        function updateModule3Progress() {
+            allModule3Sections.forEach(sectionId => {
+                const btn = document.querySelector(`#module-3 [data-section="${sectionId}"]`);
+                if (btn && state.module3Sections.has(sectionId)) {
+                    btn.classList.add('viewed');
+                }
+            });
+            
+            updateNavigation();
+        }
+
+        // ===== MODULE 4 SUBSECTION HANDLING =====
+        function showModule4Subsection(sectionId) {
+            // Hide all Module 4 subsections
+            document.querySelectorAll('#module-4 .module-subsection').forEach(section => {
+                section.style.display = 'none';
+                section.classList.remove('active');
+            });
+            
+            // Show selected subsection
+            const targetSection = document.getElementById(`subsection-${sectionId}`);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+                targetSection.classList.add('active');
+            }
+            
+            // Update button states
+            document.querySelectorAll('#module-4 .module-section-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            const activeBtn = document.querySelector(`#module-4 [data-section="${sectionId}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+            
+            // Track viewed sections
+            if (state.currentModule === 4) {
+                state.module4Sections.add(sectionId);
+                updateModule4Progress();
+            }
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextModule4Subsection() {
+            const currentIndex = allModule4Sections.findIndex(s => 
+                document.getElementById(`subsection-${s}`).classList.contains('active')
+            );
+            
+            if (currentIndex < allModule4Sections.length - 1) {
+                showModule4Subsection(allModule4Sections[currentIndex + 1]);
+            }
+        }
+
+        function prevModule4Subsection() {
+            const currentIndex = allModule4Sections.findIndex(s => 
+                document.getElementById(`subsection-${s}`).classList.contains('active')
+            );
+            
+            if (currentIndex > 0) {
+                showModule4Subsection(allModule4Sections[currentIndex - 1]);
+            }
+        }
+
+        function updateModule4Progress() {
+            allModule4Sections.forEach(sectionId => {
+                const btn = document.querySelector(`#module-4 [data-section="${sectionId}"]`);
+                if (btn && state.module4Sections.has(sectionId)) {
+                    btn.classList.add('viewed');
+                }
+            });
+            
+            updateNavigation();
+        }
+
+        // ===== NAVIGATION =====
+        function showModule(index) {
+            const totalMods = getTotalModules();
+            if (index < 0 || index >= totalMods) return;
+            
+            document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
+            document.getElementById(`module-${index}`).classList.add('active');
+            state.currentModule = index;
+            
+            if (index === 3) {
+                showSubsection('intro');
+            } else if (index === 4) {
+                showModule4Subsection('m4-principles');
+            }
+            
+            updateDisplay();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            if (index > 0) state.completedModules.add(index - 1);
+            
+            if (index === totalMods - 1) {
+                showResults();
+            }
+        }
+
+        function nextModule() {
+            const totalMods = getTotalModules();
+            
+            if (state.currentModule === 3) {
+                const allViewed = allModule3Sections.every(s => state.module3Sections.has(s));
+                if (!allViewed) {
+                    alert('Please complete all 6 subsections of Module 3 before continuing.');
+                    return;
+                }
+            }
+            
+            if (state.currentModule === 4) {
+                const allViewed = allModule4Sections.every(s => state.module4Sections.has(s));
+                if (!allViewed) {
+                    alert('Please complete all 3 subsections of Module 4 before continuing.');
+                    return;
+                }
+            }
+            
+            if (state.currentModule < totalMods - 1) {
+                showModule(state.currentModule + 1);
+            }
+        }
+
+        function previousModule() {
+            if (state.currentModule > 0) {
+                showModule(state.currentModule - 1);
+            }
+        }
+
+        function updateDisplay() {
+            const totalMods = getTotalModules();
+            
+            const progress = Math.round(((state.currentModule + 1) / totalMods) * 100);
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = progress + '%';
+            
+            const footer = document.querySelector('.navigation');
+            const moduleCounter = footer.querySelector('div:nth-child(2)');
+            
+            if (state.currentModule === 0) {
+                footer.style.display = 'flex';
+                moduleCounter.style.visibility = 'hidden';
+            } else if (state.currentModule === 7) {
+                footer.style.display = 'none';
+            } else {
+                footer.style.display = 'flex';
+                moduleCounter.style.visibility = 'visible';
+                document.getElementById('currentModuleDisplay').textContent = state.currentModule;
+                document.getElementById('totalModules').textContent = '6';
+            }
+            
+            updateNavigation();
+            
+            document.querySelectorAll('.module-nav-item').forEach((dot, i) => {
+                dot.classList.remove('active', 'completed');
+                if (i === state.currentModule) {
+                    dot.classList.add('active');
+                } else if (state.completedModules.has(i)) {
+                    dot.classList.add('completed');
+                }
+            });
+        }
+
+        function updateNavigation() {
+            document.getElementById('prevBtn').disabled = state.currentModule === 0;
+            
+            const nextBtn = document.getElementById('nextBtn');
+            const totalMods = getTotalModules();
+            
+            if (state.currentModule === 3) {
+                const allViewed = allModule3Sections.every(s => state.module3Sections.has(s));
+                nextBtn.disabled = !allViewed;
+                if (!allViewed) {
+                    nextBtn.title = 'Complete all Module 3 sections to continue';
+                } else {
+                    nextBtn.title = '';
+                }
+            } else if (state.currentModule === 4) {
+                const allViewed = allModule4Sections.every(s => state.module4Sections.has(s));
+                nextBtn.disabled = !allViewed;
+                if (!allViewed) {
+                    nextBtn.title = 'Complete all Module 4 sections to continue';
+                } else {
+                    nextBtn.title = '';
+                }
+            } else {
+                nextBtn.disabled = false;
+                nextBtn.title = '';
+            }
+            
+            if (state.currentModule === totalMods - 1) {
+                nextBtn.textContent = 'View Results';
+            } else {
+                nextBtn.textContent = 'Next →';
+            }
+        }
+
+        function updateProgress() {
+            const totalQuestions = Object.keys(correctAnswers).length;
+            const answeredQuestions = Object.keys(state.answers).length;
+            const questionProgress = (answeredQuestions / totalQuestions) * 100;
+            
+            const moduleProgress = ((state.currentModule + 1) / getTotalModules()) * 50;
+            const totalProgress = Math.round(moduleProgress + (questionProgress * 0.5));
+            
+            document.getElementById('progressFill').style.width = totalProgress + '%';
+            document.getElementById('progressText').textContent = totalProgress + '%';
+        }
+
+        // ===== RESULTS & CERTIFICATE =====
+        function showResults() {
+            const score = calculateScore();
+            generateAnswerKey();
+            updateCertificate(score);
+        }
+
+        function calculateScore() {
+            const totalQuestions = Object.keys(correctAnswers).length;
+            let correctCount = 0;
+            
+            Object.keys(correctAnswers).forEach(qId => {
+                if (state.answers[qId] === correctAnswers[qId]) {
+                    correctCount++;
+                }
+            });
+            
+            const percentage = Math.round((correctCount / totalQuestions) * 100);
+            const passed = percentage >= 80;
+            
+            const scoreDisplay = document.getElementById('finalScore');
+            if (scoreDisplay) {
+                scoreDisplay.innerHTML = `
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">
+                        ${passed ? '✅' : '❌'} ${percentage}%
+                    </div>
+                    <div style="font-size: 1rem;">
+                        ${correctCount} out of ${totalQuestions} correct
+                    </div>
+                    <div style="margin-top: 0.5rem; font-size: 0.9rem;">
+                        ${passed ? '<span style="color: #27ae60;">PASSED</span>' : '<span style="color: #e74c3c;">FAILED - 80% required</span>'}
+                    </div>
+                `;
+            }
+            
+            return { correctCount, totalQuestions, percentage, passed };
+        }
+
+        function generateAnswerKey() {
+            const keyContent = document.getElementById('answerKeyContent');
+            if (!keyContent) return;
+            
+            keyContent.innerHTML = '';
+            
+            Object.keys(correctAnswers).forEach(qId => {
+                const userAnswer = state.answers[qId];
+                const isCorrect = userAnswer === correctAnswers[qId];
+                
+                const item = document.createElement('div');
+                item.className = `answer-item ${isCorrect ? 'correct' : 'incorrect'}`;
+                item.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <strong>Question ${qId}</strong>
+                        </div>
+                        <div style="font-size: 1.5rem;">
+                            ${isCorrect ? '✅' : '❌'}
+                        </div>
+                    </div>
+                    <div style="margin-top: 0.5rem;">
+                        <strong>Your answer:</strong> ${userAnswer || 'Not answered'}
+                        ${!isCorrect ? `<br><strong style="color: #27ae60;">Correct answer:</strong> ${correctAnswers[qId]}` : ''}
+                    </div>
+                `;
+                keyContent.appendChild(item);
+            });
+        }
+
+        function updateCertificate(score) {
+            const dateStr = new Date().toLocaleDateString();
+            const certDate = document.getElementById('certDate');
+            if (certDate) certDate.textContent = dateStr;
+            const certDate2 = document.getElementById('certDate2');
+            if (certDate2) certDate2.textContent = dateStr;
+            const certMode = document.getElementById('certMode');
+            if (certMode) certMode.textContent = state.mode === 'assessment' ? 'Assessment Mode' : 'Learn Mode';
+            const certName = document.getElementById('userName');
+            if (certName) {
+                certName.textContent = state.userName || 'Participant';
+            }
+            
+            const completionStatus = document.getElementById('completionStatus');
+            if (completionStatus) {
+                if (score.passed) {
+                    completionStatus.textContent = 'has successfully completed';
+                } else {
+                    completionStatus.textContent = 'has completed';
+                }
+            }
+        }
+
+        // ===== CERTIFICATE ACTIONS =====
+        function printCertificate() {
+            const answerKey = document.getElementById('answerKey');
+            const certActions = document.querySelector('.cert-actions');
+            const moduleHeader = document.querySelector('#module-7 .module-header');
+            const tipBox = document.querySelector('.cert-actions + div');
+            
+            if (answerKey) answerKey.style.display = 'none';
+            if (certActions) certActions.style.display = 'none';
+            if (moduleHeader) moduleHeader.style.display = 'none';
+            if (tipBox) tipBox.style.display = 'none';
+            
+            window.print();
+            
+            setTimeout(() => {
+                if (answerKey) answerKey.style.display = 'block';
+                if (certActions) certActions.style.display = 'flex';
+                if (moduleHeader) moduleHeader.style.display = 'block';
+                if (tipBox) tipBox.style.display = 'block';
+            }, 1000);
+        }
+
+        function resetTraining() {
+            if (confirm('Reset and retry the training? All progress will be lost.')) {
+                state.currentModule = 0;
+                state.answers = {};
+                state.completedModules = new Set();
+                state.startTime = Date.now();
+                state.module3Sections = new Set(['intro']);
+                state.module4Sections = new Set(['m4-principles']);
+                
+                document.querySelectorAll('.question').forEach(q => {
+                    q.classList.remove('correct-answered', 'incorrect-answered');
+                    q.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.remove('selected', 'correct', 'incorrect', 'disabled');
+                    });
+                    q.querySelectorAll('.feedback').forEach(fb => {
+                        fb.style.display = 'none';
+                    });
+                });
+                
+                showModule(0);
+                
+                const msg = document.createElement('div');
+                msg.className = 'alert alert-success';
+                msg.innerHTML = '<strong>Training Reset!</strong> You can now retake the training.';
+                msg.style.position = 'fixed';
+                msg.style.top = '80px';
+                msg.style.left = '50%';
+                msg.style.transform = 'translateX(-50%)';
+                msg.style.zIndex = '9999';
+                msg.style.maxWidth = '90%';
+                document.body.appendChild(msg);
+                setTimeout(() => msg.remove(), 3000);
+            }
+        }
+
+        // ===== START =====
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
