@@ -1,10 +1,11 @@
-Changelog - PHI/PII Identification & Handling Training
+# Changelog - PHI/PII Identification & Handling Training
+
 All notable changes to this project are documented here.
 
-[v3.1] - October 21, 2025 (Current Version)
-Progress Saving & Session Management
+## [v3.1] - October 21, 2025 (Current Version)
+**Progress Saving & Session Management**
 
-Automatic Progress Saving
+**Automatic Progress Saving**
 
 Auto-save to browser localStorage on all user interactions
 Saves on question answers, module navigation, and subsection clicks
@@ -13,7 +14,7 @@ Visual "✓ Progress Saved" toast notification
 1-second delay to ensure actions complete before saving
 
 
-Welcome Back Resume Prompt
+**Welcome Back Resume Prompt**
 
 "Welcome Back!" dialog when returning with saved progress
 Displays last session date/time
@@ -23,7 +24,7 @@ Displays number of questions answered
 "Continue Training" and "Start Fresh" options
 
 
-State Preservation
+**State Preservation**
 
 Complete answer history with correct/incorrect status
 Module completion tracking
@@ -33,7 +34,7 @@ User name for certificate
 Current subsection tracking for multi-subsection modules
 
 
-User Experience Improvements
+**User Experience Improvements**
 
 Resume exactly where user left off
 No data loss on browser close/refresh
@@ -42,7 +43,7 @@ Graceful handling of localStorage errors
 Works across browser sessions (same browser/device)
 
 
-Technical Implementation
+**Technical Implementation**
 
 Integration with existing state management system
 localStorage-based persistence (no backend required)
@@ -52,7 +53,7 @@ Error handling with try-catch blocks
 Browser compatibility (all modern browsers)
 
 
-Limitations & Considerations
+**Limitations & Considerations**
 
 Progress stored locally per browser (doesn't sync across devices)
 Requires localStorage support (not available in private/incognito mode)
@@ -62,9 +63,9 @@ Not compatible with cross-browser usage
 
 
 
-[v3.0] - October 19, 2025
-Major Content Enhancements
-Module 3 Complete Rewrite - "When Safe Data Becomes PHI"
+## [v3.0] - October 19, 2025
+**Major Content Enhancements**
+**Module 3 Complete Rewrite - "When Safe Data Becomes PHI"**
 
 Expanded from simple scenarios to 6 comprehensive subsections with advanced technical content
 Added 20+ minutes of expert-level training content
@@ -79,7 +80,7 @@ HIPAA Safe Harbor (technical implementation)
 
 
 
-Module 3 Subsection Details:
+**Module 3 Subsection Details:**
 
 Database & API Patterns: Schema design anti-patterns, table join implications, API response design, GraphQL query risks, code examples with PostgreSQL/MySQL patterns
 Logging & Analytics: Error logs capturing PHI, stack traces, analytics events, monitoring tools (Datadog/CloudWatch/Azure Monitor), safe logging patterns with hashed IDs
@@ -87,7 +88,7 @@ Inference Problem: Behavioral patterns implying health conditions, app usage tim
 Multi-System Flows: CRM + EHR integration, marketing + health programs, support ticket PHI creation, time window effects, session correlation risks
 Safe Harbor Implementation: Technical database views, automated redaction, ZIP code population lookups, practical code examples
 
-Module 4 Core Principles Expansion
+**Module 4 Core Principles Expansion**
 
 Expanded "Core Principles" subsection with three foundational principles:
 
@@ -100,7 +101,7 @@ Added "What this means in practice" sections for each principle
 Included common violation examples with real-world scenarios
 Added "Why this matters" explanations connecting to actual incidents
 
-UI/UX Improvements
+**UI/UX Improvements**
 
 Added subsection navigation breadcrumbs ("📍 Current Section: X")
 Improved Module 3 navigation with persistent section buttons
@@ -109,7 +110,7 @@ Added comprehensive JavaScript debugging for subsection navigation
 Enhanced CSS class and inline style coordination
 Improved mobile responsiveness for subsection navigation grid
 
-Content Improvements
+**Content Improvements**
 
 Vendor-agnostic terminology throughout (CSP for Cloud Service Providers)
 Code examples using real database patterns and API designs
@@ -117,7 +118,7 @@ Practical guidance for AWS, GCP, Azure environments
 Enhanced learning objectives to reflect expanded content
 Updated marketing copy for community positioning
 
-Bug Fixes
+**Bug Fixes**
 
 Fixed Module 3 subsection display issues (CSS + JavaScript coordination)
 Resolved blank content sections in Module 4
@@ -126,8 +127,8 @@ Corrected navigation state management between modules
 Improved console logging for debugging navigation issues
 
 
-[v2.4] - October 16, 2025
-Module 4 Restructure
+## [v2.4] - October 16, 2025
+**Module 4 Restructure**
 
 Expanded Module 4 from 3 to 5 subsections:
 
@@ -139,20 +140,20 @@ Data Architecture (NEW - isolation strategies)
 
 
 
-Question Bank Expansion
+**Question Bank Expansion**
 
 Added ~10 new questions (from 40 to ~50 total)
 Enhanced scenario-based questions for technical teams
 Improved answer feedback with detailed explanations
 
-Terminology Updates
+**Terminology Updates**
 
 Standardized on "CSP" (Cloud Service Provider) for vendor-agnostic content
 Updated all cloud platform references to use CSP terminology
 Maintained specific examples (AWS/GCP/Azure) while being brand-neutral
 
 
-[v2.0.0] - October 13-14, 2025
+## [v2.0.0] - October 13-14, 2025
 Major Feature Enhancement Release
 10 New Interactive Features:
 
@@ -237,7 +238,7 @@ New Pages
 
 Added LICENSE.html - Formatted MIT License page with navigation
 
-Bug Fixes
+**Bug Fixes**
 
 Fixed certificate print layout (removed answer key from print view)
 Fixed Module 3 subsection navigation bleeding into other modules
@@ -245,7 +246,7 @@ Improved accessibility with ARIA labels
 Enhanced mobile responsiveness
 
 
-[v1.0.3] - 2025-01-XX
+## [v1.0.3] - 2025-01-XX
 Governance Documentation
 
 Added COPYRIGHT file with ownership notice
@@ -262,8 +263,8 @@ Added governance references
 Improved project structure documentation
 
 
-[v1.0.2] - 2025-01-XX
-Bug Fixes
+## [v1.0.2] - 2025-01-XX
+**Bug Fixes**
 
 Footer Placement Fix: Moved footer inside training container
 
@@ -274,7 +275,7 @@ Better print layout
 
 
 
-[v1.0.1] - 2025-01-XX
+## [v1.0.1] - 2025-01-XX
 Licensing
 
 Added dual licensing structure:
@@ -288,7 +289,7 @@ Created attribution documentation
 Added license badges
 
 
-[v1.0.0] - 2025-01-XX (Initial Public Release)
+## [v1.0.0] - 2025-01-XX (Initial Public Release)
 Core Training Content
 8 Training Modules:
 0. Welcome & Introduction
@@ -319,7 +320,7 @@ AI/LLM specific guidance (ChatGPT, GenAI tools)
 Context-dependent PHI identification
 Database and API design implications
 
-Technical Implementation
+**Technical Implementation**
 
 Single-page HTML application
 Pure JavaScript (no external dependencies)
