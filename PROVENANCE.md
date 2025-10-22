@@ -25,7 +25,7 @@
 - Subsection name capture for accurate resume display
 
 **Build Artifacts:**
-* `index.html` (SHA-256): `1942F47F5C1A0799AEE96B193C08EF46178A40A9AA215702562B6BBC5BF9980A`
+* `index.html` (SHA-256): `63A33B048455BD1AE0E00B79B70B7963EB5DF1C46A7FCB48708CBE60A1B454FD`
 
 ### v3.0 — Major Content Enhancements (2025-10-19)
 **Module 3 Complete Rewrite:**
