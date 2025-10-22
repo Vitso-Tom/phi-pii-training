@@ -706,6 +706,64 @@ VERSION 2.3 - Module 4 with Per-Subsection Exercises (Like Module 3)
                 page-break-inside: avoid;
             }
         }
+                /* Tooltip styles for checklist items */
+        .tooltip-item {
+            position: relative;
+            display: inline;
+            cursor: help;
+            border-bottom: 1px dotted #3498db;
+        }
+        
+        .tooltip-item:hover {
+            color: #3498db;
+        }
+        
+        .tooltip-content {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            left: 0;
+            top: 100%;
+            margin-top: 0.5rem;
+            width: 400px;
+            max-width: 90vw;
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 1000;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .tooltip-item:hover .tooltip-content {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .tooltip-content strong {
+            color: #3498db;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tooltip-content p {
+            margin: 0.5rem 0;
+            color: #ecf0f1;
+        }
+        
+        .tooltip-content ul {
+            margin: 0.5rem 0;
+            padding-left: 1.2rem;
+        }
+        
+        .tooltip-content li {
+            margin: 0.3rem 0;
+            color: #ecf0f1;
+        }
     </style>
 </head>
 <body>
@@ -1556,28 +1614,219 @@ VERSION 2.3 - Module 4 with Per-Subsection Exercises (Like Module 3)
                     
                     <div class="scenario-box">
                         <h4>Database Design Review:</h4>
-                        <ol style="padding-left: 1.5rem; line-height: 1.8;">
-                            <li><strong>Table separation:</strong> Can you separate PII tables from health data tables?</li>
-                            <li><strong>Foreign keys:</strong> Do FKs force joins that create PHI? Consider application-layer hashing instead</li>
-                            <li><strong>Query patterns:</strong> Audit common queries - do they SELECT across PII + health tables?</li>
-                            <li><strong>ORM configuration:</strong> Does ORM default to SELECT *? Can you configure explicit column selection?</li>
-                            <li><strong>Indexing strategy:</strong> Are you indexing on PHI fields? (Index contents may be logged, cached)</li>
-                            <li><strong>Database logging:</strong> Are queries logged? Do logs expose PHI in WHERE clauses?</li>
-                            <li><strong>Backup strategy:</strong> Can you backup PII separately from health data for different retention?</li>
+                        <ol style="padding-left: 1.5rem; line-height: 2.2;">
+                            <li>
+                                <span class="tooltip-item"><strong>Table separation:</strong> Can you separate PII tables from health data tables?
+                                    <span class="tooltip-content">
+                                        <strong>What it means:</strong>
+                                        <p>Keep user contact info (names, emails) in different tables from medical data (diagnoses, prescriptions).</p>
+                                        <strong>Why it matters:</strong>
+                                        <p>When separated, you reduce the chance of accidentally creating PHI. A query against just the contact table won't expose health data.</p>
+                                        <strong>Example:</strong>
+                                        <p><code>users</code> table vs <code>medical_records</code> table instead of one big <code>patient_data</code> table.</p>
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tooltip-item"><strong>Foreign keys:</strong> Do FKs force joins that create PHI? Consider application-layer hashing instead
+                                    <span class="tooltip-content">
+                                        <strong>What it means:</strong>
+                                        <p>If your database schema requires joining PII+health tables just to get basic info, you're creating PHI constantly.</p>
+                                        <strong>Alternative:</strong>
+                                        <p>Use hashed IDs at the application layer so the DB doesn't know the direct relationship.</p>
+                                        <strong>Example:</strong>
+                                        <p>Instead of <code>SELECT users.name, visits.diagnosis FROM users JOIN visits</code>, your app uses a hash to lookup separately.</p>
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tooltip-item"><strong>Query patterns:</strong> Audit common queries - do they SELECT across PII + health tables?
+                                    <span class="tooltip-content">
+                                        <strong>What it means:</strong>
+                                        <p>Audit your most common queries - are developers routinely joining contact info with medical data?</p>
+                                        <strong>Risk:</strong>
+                                        <p>Every time this happens, PHI flows through your app, logs, caches, etc.</p>
+                                        <strong>Action:</strong>
+                                        <p>Look for JOIN patterns between PII and health data tables in your codebase.</p>
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tooltip-item"><strong>ORM configuration:</strong> Does ORM default to SELECT *? Can you configure explicit column selection?
+                                    <span class="tooltip-content">
+                                        <strong>What it means:</strong>
+                                        <p>ORMs (like Hibernate, Entity Framework, Sequelize) often fetch ALL columns by default.</p>
+                                        <strong>Risk:</strong>
+                                        <p>Developer wants just an email address, but ORM pulls diagnosis codes too.</p>
+                                        <strong>Fix:</strong>
+                                        <p>Configure explicit column selection and lazy loading to only fetch what's needed.</p>
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tooltip-item"><strong>Indexing strategy:</strong> Are you indexing on PHI fields? (Index contents may be logged, cached)
+                                    <span class="tooltip-content">
+                                        <strong>What it means:</strong>
+                                        <p>Database indexes can show up in query plans, performance logs, and cache layers.</p>
+                                        <strong>Risk:</strong>
+                                        <p>Index on <code>diagnosis_code</code> field → logs show which diagnoses are being searched.</p>
+                                        <strong>Consideration:</strong>
+                                        <p>Sometimes necessary for performance, but be aware indexes expose data in monitoring tools.</p>
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tooltip-item"><strong>Database logging:</strong> Are queries logged? Do logs expose PHI in WHERE clauses?
+                                    <span class="tooltip-content">
+                                        <strong>What it means:</strong>
+                                        <p>Many DBs log slow queries, error queries, or all queries for debugging.</p>
+                                        <strong>Risk:</strong>
+                                        <p>Log shows <code>WHERE patient_name='John Smith' AND diagnosis='HIV'</code></p>
+                                        <strong>Fix:</strong>
+                                        <p>Sanitize query logs, use parameterized queries, restrict log access.</p>
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tooltip-item"><strong>Backup strategy:</strong> Can you backup PII separately from health data for different retention?
+                                    <span class="tooltip-content">
+                                        <strong>What it means:</strong>
+                                        <p>If separated, you can keep contact info for 7 years but medical data for 10 (or whatever your retention policy requires).</p>
+                                        <strong>Why it matters:</strong>
+                                        <p>HIPAA has minimum retention requirements; separating data types gives you flexibility.</p>
+                                        <strong>Bonus:</strong>
+                                        <p>Makes it easier to respond to "right to be forgotten" requests.</p>
+                                    </span>
+                                </span>
+                            </li>
                         </ol>
                         
                         <h4 style="margin-top: 2rem;">API Design Review:</h4>
-                        <ol style="padding-left: 1.5rem; line-height: 1.8;">
-                            <li><strong>Response structure:</strong> Does single endpoint return PII + health data together?</li>
-                            <li><strong>Endpoint separation:</strong> Can you split into /contact, /health, /appointments endpoints?</li>
-                            <li><strong>Field selection:</strong> Can clients request only fields they need? (GraphQL field selection, REST field parameter)</li>
-                            <li><strong>Authorization:</strong> Different auth levels for PII vs health data endpoints?</li>
-                            <li><strong>Rate limiting:</strong> More restrictive limits for PHI-heavy endpoints?</li>
-                            <li><strong>Caching strategy:</strong> What gets cached? For how long? Is PHI in cache covered by BAA?</li>
-                            <li><strong>Logging:</strong> Are request/response bodies logged? Do logs contain PHI?</li>
-                            <li><strong>Error responses:</strong> Do 400/500 errors expose PHI in error messages?</li>
-                            <li><strong>API documentation:</strong> Are example requests/responses using real or realistic-fake PHI?</li>
-                            <li><strong>Versioning:</strong> Old API versions still exposed with less secure PHI handling?</li>
+                        <ol style="padding-left: 1.5rem; line-height: 2.2;">
+                            <li>
+                                <span class="tooltip-item"><strong>Response structure:</strong> Does single endpoint return PII + health data together?
+                                    <span class="tooltip-content">
+                                        <strong>What it means:</strong>
+                                        <p>Does <code>/api/patient/123</code> return <code>{name: "Jane", diagnosis: "diabetes"}</code> in one response?</p>
+                                        <strong>Risk:</strong>
+                                        <p>Any consumer of that endpoint sees PHI, even if they only needed the name.</p>
+                                        <strong>Better:</strong>
+                                        <p>Separate endpoints or field selection.</p>
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tooltip-item"><strong>Endpoint separation:</strong> Can you split into /contact, /health, /appointments endpoints?
+                                    <span class="tooltip-content">
+                                        <strong>What it means:</strong>
+                                        <p>Different endpoints for different data types.</p>
+                                        <strong>Benefits:</strong>
+                                        <ul>
+                                            <li>Can apply different security controls to each</li>
+                                            <li>Can audit "who accesses health data" separately</li>
+                                            <li>Reduces PHI exposure to only code paths that need it</li>
+                                        </ul>
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tooltip-item"><strong>Field selection:</strong> Can clients request only fields they need? (GraphQL field selection, REST field parameter)
+                                    <span class="tooltip-content">
+                                        <strong>What it means:</strong>
+                                        <p>GraphQL-style field selection or REST parameter like <code>?fields=name,email</code></p>
+                                        <strong>Why:</strong>
+                                        <p>Frontend only needs to show appointment time? Don't send diagnosis codes.</p>
+                                        <strong>Reduces:</strong>
+                                        <p>PHI flowing to browser, client logs, network captures.</p>
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tooltip-item"><strong>Authorization:</strong> Different auth levels for PII vs health data endpoints?
+                                    <span class="tooltip-content">
+                                        <strong>What it means:</strong>
+                                        <p>Maybe all staff can see contact info, but only providers see diagnoses.</p>
+                                        <strong>HIPAA angle:</strong>
+                                        <p>Minimum necessary principle - limit access to only what's needed for job function.</p>
+                                        <strong>Implementation:</strong>
+                                        <p>Different API scopes/permissions for different endpoint groups.</p>
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tooltip-item"><strong>Rate limiting:</strong> More restrictive limits for PHI-heavy endpoints?
+                                    <span class="tooltip-content">
+                                        <strong>What it means:</strong>
+                                        <p>Allow more calls to <code>/api/contact</code> than <code>/api/diagnoses</code></p>
+                                        <strong>Why:</strong>
+                                        <p>Makes bulk PHI extraction harder, makes scraping attempts more visible.</p>
+                                        <strong>Security depth:</strong>
+                                        <p>Defense in depth against compromised credentials.</p>
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tooltip-item"><strong>Caching strategy:</strong> What gets cached? For how long? Is PHI in cache covered by BAA?
+                                    <span class="tooltip-content">
+                                        <strong>Critical questions:</strong>
+                                        <ul>
+                                            <li>CDN caching API responses? → PHI in CDN logs (is CDN covered by BAA?)</li>
+                                            <li>Browser caching with Cache-Control headers? → PHI in browser cache</li>
+                                            <li>Redis/Memcached? → PHI in memory cache (encrypted? BAA? access controls?)</li>
+                                        </ul>
+                                        <strong>Rule of thumb:</strong>
+                                        <p>PHI should rarely be cached; if it is, use short TTL and encryption.</p>
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tooltip-item"><strong>Logging:</strong> Are request/response bodies logged? Do logs contain PHI?
+                                    <span class="tooltip-content">
+                                        <strong>Common issue:</strong>
+                                        <p>API gateway logs full request/response for debugging.</p>
+                                        <strong>Result:</strong>
+                                        <p>Logs full of <code>{"patient": "John", "diagnosis": "cancer"}</code></p>
+                                        <strong>Fix:</strong>
+                                        <p>Sanitize logs, use correlation IDs instead of actual data, log only metadata.</p>
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tooltip-item"><strong>Error responses:</strong> Do 400/500 errors expose PHI in error messages?
+                                    <span class="tooltip-content">
+                                        <strong>Bad example:</strong>
+                                        <p><code>"Error: Patient John Smith's diagnosis of HIV cannot be updated"</code></p>
+                                        <strong>Better:</strong>
+                                        <p><code>"Error: Unable to update record ID abc123. Reference code: ERR-2938"</code></p>
+                                        <strong>Principle:</strong>
+                                        <p>Error messages shouldn't echo back sensitive data.</p>
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tooltip-item"><strong>API documentation:</strong> Are example requests/responses using real or realistic-fake PHI?
+                                    <span class="tooltip-content">
+                                        <strong>Risk:</strong>
+                                        <p>Swagger docs show <code>"patient_name": "Sarah Johnson"</code> with real social security numbers from testing.</p>
+                                        <strong>Better:</strong>
+                                        <p>Obvious fake data like <code>"patient_name": "Test Patient"</code> or <code>"ssn": "000-00-0000"</code></p>
+                                        <strong>Why:</strong>
+                                        <p>Docs get shared, indexed, cached - don't want real PHI there.</p>
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tooltip-item"><strong>Versioning:</strong> Old API versions still exposed with less secure PHI handling?
+                                    <span class="tooltip-content">
+                                        <strong>Scenario:</strong>
+                                        <p>v2 API has proper PHI controls, but v1 is still running and returns PHI in logs.</p>
+                                        <strong>Risk:</strong>
+                                        <p>Attackers/auditors find old version with weaker security.</p>
+                                        <strong>Fix:</strong>
+                                        <p>Deprecate and sunset old versions, or retrofit security controls.</p>
+                                    </span>
+                                </span>
+                            </li>
                         </ol>
                     </div>
                 </div>
@@ -1964,30 +2213,118 @@ VERSION 2.3 - Module 4 with Per-Subsection Exercises (Like Module 3)
                     <h3>🎯 Builder's Checklist: PHI-Safe Logging</h3>
                     
                     <div class="scenario-box">
-                        <h4>Before Deploying to Production:</h4>
-                        <ol style="padding-left: 1.5rem; line-height: 1.8;">
-                            <li><strong>Audit log statements:</strong> Search codebase for logger.debug, console.log, print statements
+<h4>Before Deploying to Production:</h4>
+                        <ol style="padding-left: 1.5rem; line-height: 2.2;">
+                            <li>
+                                <span class="tooltip-item"><strong>Audit log statements:</strong> Search codebase for logger.debug, console.log, print statements
+                                    <span class="tooltip-content">
+                                        <strong>Why this matters:</strong>
+                                        <p>Debug statements often log entire objects "temporarily" during development and get forgotten. These are PHI time bombs.</p>
+                                        <strong>What to search for:</strong>
+                                        <ul>
+                                            <li><code>logger.debug(</code> or <code>console.log(</code> or <code>print(</code></li>
+                                            <li><code>JSON.stringify(req.body)</code> or <code>str(user_obj)</code></li>
+                                            <li>Any logging of <code>query.results</code>, <code>db.rows</code>, <code>api_response</code></li>
+                                        </ul>
+                                        <strong>Good vs Bad:</strong>
+                                        <p>✅ Good: <code>logger.info('User login', {userId: hashId(user.id)})</code></p>
+                                        <p>❌ Bad: <code>console.log('Debug user:', user)</code></p>
+                                    </span>
+                                </span>
                                 <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
                                     <li>What objects are being logged? req.body? user objects? query results?</li>
                                     <li>Do any logs contain email, phone, patient IDs, diagnoses, medications?</li>
                                 </ul>
                             </li>
-                            <li><strong>Check ORM/database logging:</strong> Is query logging enabled? Are queries with PHI being logged?</li>
-                            <li><strong>Review APM configuration:</strong> What does your APM tool capture by default?
+                            <li>
+                                <span class="tooltip-item"><strong>Check ORM/database logging:</strong> Is query logging enabled? Are queries with PHI being logged?
+                                    <span class="tooltip-content">
+                                        <strong>The problem:</strong>
+                                        <p>Many ORMs (Sequelize, Hibernate, Entity Framework) log ALL queries by default in development mode. Developers forget to disable this for production.</p>
+                                        <strong>What gets exposed:</strong>
+                                        <ul>
+                                            <li><code>WHERE patient_name='John' AND diagnosis='HIV'</code></li>
+                                            <li><code>INSERT INTO prescriptions (patient_id, drug, dosage) VALUES...</code></li>
+                                            <li>Query parameters that contain PHI</li>
+                                        </ul>
+                                        <strong>How to fix:</strong>
+                                        <p>Disable query logging in production, or configure to log only query structure (no parameters). Use parameterized queries always.</p>
+                                        <strong>Consequence if missed:</strong>
+                                        <p>Every database query with PHI is written to logs, often retained for months. This is a breach waiting to be discovered.</p>
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tooltip-item"><strong>Review APM configuration:</strong> What does your APM tool capture by default?
+                                    <span class="tooltip-content">
+                                        <strong>Why this matters:</strong>
+                                        <p>APM tools (Application Performance Monitoring) are designed to capture EVERYTHING by default to help with debugging. This is dangerous in healthcare.</p>
+                                        <strong>Default capture includes:</strong>
+                                        <ul>
+                                            <li>Full HTTP request/response bodies</li>
+                                            <li>All headers (may contain auth tokens with user identifiers)</li>
+                                            <li>Query parameters from URLs</li>
+                                            <li>Database query results</li>
+                                            <li>Stack traces with local variables (may contain patient data)</li>
+                                        </ul>
+                                        <strong>Required actions:</strong>
+                                        <ul>
+                                            <li>Configure scrubbing rules to redact PHI fields</li>
+                                            <li>Disable request/response body capture, or whitelist safe fields only</li>
+                                            <li>Verify your APM vendor has signed a BAA</li>
+                                        </ul>
+                                        <strong>Real example:</strong>
+                                        <p>New Relic by default captures full request bodies. If someone POSTs patient diagnosis data, it's in New Relic's servers. Without BAA = HIPAA violation.</p>
+                                    </span>
+                                </span>
                                 <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
                                     <li>Request bodies? Response bodies? Headers? Query parameters?</li>
                                     <li>Do you have proper sanitization rules configured?</li>
                                     <li>Does your APM plan include BAA coverage?</li>
                                 </ul>
                             </li>
-                            <li><strong>Error tracking review:</strong> What context are you sending with errors?
+                            <li>
+                                <span class="tooltip-item"><strong>Error tracking review:</strong> What context are you sending with errors?
+                                    <span class="tooltip-content">
+                                        <strong>The trap:</strong>
+                                        <p>Error tracking tools (Sentry, Rollbar, Bugsnag) are built to send as much context as possible to help debug. This often includes PHI.</p>
+                                        <strong>Common PHI exposures:</strong>
+                                        <ul>
+                                            <li>Full <code>req.body</code> attached to errors (contains patient form data)</li>
+                                            <li>"Breadcrumbs" showing user navigation through health records</li>
+                                            <li>Local variables in stack traces (may include query results)</li>
+                                            <li>Session replay recordings (captures everything user sees/types)</li>
+                                        </ul>
+                                        <strong>Session replay = EXTREME RISK:</strong>
+                                        <p>Session replay records everything: every click, every form field, every page view. If your app shows diagnoses, prescriptions, or patient names, it's ALL recorded and sent to the error tracking vendor.</p>
+                                        <strong>How to fix:</strong>
+                                        <p>Configure scrubbing rules, disable session replay, send only error messages (not full context), use hashed identifiers only.</p>
+                                    </span>
+                                </span>
                                 <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
                                     <li>Full request objects? User objects? Database query results?</li>
                                     <li>Are breadcrumbs capturing health-related navigation?</li>
                                     <li>Session replay enabled? (High risk!)</li>
                                 </ul>
                             </li>
-                            <li><strong>Verify BAA coverage:</strong> For every logging/monitoring tool:
+                            <li>
+                                <span class="tooltip-item"><strong>Verify BAA coverage:</strong> For every logging/monitoring tool:
+                                    <span class="tooltip-content">
+                                        <strong>Legal requirement:</strong>
+                                        <p>Any vendor that could potentially access PHI (even in logs) must sign a Business Associate Agreement (BAA) with you. Without BAA = automatic HIPAA violation.</p>
+                                        <strong>Common mistakes:</strong>
+                                        <ul>
+                                            <li>Assuming cloud provider BAA covers all services (it often doesn't - check specific services)</li>
+                                            <li>Using free/starter tiers that don't offer BAAs (must upgrade to enterprise)</li>
+                                            <li>Not verifying BAA is actually signed and in place</li>
+                                            <li>Using consumer tools (personal Dropbox, Gmail, etc.) for PHI</li>
+                                        </ul>
+                                        <strong>Check for each tool:</strong>
+                                        <p>Go to vendor's website and search "BAA" or "HIPAA compliance". Most enterprise vendors have a self-service BAA signing process. If they don't offer BAAs, you CANNOT use them for any data that might contain PHI.</p>
+                                        <strong>Example gotcha:</strong>
+                                        <p>AWS signs BAA, but it only covers specific services. S3 (yes), but CloudWatch Logs requires configuration. Read the fine print.</p>
+                                    </span>
+                                </span>
                                 <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
                                     <li>CloudWatch/Cloud Logging/Azure Monitor - covered by CSP BAA? Check specific service coverage</li>
                                     <li>Datadog/New Relic/AppDynamics - do you have enterprise tier with BAA?</li>
@@ -1995,9 +2332,78 @@ VERSION 2.3 - Module 4 with Per-Subsection Exercises (Like Module 3)
                                     <li>Splunk/Elasticsearch - on-premises or cloud? BAA configured?</li>
                                 </ul>
                             </li>
-                            <li><strong>Log retention policies:</strong> How long are logs kept? Can you demonstrate compliance with data retention limits in your DUA/BAA?</li>
-                            <li><strong>Access controls:</strong> Who has log access? Is it appropriate for their role? Audit trails for log access?</li>
-                            <li><strong>Log exports:</strong> Can team members export logs with PHI to local machines? CSV files in Downloads folders?</li>
+                            <li>
+                                <span class="tooltip-item"><strong>Log retention policies:</strong> How long are logs kept? Can you demonstrate compliance with data retention limits in your DUA/BAA?
+                                    <span class="tooltip-content">
+                                        <strong>Why this matters:</strong>
+                                        <p>HIPAA requires you to retain certain records but also to dispose of PHI when no longer needed. Keeping logs forever = compliance problem.</p>
+                                        <strong>Common scenarios:</strong>
+                                        <ul>
+                                            <li>Logs retained for 1+ year "just in case" but BAA requires deletion after 90 days</li>
+                                            <li>No automated deletion - logs accumulate indefinitely</li>
+                                            <li>Different retention for different log types (access logs vs error logs)</li>
+                                        </ul>
+                                        <strong>What to document:</strong>
+                                        <ul>
+                                            <li>Retention period for each log type</li>
+                                            <li>Automated deletion process</li>
+                                            <li>Manual review/deletion procedures if needed</li>
+                                            <li>Alignment with BAA/DUA requirements</li>
+                                        </ul>
+                                        <strong>Audit question:</strong>
+                                        <p>"Show me your log retention policy and prove it's being enforced." Can you?</p>
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tooltip-item"><strong>Access controls:</strong> Who has log access? Is it appropriate for their role? Audit trails for log access?
+                                    <span class="tooltip-content">
+                                        <strong>Minimum necessary principle:</strong>
+                                        <p>HIPAA requires limiting access to PHI to only what's needed for someone's job. This applies to logs too.</p>
+                                        <strong>Common violations:</strong>
+                                        <ul>
+                                            <li>All developers have CloudWatch access "for debugging" (but only 2-3 need it)</li>
+                                            <li>Junior developers can see production logs with PHI</li>
+                                            <li>Customer support can access application logs (should only access audit logs)</li>
+                                            <li>No tracking of who views logs when</li>
+                                        </ul>
+                                        <strong>What to implement:</strong>
+                                        <ul>
+                                            <li>Role-based access control (RBAC) for log viewing</li>
+                                            <li>Audit trail of who accessed what logs when</li>
+                                            <li>Justification requirement for log access requests</li>
+                                            <li>Regular access reviews (quarterly minimum)</li>
+                                        </ul>
+                                        <strong>Red flag:</strong>
+                                        <p>If you can't list everyone with log access right now, you have a compliance problem.</p>
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tooltip-item"><strong>Log exports:</strong> Can team members export logs with PHI to local machines? CSV files in Downloads folders?
+                                    <span class="tooltip-content">
+                                        <strong>The nightmare scenario:</strong>
+                                        <p>Developer exports logs to CSV for analysis, saves to Downloads folder, laptop gets stolen = breach notification to thousands of patients + regulatory investigation.</p>
+                                        <strong>Why this happens:</strong>
+                                        <ul>
+                                            <li>Log viewer UI has "Export to CSV" button - too easy to click</li>
+                                            <li>Developer needs to analyze error patterns, exports 10K log lines</li>
+                                            <li>No policy against exporting, no technical controls preventing it</li>
+                                            <li>Exported files stored on unencrypted local drives</li>
+                                        </ul>
+                                        <strong>How to prevent:</strong>
+                                        <ul>
+                                            <li>Disable export functionality if possible</li>
+                                            <li>Require MFA + justification for exports</li>
+                                            <li>Auto-expire export downloads after 24 hours</li>
+                                            <li>Watermark exports with username/timestamp</li>
+                                            <li>Policy: all analysis must happen in production tools (no local exports)</li>
+                                        </ul>
+                                        <strong>Better alternative:</strong>
+                                        <p>Provide analysis tools IN the logging platform (queries, dashboards, alerts) so exports aren't needed.</p>
+                                    </span>
+                                </span>
+                            </li>
                         </ol>
                     </div>
                 </div>
@@ -2322,21 +2728,184 @@ VERSION 2.3 - Module 4 with Per-Subsection Exercises (Like Module 3)
                         
                         <div class="scenario-box">
                             <h4>Before Implementing Analytics, A/B Tests, or ML Features:</h4>
-                            <ol style="padding-left: 1.5rem; line-height: 1.8;">
-                                <li><strong>Identify PII in your data:</strong> What fields identify individuals? (email, phone, user_id that maps to PII?)</li>
-                                <li><strong>Identify health context:</strong> What behaviors or content imply health conditions?</li>
-                                <li><strong>Map the correlation:</strong> Can PII be correlated with health behaviors? If yes → inferential PHI risk</li>
-                                <li><strong>Choose safe patterns:</strong>
+                            <ol style="padding-left: 1.5rem; line-height: 2.2;">
+                                <li>
+                                    <span class="tooltip-item"><strong>Identify PII in your data:</strong> What fields identify individuals? (email, phone, user_id that maps to PII?)
+                                        <span class="tooltip-content">
+                                            <strong>Why this matters:</strong>
+                                            <p>If you don't know what's PII, you can't protect it. Many developers think "user_id=12345" is anonymous, but if it maps to an email/name in another table, it's PII.</p>
+                                            <strong>What counts as PII:</strong>
+                                            <ul>
+                                                <li>Direct identifiers: email, phone, SSN, name, address</li>
+                                                <li>Indirect identifiers: user_id that can be joined to identity tables</li>
+                                                <li>Device IDs if they're persistent and tied to individuals</li>
+                                                <li>IP addresses if combined with other data</li>
+                                            </ul>
+                                            <strong>Common mistake:</strong>
+                                            <p>"We use hashed user IDs in analytics, so it's anonymous!" → But if marketing can join that hash back to the CRM, it's NOT anonymous.</p>
+                                            <strong>Action:</strong>
+                                            <p>Map all data flows: Can any analytics ID be traced back to a real person? If yes = PII.</p>
+                                        </span>
+                                    </span>
+                                </li>
+                                <li>
+                                    <span class="tooltip-item"><strong>Identify health context:</strong> What behaviors or content imply health conditions?
+                                        <span class="tooltip-content">
+                                            <strong>The inference problem:</strong>
+                                            <p>You don't need to store "diabetes" to reveal someone has diabetes. Behavioral patterns can imply health conditions just as clearly.</p>
+                                            <strong>Examples of health context:</strong>
+                                            <ul>
+                                                <li>Page views: "glucose-monitoring.html", "cardiac-rehab-programs"</li>
+                                                <li>Search terms: "insulin dosage", "chemotherapy side effects"</li>
+                                                <li>Feature usage: "Track Blood Pressure" button clicks</li>
+                                                <li>Content interactions: Viewing cancer treatment videos</li>
+                                                <li>Time patterns: Regular 8am medication reminders</li>
+                                            </ul>
+                                            <strong>Real example:</strong>
+                                            <p>A fitness app tracked "users who viewed diabetes content" → that's identifying people with potential diabetes. That's health context.</p>
+                                            <strong>Key principle:</strong>
+                                            <p>If knowing someone did X would reveal something about their health condition, X is health context.</p>
+                                        </span>
+                                    </span>
+                                </li>
+                                <li>
+                                    <span class="tooltip-item"><strong>Map the correlation:</strong> Can PII be correlated with health behaviors? If yes → inferential PHI risk
+                                        <span class="tooltip-content">
+                                            <strong>The PHI creation formula:</strong>
+                                            <p>PII + Health Context (even behavioral) = PHI. This is true even if they're in separate systems/tables.</p>
+                                            <strong>How correlation happens:</strong>
+                                            <ul>
+                                                <li>Analytics dashboard showing "sarah@example.com viewed insulin content 15 times"</li>
+                                                <li>A/B test segments: "Users with diabetes" (even if you don't store diagnosis, you've identified them)</li>
+                                                <li>ML recommendations: "Because you have diabetes..." (reveals condition)</li>
+                                                <li>Cohort analysis: "Users who clicked 'Schedule Oncology Appointment'" → identifiable group</li>
+                                            </ul>
+                                            <strong>The audit test:</strong>
+                                            <p>Ask: "Could someone with access to our analytics determine who has what health condition?" If yes → you're creating PHI.</p>
+                                            <strong>Common defense that fails:</strong>
+                                            <p>"The data is in different systems!" → Doesn't matter. If someone with access can correlate it, it's PHI.</p>
+                                        </span>
+                                    </span>
+                                </li>
+                                <li>
+                                    <span class="tooltip-item"><strong>Choose safe patterns:</strong>
+                                        <span class="tooltip-content">
+                                            <strong>Three approaches to avoid PHI creation:</strong>
+                                            <p><strong>Option A: Aggregate only</strong> - Track cohorts, never individuals. "500 users viewed diabetes content" but never "user X viewed Y".</p>
+                                            <p><strong>Option B: Hash + generalize</strong> - Use irreversible hashes for IDs, generalize health features ("wellness" not "diabetes"), make re-identification impossible.</p>
+                                            <p><strong>Option C: Separate pipelines</strong> - Run contact analysis (who are our users?) completely separately from behavior analysis (what features are popular?). Never join them.</p>
+                                            <strong>How to choose:</strong>
+                                            <ul>
+                                                <li>Option A: Best for feature adoption, funnel analysis, trend tracking</li>
+                                                <li>Option B: When you need some individual tracking but can't create PHI</li>
+                                                <li>Option C: When you need both PII (marketing) and health behavior (product) but must keep separate</li>
+                                            </ul>
+                                            <strong>All three require:</strong>
+                                            <p>Technical controls that make correlation impossible, not just policy. "We promise not to join the data" is not enough.</p>
+                                        </span>
+                                    </span>
                                     <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
                                         <li>Option A: Aggregate data, no individual tracking</li>
                                         <li>Option B: Hash identifiers, generalize features</li>
                                         <li>Option C: Separate pipelines - PII analysis separate from health behavior analysis</li>
                                     </ul>
                                 </li>
-                                <li><strong>Verify BAA coverage:</strong> Does your analytics platform have a BAA if you're tracking individual-level health-related behavior?</li>
-                                <li><strong>Review ML pipelines:</strong> Training data, model inference logs, recommendation engines - all need scrutiny</li>
-                                <li><strong>Audit third-party tools:</strong> Google Analytics, Mixpanel, Amplitude, Segment, A/B testing platforms - what data are you sending them?</li>
-                                <li><strong>Document decisions:</strong> If challenged in audit, can you explain why your analytics don't create PHI?</li>
+                                <li>
+                                    <span class="tooltip-item"><strong>Verify BAA coverage:</strong> Does your analytics platform have a BAA if you're tracking individual-level health-related behavior?
+                                        <span class="tooltip-content">
+                                            <strong>Why this matters:</strong>
+                                            <p>If your analytics contain PHI (even inferential PHI), the analytics vendor is handling PHI and MUST have a BAA. Most don't offer BAAs at standard tiers.</p>
+                                            <strong>Common platforms & BAA status:</strong>
+                                            <ul>
+                                                <li><strong>Google Analytics:</strong> Standard/Free version = NO BAA. GA360 (enterprise) = BAA available but must be configured carefully</li>
+                                                <li><strong>Mixpanel:</strong> Enterprise tier only, must request BAA</li>
+                                                <li><strong>Amplitude:</strong> Enterprise tier, BAA available</li>
+                                                <li><strong>Segment:</strong> Business tier and above, BAA available</li>
+                                                <li><strong>Heap:</strong> Growth plan and above, BAA available</li>
+                                            </ul>
+                                            <strong>The gotcha:</strong>
+                                            <p>Even WITH a BAA, you must configure the tool correctly. Google Analytics with BAA still needs IP anonymization, user-ID scrubbing, and other protections enabled.</p>
+                                            <strong>Red flag:</strong>
+                                            <p>If you're using free/starter tier of ANY analytics tool and tracking health behaviors, you're likely in violation.</p>
+                                        </span>
+                                    </span>
+                                </li>
+                                <li>
+                                    <span class="tooltip-item"><strong>Review ML pipelines:</strong> Training data, model inference logs, recommendation engines - all need scrutiny
+                                        <span class="tooltip-content">
+                                            <strong>ML creates special PHI risks:</strong>
+                                            <p>Machine learning systems process large amounts of data, make inferences about individuals, and create new derived data. Each stage is a PHI exposure point.</p>
+                                            <strong>Where PHI appears in ML:</strong>
+                                            <ul>
+                                                <li><strong>Training data:</strong> "Users with diabetes" labeled dataset for recommendation model</li>
+                                                <li><strong>Feature engineering:</strong> Creating "health_score" feature from behaviors</li>
+                                                <li><strong>Model inference logs:</strong> "User 12345: predicted condition = diabetes (94% confidence)"</li>
+                                                <li><strong>Recommendation outputs:</strong> "Because you have anxiety, try meditation app"</li>
+                                                <li><strong>A/B test variants:</strong> "Show diabetes content to diabetic cohort"</li>
+                                            </ul>
+                                            <strong>Questions to ask:</strong>
+                                            <ul>
+                                                <li>Can training data be traced to individuals?</li>
+                                                <li>Do model predictions reveal health conditions?</li>
+                                                <li>Are inference logs storing PHI?</li>
+                                                <li>Do recommendation reasons expose conditions?</li>
+                                                <li>Where is ML pipeline data stored? BAA coverage?</li>
+                                            </ul>
+                                            <strong>Common violation:</strong>
+                                            <p>Storing ML training data in S3 bucket without proper access controls or BAA coverage, labeled with "patient_id" + "diagnosis".</p>
+                                        </span>
+                                    </span>
+                                </li>
+                                <li>
+                                    <span class="tooltip-item"><strong>Audit third-party tools:</strong> Google Analytics, Mixpanel, Amplitude, Segment, A/B testing platforms - what data are you sending them?
+                                        <span class="tooltip-content">
+                                            <strong>The data leakage problem:</strong>
+                                            <p>Most analytics tools are installed with a single script tag and immediately start sending everything to third-party servers. What's being sent?</p>
+                                            <strong>Automatic data collection includes:</strong>
+                                            <ul>
+                                                <li>Page URLs (may contain health context: "/diabetes-resources")</li>
+                                                <li>Page titles (may reveal conditions: "Managing Your Cancer Treatment")</li>
+                                                <li>User IDs (if you're passing them)</li>
+                                                <li>Custom events you track (button clicks, form submissions)</li>
+                                                <li>UTM parameters from marketing campaigns</li>
+                                                <li>Referrer URLs (where users came from)</li>
+                                            </ul>
+                                            <strong>How to audit:</strong>
+                                            <ol>
+                                                <li>Open browser DevTools → Network tab</li>
+                                                <li>Navigate through your app as a user would</li>
+                                                <li>Filter for analytics domains (google-analytics.com, mixpanel.com, etc.)</li>
+                                                <li>Examine EVERY request - what's in the payload?</li>
+                                                <li>Look for PII (emails, IDs) + health context (page titles, events)</li>
+                                            </ol>
+                                            <strong>Real example:</strong>
+                                            <p>Company discovered they were sending <code>{page: "/patient/12345/diabetes-treatment-plan", userId: "abc@email.com"}</code> to Mixpanel. Full PHI exposure to third party without BAA.</p>
+                                        </span>
+                                    </span>
+                                </li>
+                                <li>
+                                    <span class="tooltip-item"><strong>Document decisions:</strong> If challenged in audit, can you explain why your analytics don't create PHI?
+                                        <span class="tooltip-content">
+                                            <strong>The audit moment:</strong>
+                                            <p>Auditor: "Show me evidence that your analytics don't contain PHI." Can you produce documentation right now?</p>
+                                            <strong>What to document:</strong>
+                                            <ul>
+                                                <li><strong>Data classification:</strong> What data goes into analytics? Which fields are PII? Which are health context?</li>
+                                                <li><strong>Risk assessment:</strong> Can PII be correlated with health data? If yes, how is this mitigated?</li>
+                                                <li><strong>Technical controls:</strong> Hashing? Aggregation? Separate pipelines? How implemented?</li>
+                                                <li><strong>BAA coverage:</strong> Which vendors have BAAs? Proof of signed agreements?</li>
+                                                <li><strong>Testing evidence:</strong> Audit logs showing data sent to third parties doesn't contain PHI</li>
+                                                <li><strong>Change management:</strong> Process for reviewing new analytics before implementation</li>
+                                            </ul>
+                                            <strong>Red flag in audits:</strong>
+                                            <p>"We don't think it's PHI" without evidence. "Our developers are careful" without documentation. "We've never had a problem" without testing.</p>
+                                            <strong>Good answer:</strong>
+                                            <p>"Here's our data flow diagram showing PII is hashed before analytics. Here's our BAA with Mixpanel. Here's our quarterly audit showing no PHI in analytics payloads."</p>
+                                            <strong>Why this matters:</strong>
+                                            <p>Fines and breach notifications aside, you need to prove to auditors you've thought this through. Documentation is evidence of due diligence.</p>
+                                        </span>
+                                    </span>
+                                </li>
                             </ol>
                         </div>
                     </div>
@@ -2659,15 +3228,227 @@ POST /api/sms/send
     
     <div class="scenario-box">
         <h4>Before Building Any Integration, Ask:</h4>
-        <ol style="padding-left: 1.5rem; line-height: 1.8;">
-            <li><strong>Data inventory:</strong> What PII exists in System A? What health data exists in System B?</li>
-            <li><strong>Combination points:</strong> Where do they combine? APIs? ETL jobs? Event streams? Frontend?</li>
-            <li><strong>Data flow:</strong> Map the entire flow - which systems touch the combined data?</li>
-            <li><strong>BAA coverage:</strong> Does EVERY system in the flow have appropriate BAA coverage?</li>
-            <li><strong>Logging:</strong> What gets logged at integration points? API gateways? Message queues? Error tracking?</li>
-            <li><strong>Caching:</strong> Are you caching combined data? Where? Is that covered by BAA?</li>
-            <li><strong>Can we de-identify?</strong> Do we NEED identifiable data combined, or can we hash/aggregate first?</li>
-            <li><strong>Frontend exposure:</strong> Is combined PHI visible in browser dev tools, network tab, or local storage?</li>
+        <ol style="padding-left: 1.5rem; line-height: 2.2;">
+            <li>
+                <span class="tooltip-item"><strong>Data inventory:</strong> What PII exists in System A? What health data exists in System B?
+                    <span class="tooltip-content">
+                        <strong>Start here BEFORE writing code:</strong>
+                        <p>You cannot protect data you don't know about. Before integrating systems, inventory exactly what each system contains.</p>
+                        <strong>Questions for System A (e.g., CRM):</strong>
+                        <ul>
+                            <li>What identifiers: emails, names, phone numbers, addresses?</li>
+                            <li>What demographics: age, gender, location, employer?</li>
+                            <li>Account/billing info that could identify individuals?</li>
+                        </ul>
+                        <strong>Questions for System B (e.g., Clinical):</strong>
+                        <ul>
+                            <li>What health data: diagnoses, medications, vitals, lab results?</li>
+                            <li>What behaviors: appointment history, feature usage in health tools?</li>
+                            <li>What content: viewed health articles, search terms?</li>
+                        </ul>
+                        <strong>Why this matters:</strong>
+                        <p>If you integrate System A + System B without this inventory, you're blindly creating PHI. You need to know WHAT you're combining BEFORE you combine it.</p>
+                        <strong>Red flag:</strong>
+                        <p>"We'll figure out what data we need as we build the integration." No. Inventory first, design second, build third.</p>
+                    </span>
+                </span>
+            </li>
+            <li>
+                <span class="tooltip-item"><strong>Combination points:</strong> Where do they combine? APIs? ETL jobs? Event streams? Frontend?
+                    <span class="tooltip-content">
+                        <strong>PHI is created at the moment of combination:</strong>
+                        <p>The instant PII meets health data, PHI exists. You need to know EXACTLY where this happens so you can protect that point.</p>
+                        <strong>Common combination points:</strong>
+                        <ul>
+                            <li><strong>API layer:</strong> Backend endpoint JOINs user table with health records table</li>
+                            <li><strong>ETL/Data pipeline:</strong> Nightly job merges CRM export with clinical data warehouse</li>
+                            <li><strong>Event streams:</strong> Kafka topic receives user_id + health_event, combined in stream processor</li>
+                            <li><strong>Frontend:</strong> React component fetches user info AND health data, displays together</li>
+                            <li><strong>Analytics:</strong> BI tool joins marketing database with product usage (health features)</li>
+                            <li><strong>Reporting:</strong> SQL query combines contact info with medical history for provider dashboard</li>
+                        </ul>
+                        <strong>Why every point matters:</strong>
+                        <p>Each combination point needs: proper logging controls, BAA-covered infrastructure, access controls, audit trails. Miss one point = PHI exposure.</p>
+                        <strong>Action:</strong>
+                        <p>Draw a data flow diagram. Circle every place where PII and health data meet. That's your PHI attack surface.</p>
+                    </span>
+                </span>
+            </li>
+            <li>
+                <span class="tooltip-item"><strong>Data flow:</strong> Map the entire flow - which systems touch the combined data?
+                    <span class="tooltip-content">
+                        <strong>PHI doesn't stay in one place:</strong>
+                        <p>Once created, PHI flows through your architecture. Every system it touches becomes a PHI handler requiring protections.</p>
+                        <strong>Typical flow example:</strong>
+                        <ol>
+                            <li>API Gateway receives request with user_id</li>
+                            <li>Auth Service validates, adds email to context</li>
+                            <li>Patient Service fetches diagnosis from DB</li>
+                            <li>Aggregation Service combines email + diagnosis</li>
+                            <li>Cache layer (Redis) stores combined result</li>
+                            <li>API Gateway returns PHI to frontend</li>
+                            <li>Frontend renders in browser, may hit local storage</li>
+                            <li>Logging at each layer captures request/response</li>
+                        </ol>
+                        <strong>Each system now handles PHI:</strong>
+                        <p>API Gateway, Auth Service, Patient Service, Aggregation Service, Redis cache, logs at every layer. All need BAA coverage, encryption, access controls.</p>
+                        <strong>The forgotten systems:</strong>
+                        <ul>
+                            <li>Message queues between services</li>
+                            <li>Load balancers (access logs)</li>
+                            <li>CDN/reverse proxies (if caching responses)</li>
+                            <li>Monitoring/APM tools (capturing requests)</li>
+                        </ul>
+                        <strong>Action required:</strong>
+                        <p>Document EVERY system in the flow. Verify each has appropriate safeguards. One unprotected link = breach path.</p>
+                    </span>
+                </span>
+            </li>
+            <li>
+                <span class="tooltip-item"><strong>BAA coverage:</strong> Does EVERY system in the flow have appropriate BAA coverage?
+                    <span class="tooltip-content">
+                        <strong>The chain rule:</strong>
+                        <p>PHI protection is only as strong as the weakest link. If ANY system in your data flow lacks BAA coverage, you're in HIPAA violation.</p>
+                        <strong>Systems that need BAA coverage:</strong>
+                        <ul>
+                            <li>Cloud infrastructure (AWS/Azure/GCP services that touch PHI)</li>
+                            <li>Database hosting (RDS, Cosmos DB, Cloud SQL)</li>
+                            <li>Cache layers (ElastiCache, Redis Cloud, Memorystore)</li>
+                            <li>Message queues (SQS, Service Bus, Pub/Sub)</li>
+                            <li>Log aggregation (CloudWatch, Stackdriver, Azure Monitor)</li>
+                            <li>Monitoring/APM (Datadog, New Relic, if capturing PHI)</li>
+                            <li>Error tracking (Sentry, Rollbar, if capturing PHI)</li>
+                            <li>CDN (if caching responses with PHI)</li>
+                            <li>Load balancers (if logging request details)</li>
+                        </ul>
+                        <strong>Common mistake:</strong>
+                        <p>"We have an AWS BAA!" → But does it cover the SPECIFIC services you use? AWS BAA might cover EC2 but not all analytics services. Read the fine print.</p>
+                        <strong>Verification checklist:</strong>
+                        <ol>
+                            <li>List every infrastructure component in data flow</li>
+                            <li>Confirm vendor offers BAA for that specific service</li>
+                            <li>Verify BAA is actually signed (don't assume)</li>
+                            <li>Check BAA covers your usage (some have limitations)</li>
+                            <li>Document BAA coverage in your compliance records</li>
+                        </ol>
+                    </span>
+                </span>
+            </li>
+            <li>
+                <span class="tooltip-item"><strong>Logging:</strong> What gets logged at integration points? API gateways? Message queues? Error tracking?
+                    <span class="tooltip-content">
+                        <strong>Integration points = logging hot spots:</strong>
+                        <p>Every system boundary logs something. APIs log requests. Message queues log messages. ETL jobs log transformations. These logs often contain PHI.</p>
+                        <strong>What typically gets logged at integrations:</strong>
+                        <ul>
+                            <li><strong>API Gateway:</strong> Full request/response bodies, headers, query params</li>
+                            <li><strong>Load Balancer:</strong> Access logs with URLs (may contain patient IDs in path)</li>
+                            <li><strong>Message Queue:</strong> Message payloads, routing keys, consumer errors</li>
+                            <li><strong>ETL/Data Pipeline:</strong> Source/target data samples, transformation errors, failed records</li>
+                            <li><strong>Service Mesh:</strong> Request tracing with full context propagation</li>
+                            <li><strong>Database Proxy:</strong> Query logs with WHERE clauses containing PHI</li>
+                        </ul>
+                        <strong>Real-world example:</strong>
+                        <p>API Gateway logging full request bodies → logs contain <code>{"email": "patient@example.com", "diagnosis": "HIV"}</code> → logs sent to CloudWatch → now CloudWatch contains PHI → needs BAA coverage + restricted access.</p>
+                        <strong>How to fix:</strong>
+                        <ul>
+                            <li>Configure log scrubbing at source (redact PHI fields)</li>
+                            <li>Log metadata only (correlation IDs, status codes) not payloads</li>
+                            <li>Use structured logging with field-level control</li>
+                            <li>Regularly audit what's actually being logged (not just config)</li>
+                        </ul>
+                    </span>
+                </span>
+            </li>
+            <li>
+                <span class="tooltip-item"><strong>Caching:</strong> Are you caching combined data? Where? Is that covered by BAA?
+                    <span class="tooltip-content">
+                        <strong>Caching multiplies PHI exposure:</strong>
+                        <p>When you cache PHI, you're creating additional copies in additional systems, each needing protection. Cache = extra PHI storage.</p>
+                        <strong>Common cache locations in integrations:</strong>
+                        <ul>
+                            <li><strong>Application cache:</strong> Redis/Memcached holding API responses with PHI</li>
+                            <li><strong>API Gateway cache:</strong> Caching responses to reduce backend load</li>
+                            <li><strong>CDN edge cache:</strong> Caching API responses at edge locations</li>
+                            <li><strong>Browser cache:</strong> HTTP cache headers causing PHI storage in browser</li>
+                            <li><strong>Database query cache:</strong> Cached query results in database layer</li>
+                            <li><strong>ORM cache:</strong> Hibernate/Entity Framework second-level cache</li>
+                        </ul>
+                        <strong>Questions to ask:</strong>
+                        <ul>
+                            <li>What's the cache TTL? (Longer = more PHI retention risk)</li>
+                            <li>Is cache encrypted at rest and in transit?</li>
+                            <li>Who has access to cache? (DBAs, DevOps, developers?)</li>
+                            <li>Is cache infrastructure covered by BAA?</li>
+                            <li>Can cache be exported/dumped? (PHI extraction risk)</li>
+                            <li>How is cache invalidated when patient requests data deletion?</li>
+                        </ul>
+                        <strong>Best practice:</strong>
+                        <p>Don't cache PHI if possible. If you must: short TTL (minutes not hours), encrypted, BAA-covered infrastructure, strict access controls.</p>
+                    </span>
+                </span>
+            </li>
+            <li>
+                <span class="tooltip-item"><strong>Can we de-identify?</strong> Do we NEED identifiable data combined, or can we hash/aggregate first?
+                    <span class="tooltip-content">
+                        <strong>The best PHI protection: don't create it:</strong>
+                        <p>Before building an integration that creates PHI, ask: can we accomplish the goal WITHOUT identifiable data?</p>
+                        <strong>De-identification strategies:</strong>
+                        <ul>
+                            <li><strong>Hash before combining:</strong> Use SHA-256(user_id + salt) so systems can correlate data without exposing identity</li>
+                            <li><strong>Aggregate first:</strong> Instead of individual-level data, combine aggregated/anonymized data</li>
+                            <li><strong>Separate workflows:</strong> Run PII workflow separately from health workflow, never join them</li>
+                            <li><strong>Token replacement:</strong> Replace PII with tokens, keep mapping in separate secured system</li>
+                        </ul>
+                        <strong>Example scenarios:</strong>
+                        <p><strong>Need:</strong> Show provider which patients viewed their health portal</p>
+                        <p>❌ Bad: JOIN patients (name, email) with portal_access (timestamps, viewed_pages)</p>
+                        <p>✅ Good: Aggregate: "42 patients accessed portal in last week" (no individual identification)</p>
+                        <p><strong>Need:</strong> Analytics on feature usage by diagnosis</p>
+                        <p>❌ Bad: Track "user@email.com clicked glucose tracking (diabetes diagnosis)"</p>
+                        <p>✅ Good: Track "Cohort: Q3-2025-Diabetes-Patients, Feature: GlucoseTracking, Count: 847 clicks"</p>
+                        <strong>When you CAN'T de-identify:</strong>
+                        <p>Some use cases legitimately need identifiable PHI (provider dashboards, patient portals). That's fine - but confirm it's necessary before building. Many assumed-necessary cases can actually work with hashed/aggregated data.</p>
+                    </span>
+                </span>
+            </li>
+            <li>
+                <span class="tooltip-item"><strong>Frontend exposure:</strong> Is combined PHI visible in browser dev tools, network tab, or local storage?
+                    <span class="tooltip-content">
+                        <strong>The browser is an uncontrolled environment:</strong>
+                        <p>Once PHI reaches the browser, you lose control. Users can inspect network traffic, view local storage, take screenshots, use browser extensions that exfiltrate data.</p>
+                        <strong>Where PHI appears in browsers:</strong>
+                        <ul>
+                            <li><strong>Network tab:</strong> API responses containing PHI visible in DevTools</li>
+                            <li><strong>Local Storage:</strong> Cached user objects with email + health data</li>
+                            <li><strong>Session Storage:</strong> Temporary PHI storage during user session</li>
+                            <li><strong>Cookies:</strong> PHI in cookie values (terrible practice but happens)</li>
+                            <li><strong>URL parameters:</strong> <code>/patient/12345/diabetes-plan</code> exposes patient ID + condition</li>
+                            <li><strong>Page source:</strong> PHI rendered in HTML/JavaScript</li>
+                            <li><strong>Console logs:</strong> Debug statements logging PHI objects</li>
+                        </ul>
+                        <strong>Risks of frontend PHI:</strong>
+                        <ul>
+                            <li>Browser extensions can read/exfiltrate data</li>
+                            <li>XSS vulnerabilities can steal PHI from DOM/storage</li>
+                            <li>Users screenshot/share URLs containing PHI</li>
+                            <li>Cached data persists after logout</li>
+                            <li>Browser history contains PHI-revealing URLs</li>
+                        </ul>
+                        <strong>How to minimize frontend PHI:</strong>
+                        <ul>
+                            <li>Send only absolutely necessary data to browser</li>
+                            <li>Never store PHI in local/session storage (use memory only)</li>
+                            <li>Use hashed IDs in URLs, not patient identifiers</li>
+                            <li>Implement proper session timeout and data clearing</li>
+                            <li>Add Content-Security-Policy headers</li>
+                            <li>Remove console.log statements before production</li>
+                        </ul>
+                        <strong>Test this:</strong>
+                        <p>Open DevTools, use your app, check Network tab and Application tab. If you see PHI, you're exposing it to an uncontrolled environment.</p>
+                    </span>
+                </span>
+            </li>
         </ol>
     </div>
 </div>
