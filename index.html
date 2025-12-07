@@ -3,7 +3,7 @@
 Copyright (c) 2025 Tom Smolinsky
 Code licensed under the MIT License. See LICENSE-MIT.
 Content licensed under CC BY 4.0. See LICENSE-CC-BY-4.0.
-VERSION 2.3 - Vitso Branded Edition
+VERSION 2.4 - Vitso Branded Edition (Refined Color Palette)
 -->
 <html lang="en"><head>
     <meta http-equiv="Content-Security-Policy"
@@ -17,7 +17,7 @@ VERSION 2.3 - Vitso Branded Edition
                upgrade-insecure-requests">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PHI/PII Training v2.3 - Vitso Healthcare Compliance</title>
+    <title>PHI/PII Training v2.4 - Vitso Healthcare Compliance</title>
     <style>
         :root {
             /* Vitso brand colors */
@@ -261,17 +261,18 @@ VERSION 2.3 - Vitso Branded Edition
             color: var(--text-secondary);
         }
 
-        /* Formula Box */
+        /* Formula Box - Dark with gold accent */
         .formula-box {
-            background: var(--warning-bg);
-            border: 1px solid var(--warning-border);
-            padding: 1rem 1.5rem;
+            background: var(--bg-dark);
+            border: 2px solid var(--accent);
+            padding: 1.25rem 1.5rem;
             border-radius: var(--radius-md);
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: 600;
             margin: 1.5rem 0;
-            color: var(--warning);
+            color: var(--accent);
+            letter-spacing: 0.5px;
         }
 
         /* Code Examples */
@@ -341,26 +342,28 @@ VERSION 2.3 - Vitso Branded Edition
             border-radius: var(--radius-md);
             padding: 1.5rem;
             margin: 2rem 0;
+            overflow: hidden;
             box-shadow: var(--shadow-card);
         }
 
         .exercise-header {
-            background: var(--bg-subtle);
+            background: var(--bg-dark);
             margin: -1.5rem -1.5rem 1.5rem -1.5rem;
             padding: 1rem 1.5rem;
             border-radius: var(--radius-md) var(--radius-md) 0 0;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: none;
         }
 
         .exercise-title {
             font-weight: 600;
-            color: var(--text-primary);
+            color: var(--accent);
             margin-bottom: 0.25rem;
         }
 
         .exercise-header p {
-            color: var(--text-muted);
+            color: #9CA3AF;
             font-size: 0.9rem;
+            margin: 0;
         }
 
         /* Questions */
@@ -664,36 +667,50 @@ VERSION 2.3 - Vitso Branded Edition
             border-left: 4px solid var(--error);
         }
 
-        /* Alerts - Softer colors */
+        /* Alerts - Refined muted colors with dark text */
         .alert {
-            padding: 1rem 1.25rem;
+            padding: 1.25rem 1.5rem;
             border-radius: var(--radius-md);
-            margin: 1rem 0;
+            margin: 1.5rem 0;
             border-left: 4px solid;
+            line-height: 1.7;
+            color: var(--text-primary);
         }
 
         .alert-warning {
-            background: var(--warning-bg);
-            border-color: var(--warning);
-            color: var(--warning);
+            background: var(--accent-muted);
+            border-color: var(--accent);
+        }
+
+        .alert-warning strong {
+            color: var(--bg-dark);
         }
 
         .alert-danger {
-            background: var(--error-bg);
-            border-color: var(--error);
-            color: var(--error);
+            background: #FDF2F2;
+            border-color: #B91C1C;
+        }
+
+        .alert-danger strong {
+            color: #991B1B;
         }
 
         .alert-info {
-            background: var(--info-bg);
-            border-color: var(--info);
-            color: var(--info);
+            background: var(--bg-subtle);
+            border-color: var(--bg-dark);
+        }
+
+        .alert-info strong {
+            color: var(--bg-dark);
         }
 
         .alert-success {
-            background: var(--success-bg);
-            border-color: var(--success);
-            color: var(--success);
+            background: #F0FDF4;
+            border-color: #059669;
+        }
+
+        .alert-success strong {
+            color: #047857;
         }
 
         .alert strong {
@@ -723,17 +740,27 @@ VERSION 2.3 - Vitso Branded Edition
             font-size: 0.85rem;
             padding: 0.6rem 1rem;
             margin: 0.2rem;
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius-md);
+            background: var(--bg-dark);
+            color: white;
+            border: 2px solid var(--bg-dark);
+            transition: all 0.2s ease;
+        }
+
+        .module-section-btn:hover {
+            background: var(--bg-dark-alt);
+            border-color: var(--accent);
         }
 
         .module-section-btn.active {
             background: var(--accent) !important;
             color: var(--bg-dark) !important;
+            border-color: var(--accent);
         }
 
         .module-section-btn.viewed::after {
             content: ' ✓';
-            color: var(--success);
+            color: #10B981;
             font-weight: bold;
         }
 
@@ -1203,7 +1230,7 @@ VERSION 2.3 - Vitso Branded Edition
                     <p><strong>Why this matters for developers:</strong> You can work with health data safely as long as it's truly de-identified and contains no PII. The risk comes when identifiable information gets combined with health context.</p>
                 </div>
 
-                <div class="content-section" style="margin-top: 2rem; padding: 1.5rem; background: #e8f4fd; border-radius: 8px;">
+                <div class="content-section" style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-subtle); border-radius: var(--radius-md);">
                     <h3>🎯 Module 1 Key Takeaways</h3>
                     <ul>
                         <li><strong>PII = Identifiable:</strong> Any data that can reasonably identify a specific individual</li>
@@ -1341,15 +1368,15 @@ VERSION 2.3 - Vitso Branded Edition
                 <div class="alert alert-warning">
                     <strong>Expert-Level Content:</strong> This module covers subtle cases. Complete all 6 subsections to continue.
                     <ul style="margin-top: 0.5rem; padding-left: 2rem;">
-                        <li>Green checkmark (<span style="color: #27ae60;">✓</span>) appears after viewing each section</li>
+                        <li>Green checkmark (<span style="color: #059669;">✓</span>) appears after viewing each section</li>
                         <li>NEXT button enables after all sections completed</li>
                     </ul>
                 </div>
 
                 <div class="content-section">
-                    <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
-                        <h4 style="color: #856404; margin-bottom: 0.5rem;">📋 Quick Navigation - Click Any Section:</h4>
-                        <p style="color: #856404; font-size: 0.9rem; margin-bottom: 0.5rem;">Use buttons below OR scroll to bottom for Next/Previous buttons</p>
+                    <div style="background: var(--bg-subtle); border: 2px solid var(--border-light); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <h4 style="color: var(--bg-dark); margin-bottom: 0.5rem;">📋 Quick Navigation - Click Any Section:</h4>
+                        <p style="color: var(--bg-dark); font-size: 0.9rem; margin-bottom: 0.5rem;">Use buttons below OR scroll to bottom for Next/Previous buttons</p>
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
                             <button class="btn btn-secondary module-section-btn active viewed" data-section="intro">1. Basic Context</button>
                             <button class="btn btn-secondary module-section-btn" data-section="database">2. Database & API</button>
@@ -1363,8 +1390,8 @@ VERSION 2.3 - Vitso Branded Edition
 
                 <!-- Subsection: Intro -->
                 <div class="module-subsection active" id="subsection-intro">
-                    <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
-                        <strong style="color: #2980b9;">🔍 Current Section: 1. Basic Context Rules</strong>
+                    <div style="background: var(--bg-dark); padding: 0.8rem 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; border-left: 4px solid var(--accent);">
+                        <strong style="color: var(--accent);">🔍 Current Section: 1. Basic Context Rules</strong>
                     </div>
                     <div class="content-section">
                         <h3>The Context Transformation Rule</h3>
@@ -1421,7 +1448,7 @@ VERSION 2.3 - Vitso Branded Edition
 
                     <div class="subsection-nav">
                         <div></div>
-                        <div style="color: #6c757d; font-weight: bold;">Section 1 of 6</div>
+                        <div style="color: var(--text-muted); font-weight: bold;">Section 1 of 6</div>
                         <button class="btn btn-primary subsection-nav-btn" onclick="nextSubsection()">
                             Next Section: Database & API →
                         </button>
@@ -1430,8 +1457,8 @@ VERSION 2.3 - Vitso Branded Edition
 
                 <!-- Subsection: Database -->
                 <div class="module-subsection" id="subsection-database">
-                    <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
-                        <strong style="color: #2980b9;">🔍 Current Section: 2. Database Design & API Patterns</strong>
+                    <div style="background: var(--bg-dark); padding: 0.8rem 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; border-left: 4px solid var(--accent);">
+                        <strong style="color: var(--accent);">🔍 Current Section: 2. Database Design & API Patterns</strong>
                     </div>
                 <div class="content-section">
                     <h3>Database Design & API Patterns: Architectural Decisions That Create PHI</h3>
@@ -2127,7 +2154,7 @@ VERSION 2.3 - Vitso Branded Edition
                         <button class="btn btn-secondary subsection-nav-btn" onclick="prevSubsection()">
                             ← Previous: Basic Context
                         </button>
-                        <div style="color: #6c757d; font-weight: bold;">Section 2 of 6</div>
+                        <div style="color: var(--text-muted); font-weight: bold;">Section 2 of 6</div>
                         <button class="btn btn-primary subsection-nav-btn" onclick="nextSubsection()">
                             Next: Logging & Analytics →
                         </button>
@@ -2136,8 +2163,8 @@ VERSION 2.3 - Vitso Branded Edition
 
                 <!-- Subsection: Logging -->
                 <div class="module-subsection" id="subsection-logging">
-                    <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
-                        <strong style="color: #2980b9;">🔍 Current Section: 3. Logging & Analytics Traps</strong>
+                    <div style="background: var(--bg-dark); padding: 0.8rem 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; border-left: 4px solid var(--accent);">
+                        <strong style="color: var(--accent);">🔍 Current Section: 3. Logging & Analytics Traps</strong>
                     </div>
                 <div class="content-section">
                     <h3>Logging & Analytics Traps: The Silent PHI Exposures</h3>
@@ -2749,7 +2776,7 @@ VERSION 2.3 - Vitso Branded Edition
                         <button class="btn btn-secondary subsection-nav-btn" onclick="prevSubsection()">
                             ← Previous: Database & API
                         </button>
-                        <div style="color: #6c757d; font-weight: bold;">Section 3 of 6</div>
+                        <div style="color: var(--text-muted); font-weight: bold;">Section 3 of 6</div>
                         <button class="btn btn-primary subsection-nav-btn" onclick="nextSubsection()">
                             Next: Inference Problem →
                         </button>
@@ -2758,8 +2785,8 @@ VERSION 2.3 - Vitso Branded Edition
 
                 <!-- Subsection: Inference -->
                 <div class="module-subsection" id="subsection-inference">
-                    <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
-                        <strong style="color: #2980b9;">🔍 Current Section: 4. The Inference Problem</strong>
+                    <div style="background: var(--bg-dark); padding: 0.8rem 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; border-left: 4px solid var(--accent);">
+                        <strong style="color: var(--accent);">🔍 Current Section: 4. The Inference Problem</strong>
                     </div>
                     <div class="content-section">
                         <h3>The Inference Problem: When Behavior Reveals Health Conditions</h3>
@@ -3235,7 +3262,7 @@ VERSION 2.3 - Vitso Branded Edition
                         <button class="btn btn-secondary subsection-nav-btn" onclick="prevSubsection()">
                             ← Previous: Logging & Analytics
                         </button>
-                        <div style="color: #6c757d; font-weight: bold;">Section 4 of 6</div>
+                        <div style="color: var(--text-muted); font-weight: bold;">Section 4 of 6</div>
                         <button class="btn btn-primary subsection-nav-btn" onclick="nextSubsection()">
                             Next: Multi-System Flows →
                         </button>
@@ -3244,8 +3271,8 @@ VERSION 2.3 - Vitso Branded Edition
 
                 <!-- Subsection: Multi-System -->
                 <div class="module-subsection" id="subsection-systems">
-                    <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
-                        <strong style="color: #2980b9;">🔍 Current Section: 5. Multi-System Data Flows</strong>
+                    <div style="background: var(--bg-dark); padding: 0.8rem 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; border-left: 4px solid var(--accent);">
+                        <strong style="color: var(--accent);">🔍 Current Section: 5. Multi-System Data Flows</strong>
                     </div>
                     <div class="content-section">
     <h3>Multi-System Data Flows: Where PHI Emerges at Integration Points</h3>
@@ -3735,7 +3762,7 @@ POST /api/sms/send
                         <button class="btn btn-secondary subsection-nav-btn" onclick="prevSubsection()">
                             ← Previous: Inference Problem
                         </button>
-                        <div style="color: #6c757d; font-weight: bold;">Section 5 of 6</div>
+                        <div style="color: var(--text-muted); font-weight: bold;">Section 5 of 6</div>
                         <button class="btn btn-primary subsection-nav-btn" onclick="nextSubsection()">
                             Next: HIPAA Safe Harbor →
                         </button>
@@ -3744,8 +3771,8 @@ POST /api/sms/send
 
                <!-- Subsection: Safe Harbor -->
 <div class="module-subsection" id="subsection-safeharbor">
-    <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
-        <strong style="color: #2980b9;">🔍 Current Section: 6. HIPAA Safe Harbor (Final Section)</strong>
+    <div style="background: var(--bg-dark); padding: 0.8rem 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; border-left: 4px solid var(--accent);">
+        <strong style="color: var(--accent);">🔍 Current Section: 6. HIPAA Safe Harbor (Final Section)</strong>
     </div>
     
     <div class="content-section">
@@ -3778,13 +3805,13 @@ POST /api/sms/send
                     <tr>
                         <td>ZIP 331XX (Chicago area)</td>
                         <td>45,000</td>
-                        <td><span style="color: #27ae60;">✅ Yes</span></td>
+                        <td><span style="color: #059669;">✅ Yes</span></td>
                         <td>"331XX" or "331**"</td>
                     </tr>
                     <tr>
                         <td>ZIP 059XX (Rural Vermont)</td>
                         <td>12,000</td>
-                        <td><span style="color: #e74c3c;">❌ No</span></td>
+                        <td><span style="color: #B91C1C;">❌ No</span></td>
                         <td>"000XX" (generic)</td>
                     </tr>
                 </tbody>
@@ -3796,7 +3823,7 @@ POST /api/sms/send
             <p>Safe Harbor allows <strong>only the year</strong> from any date. All specific dates, months, quarters, or day-level information must be removed.</p>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">
-                <div style="background: #f8d7da; padding: 1rem; border-radius: 6px;">
+                <div style="background: #FDF2F2; padding: 1rem; border-radius: var(--radius-md);">
                     <strong style="color: #721c24;">❌ Not Safe Harbor Compliant:</strong>
                     <ul style="margin-top: 0.5rem; color: #721c24; padding-left: 1.5rem;">
                         <li>"Admitted: 03/15/2024"</li>
@@ -3805,7 +3832,7 @@ POST /api/sms/send
                         <li>"Discharged: January 2024"</li>
                     </ul>
                 </div>
-                <div style="background: #d4edda; padding: 1rem; border-radius: 6px;">
+                <div style="background: #F0FDF4; padding: 1rem; border-radius: var(--radius-md);">
                     <strong style="color: #155724;">✅ Safe Harbor Compliant:</strong>
                     <ul style="margin-top: 0.5rem; color: #155724; padding-left: 1.5rem;">
                         <li>"Admitted: 2024"</li>
@@ -3831,15 +3858,15 @@ POST /api/sms/send
                 <tbody>
                     <tr>
                         <td>23, 45, 67, 89</td>
-                        <td><span style="color: #27ae60;">✅ Show as-is:</span> 23, 45, 67, 89</td>
+                        <td><span style="color: #059669;">✅ Show as-is:</span> 23, 45, 67, 89</td>
                     </tr>
                     <tr>
                         <td>91, 93, 95</td>
-                        <td><span style="color: #27ae60;">✅ Aggregate:</span> 90+, 90+, 90+</td>
+                        <td><span style="color: #059669;">✅ Aggregate:</span> 90+, 90+, 90+</td>
                     </tr>
                     <tr>
                         <td>42, 67, 91, 35, 93, 28</td>
-                        <td><span style="color: #27ae60;">✅ Mixed:</span> 42, 67, 90+, 35, 90+, 28</td>
+                        <td><span style="color: #059669;">✅ Mixed:</span> 42, 67, 90+, 35, 90+, 28</td>
                     </tr>
                 </tbody>
             </table>
@@ -3906,7 +3933,7 @@ POST /api/sms/send
         <button class="btn btn-secondary subsection-nav-btn" onclick="prevSubsection()">
             ← Previous: Multi-System Flows
         </button>
-        <div style="color: #6c757d; font-weight: bold;">Section 6 of 6 <span style="color: #27ae60;">✓</span> Complete</div>
+        <div style="color: var(--text-muted); font-weight: bold;">Section 6 of 6 <span style="color: #059669;">✓</span> Complete</div>
         <button class="btn btn-success subsection-nav-btn" onclick="nextModule()">
             Continue to Next Module →
         </button>
@@ -3914,7 +3941,7 @@ POST /api/sms/send
 </div>
                 <!-- End of Safe Harbor subsection -->
 
-                <div class="content-section" style="margin-top: 2rem; padding: 1.5rem; background: #e8f4fd; border-radius: 8px;">
+                <div class="content-section" style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-subtle); border-radius: var(--radius-md);">
                     <h3>🎯 Module 3 Key Takeaways</h3>
                     <ul>
                         <li><strong>Context Creates PHI:</strong> Safe data becomes PHI when combined</li>
@@ -3934,15 +3961,15 @@ POST /api/sms/send
                 <div class="alert alert-warning">
                     <strong>Technical Deep-Dive:</strong> This module covers core principles, de-identification techniques, and BAA obligations. Each subsection includes practice exercises.
                     <ul style="margin-top: 0.5rem; padding-left: 2rem;">
-                        <li>Green checkmark (<span style="color: #27ae60;">✓</span>) appears after viewing each section</li>
+                        <li>Green checkmark (<span style="color: #059669;">✓</span>) appears after viewing each section</li>
                         <li>Answer exercises to reinforce learning</li>
                     </ul>
                 </div>
 
                 <div class="content-section">
-                    <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
-                        <h4 style="color: #856404; margin-bottom: 0.5rem;">📋 Quick Navigation - Click Any Section:</h4>
-                        <p style="color: #856404; font-size: 0.9rem; margin-bottom: 0.5rem;">Use buttons below OR scroll to bottom for Next/Previous buttons</p>
+                    <div style="background: var(--bg-subtle); border: 2px solid var(--border-light); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <h4 style="color: var(--bg-dark); margin-bottom: 0.5rem;">📋 Quick Navigation - Click Any Section:</h4>
+                        <p style="color: var(--bg-dark); font-size: 0.9rem; margin-bottom: 0.5rem;">Use buttons below OR scroll to bottom for Next/Previous buttons</p>
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
                             <button class="btn btn-secondary module-section-btn active viewed" data-section="m4-principles" data-module="4">1. Core Principles</button>
                             <button class="btn btn-secondary module-section-btn" data-section="m4-deidentification" data-module="4">2. De-Identification</button>
@@ -3953,8 +3980,8 @@ POST /api/sms/send
 
                 <!-- Subsection 4a: Core Principles -->
                 <div class="module-subsection active" id="subsection-m4-principles">
-                    <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
-                        <strong style="color: #2980b9;">🔍 Current Section: 1. Core Principles (~3 min)</strong>
+                    <div style="background: var(--bg-dark); padding: 0.8rem 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; border-left: 4px solid var(--accent);">
+                        <strong style="color: var(--accent);">🔍 Current Section: 1. Core Principles (~3 min)</strong>
                     </div>
 
                    <div class="content-section">
@@ -3970,7 +3997,7 @@ POST /api/sms/send
             <li><strong>No local storage:</strong> Never download PHI to laptops, personal drives, or development machines</li>
         </ul>
         
-        <div style="background: #f8d7da; padding: 1rem; border-radius: 6px; margin-top: 1rem; border-left: 4px solid #dc3545;">
+        <div style="background: #FDF2F2; padding: 1rem; border-radius: var(--radius-md); margin-top: 1rem; border-left: 4px solid #B91C1C;">
             <strong style="color: #721c24;">❌ Common Violations:</strong>
             <ul style="margin-top: 0.5rem; color: #721c24; margin-left: 2.5rem; padding-left: 1.5rem;">
                 <li>Downloading production database to laptop for "quick analysis"</li>
@@ -3992,7 +4019,7 @@ POST /api/sms/send
             <li><strong>Monitoring Tools:</strong> APM, logging, analytics - all need BAAs if touching PHI</li>
         </ul>
         
-        <div style="background: #f8d7da; padding: 1rem; border-radius: 6px; margin-top: 1rem; border-left: 4px solid #dc3545;">
+        <div style="background: #FDF2F2; padding: 1rem; border-radius: var(--radius-md); margin-top: 1rem; border-left: 4px solid #B91C1C;">
             <strong style="color: #721c24;">❌ Common Violations:</strong>
             <ul style="margin-top: 0.5rem; color: #721c24; margin-left: 2.5rem; padding-left: 1.5rem;">
                 <li>Using personal ChatGPT for debugging healthcare code</li>
@@ -4017,7 +4044,7 @@ POST /api/sms/send
             <li><strong>Test data generators:</strong> Build tools to create production-like test data</li>
         </ul>
         
-        <div style="background: #f8d7da; padding: 1rem; border-radius: 6px; margin-top: 1rem; border-left: 4px solid #dc3545;">
+        <div style="background: #FDF2F2; padding: 1rem; border-radius: var(--radius-md); margin-top: 1rem; border-left: 4px solid #B91C1C;">
             <strong style="color: #721c24;">❌ Common Violations:</strong>
             <ul style="margin-top: 0.5rem; color: #721c24; margin-left: 2.5rem; padding-left: 1.5rem;">
                 <li>"Just changing the names" but keeping real addresses, dates, diagnosis codes</li>
@@ -4069,7 +4096,7 @@ POST /api/sms/send
 
                     <div class="subsection-nav">
                         <div></div>
-                        <div style="color: #6c757d; font-weight: bold;">Section 1 of 3</div>
+                        <div style="color: var(--text-muted); font-weight: bold;">Section 1 of 3</div>
                         <button class="btn btn-primary subsection-nav-btn" onclick="nextModule4Subsection()">
                             Next: De-Identification Techniques →
                         </button>
@@ -4078,8 +4105,8 @@ POST /api/sms/send
 
                 <!-- Subsection 4b: De-Identification (content from v2.1) -->
                 <div class="module-subsection" id="subsection-m4-deidentification">
-                    <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
-                        <strong style="color: #2980b9;">🔍 Current Section: 2. De-Identification Techniques (~10-12 min)</strong>
+                    <div style="background: var(--bg-dark); padding: 0.8rem 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; border-left: 4px solid var(--accent);">
+                        <strong style="color: var(--accent);">🔍 Current Section: 2. De-Identification Techniques (~10-12 min)</strong>
                     </div>
 
                     <div class="content-section">
@@ -4301,7 +4328,7 @@ token = vault.tokenize_ssn(real_ssn)
                     <div class="content-section">
                         <h3>Common De-Identification Mistakes</h3>
                         
-                        <div class="scenario-box" style="border-left-color: #e74c3c;">
+                        <div class="scenario-box" style="border-left-color: #B91C1C;">
                             <h4>❌ Mistake #1: Incomplete Identifier Removal</h4>
                             <div class="code-example"><span class="comment">// Bad: Only removed name and email</span>
 {
@@ -4320,7 +4347,7 @@ token = vault.tokenize_ssn(real_ssn)
 }</div>
                         </div>
 
-                        <div class="scenario-box" style="border-left-color: #e74c3c;">
+                        <div class="scenario-box" style="border-left-color: #B91C1C;">
                             <h4>❌ Mistake #2: Weak Hashing Without Salt</h4>
                             <div class="code-example"><span class="comment">// Bad: No salt - vulnerable to rainbow tables</span>
 hashed = md5(patient_email)  <span class="comment">// ❌ Pre-computable</span>
@@ -4330,19 +4357,19 @@ salt = <span class="string">"complex-random-salt"</span>
 hashed = sha256(salt + patient_email)  <span class="comment">// ✅ Much harder to reverse</span></div>
                         </div>
 
-                        <div class="scenario-box" style="border-left-color: #e74c3c;">
+                        <div class="scenario-box" style="border-left-color: #B91C1C;">
                             <h4>❌ Mistake #3: Re-identification Through Data Linkage</h4>
                             <p><strong>Scenario:</strong> Even "de-identified" datasets can be re-identified when combined:</p>
                             <ul>
                                 <li>Dataset A: {age: 47, ZIP: 02138, diagnosis: diabetes}</li>
                                 <li>Dataset B: {name: John Smith, age: 47, ZIP: 02138}</li>
-                                <li><strong style="color: #e74c3c;">Risk:</strong> Join on age+ZIP → re-identify John = diabetes</li>
+                                <li><strong style="color: #B91C1C;">Risk:</strong> Join on age+ZIP → re-identify John = diabetes</li>
                             </ul>
                             <p><strong>Solution:</strong> Use k-anonymity (k≥5) and never share datasets that could be linked!</p>
                         </div>
                     </div>
 
-                    <div class="content-section" style="margin-top: 2rem; padding: 1.5rem; background: #e8f4fd; border-radius: 8px;">
+                    <div class="content-section" style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-subtle); border-radius: var(--radius-md);">
                         <h3>🎯 De-Identification Key Takeaways</h3>
                         <ul>
                             <li><strong>Safe Harbor = Remove All 18 Identifiers:</strong> Not just names and emails</li>
@@ -4412,7 +4439,7 @@ hashed = sha256(salt + patient_email)  <span class="comment">// ✅ Much harder 
                         <button class="btn btn-secondary subsection-nav-btn" onclick="prevModule4Subsection()">
                             ← Previous: Core Principles
                         </button>
-                        <div style="color: #6c757d; font-weight: bold;">Section 2 of 3</div>
+                        <div style="color: var(--text-muted); font-weight: bold;">Section 2 of 3</div>
                         <button class="btn btn-primary subsection-nav-btn" onclick="nextModule4Subsection()">
                             Next: BAA Understanding →
                         </button>
@@ -4421,8 +4448,8 @@ hashed = sha256(salt + patient_email)  <span class="comment">// ✅ Much harder 
 
                 <!-- Subsection 4c: BAA Understanding (NEW) -->
                 <div class="module-subsection" id="subsection-m4-baa">
-                    <div style="background: #e8f4fd; padding: 0.8rem; border-radius: 6px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
-                        <strong style="color: #2980b9;">🔍 Current Section: 3. BAA Understanding for Technical Teams (~8-10 min) 🆕</strong>
+                    <div style="background: var(--bg-dark); padding: 0.8rem 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; border-left: 4px solid var(--accent);">
+                        <strong style="color: var(--accent);">🔍 Current Section: 3. BAA Understanding for Technical Teams (~8-10 min) 🆕</strong>
                     </div>
 
                     <div class="content-section">
@@ -4441,7 +4468,7 @@ hashed = sha256(salt + patient_email)  <span class="comment">// ✅ Much harder 
                     <div class="content-section">
                         <h3>Part 1: Vendor BAAs (Downstream) - What Coverage Actually Means</h3>
                         
-                        <div class="scenario-box" style="border-left-color: #e74c3c;">
+                        <div class="scenario-box" style="border-left-color: #B91C1C;">
                             <h4>❌ Myth #1: "We have a BAA with AWS = PHI anywhere in AWS is fine"</h4>
                             <p><strong>Reality:</strong> BAAs are often <em>service-specific</em>. Your BAA might cover S3 and RDS, but NOT CloudWatch Logs, Elasticsearch, or third-party integrations.</p>
                             <p><strong>What you must check:</strong></p>
@@ -4453,7 +4480,7 @@ hashed = sha256(salt + patient_email)  <span class="comment">// ✅ Much harder 
                             </ul>
                         </div>
 
-                        <div class="scenario-box" style="border-left-color: #e74c3c;">
+                        <div class="scenario-box" style="border-left-color: #B91C1C;">
                             <h4>❌ Myth #2: "The vendor has HIPAA certification = we're covered"</h4>
                             <p><strong>Reality:</strong> There's no such thing as "HIPAA certified." Vendors can be "HIPAA compliant," but YOU still need a signed BAA and proper technical controls.</p>
                             <p><strong>What you must verify:</strong></p>
@@ -4464,7 +4491,7 @@ hashed = sha256(salt + patient_email)  <span class="comment">// ✅ Much harder 
                             </ul>
                         </div>
 
-                        <div class="scenario-box" style="border-left-color: #e74c3c;">
+                        <div class="scenario-box" style="border-left-color: #B91C1C;">
                             <h4>❌ Myth #3: "A BAA means the vendor is responsible if something goes wrong"</h4>
                             <p><strong>Reality:</strong> BAAs create <em>shared responsibility</em>. The vendor handles their infrastructure security, but YOU are responsible for:</p>
                             <ul>
@@ -4520,7 +4547,7 @@ AWS/Datadog/Other Vendors (Sub-processor)</div>
                                 </ul>
                             </div>
 
-                            <div class="scenario-box" style="border-left-color: #e74c3c;">
+                            <div class="scenario-box" style="border-left-color: #B91C1C;">
                                 <h4>❌ What NOT to Assume</h4>
                                 <ul style="list-style-type: none;">
                                     <li><strong>❌ "Legal handles compliance"</strong> → Technical teams implement the actual controls</li>
@@ -4576,7 +4603,7 @@ AWS/Datadog/Other Vendors (Sub-processor)</div>
                     <div class="content-section">
                         <h3>🎯 Real-World Scenario: Evaluating a New Tool</h3>
                         
-                        <div class="scenario-box" style="background: #fff3cd; border-left-color: #ffc107;">
+                        <div class="scenario-box" style="background: var(--accent-muted); border-left-color: var(--accent);">
                             <h4>Scenario: Developer wants to use Datadog for application monitoring</h4>
                             
                             <p><strong>❌ Wrong Approach:</strong></p>
@@ -4600,7 +4627,7 @@ AWS/Datadog/Other Vendors (Sub-processor)</div>
                         </div>
                     </div>
 
-                    <div class="content-section" style="margin-top: 2rem; padding: 1.5rem; background: #e8f4fd; border-radius: 8px;">
+                    <div class="content-section" style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-subtle); border-radius: var(--radius-md);">
                         <h3>🎯 BAA Key Takeaways</h3>
                         <ul>
                             <li><strong>Two-Way Obligations:</strong> Vendor BAAs (downstream) AND your BA obligations (upstream)</li>
@@ -4670,7 +4697,7 @@ AWS/Datadog/Other Vendors (Sub-processor)</div>
                         <button class="btn btn-secondary subsection-nav-btn" onclick="prevModule4Subsection()">
                             ← Previous: De-Identification
                         </button>
-                        <div style="color: #6c757d; font-weight: bold;">Section 3 of 3 <span style="color: #27ae60;">✓</span> Complete</div>
+                        <div style="color: var(--text-muted); font-weight: bold;">Section 3 of 3 <span style="color: #059669;">✓</span> Complete</div>
                         <button class="btn btn-success subsection-nav-btn" onclick="nextModule()">
                             Complete Module 4 → Continue
                         </button>
@@ -4834,13 +4861,13 @@ AWS/Datadog/Other Vendors (Sub-processor)</div>
                 <tr>
                     <td><strong>Public/Consumer AI</strong></td>
                     <td>ChatGPT Free/Plus, Claude.ai, Gemini, Perplexity (personal accounts)</td>
-                    <td><span style="color: #e74c3c;">❌ No</span></td>
-                    <td><span style="color: #e74c3c;">❌ Never</span></td>
+                    <td><span style="color: #B91C1C;">❌ No</span></td>
+                    <td><span style="color: #B91C1C;">❌ Never</span></td>
                 </tr>
                 <tr>
                     <td><strong>Enterprise AI Platforms</strong></td>
                     <td>ChatGPT Enterprise, Claude for Enterprise, Azure OpenAI</td>
-                    <td><span style="color: #27ae60;">✅ Yes (if configured)</span></td>
+                    <td><span style="color: #059669;">✅ Yes (if configured)</span></td>
                     <td><span style="color: #f39c12;">⚠️ Only with BAA + proper setup</span></td>
                 </tr>
                 <tr>
@@ -4861,7 +4888,7 @@ AWS/Datadog/Other Vendors (Sub-processor)</div>
             <h4>Common Development AI Tools & Their PHI Risks</h4>
             
             <div style="margin: 1rem 0;">
-                <strong style="color: #2980b9;">GitHub Copilot</strong>
+                <strong style="color: var(--accent);">GitHub Copilot</strong>
                 <ul>
                     <li><strong>Individual/Pro:</strong> ❌ No BAA - data may be used for training</li>
                     <li><strong>Business/Enterprise:</strong> ⚠️ BAA available, but requires proper configuration</li>
@@ -4870,7 +4897,7 @@ AWS/Datadog/Other Vendors (Sub-processor)</div>
             </div>
 
             <div style="margin: 1rem 0;">
-                <strong style="color: #2980b9;">Cursor AI</strong>
+                <strong style="color: var(--accent);">Cursor AI</strong>
                 <ul>
                     <li><strong>Free/Pro:</strong> ❌ No BAA available</li>
                     <li><strong>Business:</strong> ⚠️ Check with your organization - BAA status varies</li>
@@ -4879,7 +4906,7 @@ AWS/Datadog/Other Vendors (Sub-processor)</div>
             </div>
 
             <div style="margin: 1rem 0;">
-                <strong style="color: #2980b9;">JetBrains AI Assistant</strong>
+                <strong style="color: var(--accent);">JetBrains AI Assistant</strong>
                 <ul>
                     <li><strong>Individual:</strong> ❌ No BAA</li>
                     <li><strong>Enterprise:</strong> ⚠️ Potential BAA available - verify with IT</li>
@@ -4888,7 +4915,7 @@ AWS/Datadog/Other Vendors (Sub-processor)</div>
             </div>
 
             <div style="margin: 1rem 0;">
-                <strong style="color: #2980b9;">Tabnine</strong>
+                <strong style="color: var(--accent);">Tabnine</strong>
                 <ul>
                     <li><strong>Cloud versions:</strong> ❌ Typically no BAA for standard tiers</li>
                     <li><strong>Self-hosted Enterprise:</strong> ✅ Can be configured safely (runs on your infrastructure)</li>
@@ -4901,7 +4928,7 @@ AWS/Datadog/Other Vendors (Sub-processor)</div>
     <div class="content-section">
         <h3>⚠️ What AI Tools Can "See" in Your Development Environment</h3>
         
-        <div class="scenario-box" style="border-left-color: #e74c3c;">
+        <div class="scenario-box" style="border-left-color: #B91C1C;">
             <h4>❌ Common Dangerous Exposures</h4>
             
             <div class="code-example">
@@ -4997,8 +5024,8 @@ AWS/Datadog/Other Vendors (Sub-processor)</div>
     <div class="content-section">
         <h3>🎯 Decision Tree: Can I Use This AI Tool?</h3>
         
-        <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0;">
-            <h4 style="color: #856404; margin-bottom: 1rem;">Before Using ANY AI Tool, Ask:</h4>
+        <div style="background: var(--bg-subtle); border: 2px solid var(--border-light); padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0;">
+            <h4 style="color: var(--bg-dark); margin-bottom: 1rem;">Before Using ANY AI Tool, Ask:</h4>
             
             <div style="margin: 1rem 0; padding: 1rem; background: white; border-radius: 6px;">
                 <strong>Question 1: Will this tool access ANY of the following?</strong>
@@ -5083,7 +5110,7 @@ AWS/Datadog/Other Vendors (Sub-processor)</div>
         </div>
     </div>
 
-    <div class="content-section" style="margin-top: 2rem; padding: 1.5rem; background: #e8f4fd; border-radius: 8px;">
+    <div class="content-section" style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-subtle); border-radius: var(--radius-md);">
         <h3>🎯 Module 6 Key Takeaways</h3>
         <ul>
             <li><strong>Not All AI Tools Are Equal:</strong> Consumer vs Enterprise vs Development tools have different BAA availability</li>
@@ -5740,7 +5767,7 @@ AWS/Datadog/Other Vendors (Sub-processor)</div>
                         ${correctCount} out of ${totalQuestions} correct
                     </div>
                     <div style="margin-top: 0.5rem; font-size: 0.9rem;">
-                        ${passed ? '<span style="color: #27ae60;">PASSED</span>' : '<span style="color: #e74c3c;">FAILED - 80% required</span>'}
+                        ${passed ? '<span style="color: #059669;">PASSED</span>' : '<span style="color: #B91C1C;">FAILED - 80% required</span>'}
                     </div>
                 `;
             }
@@ -5771,7 +5798,7 @@ AWS/Datadog/Other Vendors (Sub-processor)</div>
                     </div>
                     <div style="margin-top: 0.5rem;">
                         <strong>Your answer:</strong> ${userAnswer || 'Not answered'}
-                        ${!isCorrect ? `<br><strong style="color: #27ae60;">Correct answer:</strong> ${correctAnswers[qId]}` : ''}
+                        ${!isCorrect ? `<br><strong style="color: #059669;">Correct answer:</strong> ${correctAnswers[qId]}` : ''}
                     </div>
                 `;
                 keyContent.appendChild(item);
@@ -5946,7 +5973,7 @@ AWS/Datadog/Other Vendors (Sub-processor)</div>
                     position: fixed;
                     top: 20px;
                     right: 20px;
-                    background: #27ae60;
+                    background: var(--bg-dark);
                     color: white;
                     padding: 1rem 1.5rem;
                     border-radius: 8px;
