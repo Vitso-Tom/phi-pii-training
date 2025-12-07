@@ -948,16 +948,61 @@ VERSION 2.3 - Vitso Branded Edition
         </div>
 
         <div class="content-area">
-            <!-- Module 0: Introduction -->
-            <div class="module active" id="module-0">
-                <div class="module-header">
-                    <div class="module-title">Welcome to PHI/PII Training for Builders</div>
-         <div class="content-section">
-    <p>This training was built for those of us who work directly with sensitive patient data: the developers, engineers, analysts, and operators who design, ship, secure, and support the systems behind care delivery. You will learn how to recognize, protect, and responsibly handle PHI and PII in real technical workflows, so the work we build remains safe, trusted, and worthy of the people it serves.</p>
-    
-    <p>You can complete this program in two modes. <strong>Learning Mode</strong> is designed for exploration, where you can review material, change answers, and build confidence at your own pace. When you are ready, you may switch to <strong>Assessment Mode</strong> to test your understanding with no revisions. Completing the assessment will generate a printable certificate that you can keep for your records or share as evidence of successful training.</p>
-</div>
-                </div>
+<!-- Module 0: Introduction -->
+<div class="module active" id="module-0">
+    <div class="module-header">
+        <div class="module-title">Welcome to PHI/PII Training for Builders</div>
+    </div>
+
+    <!-- Mission statement with special styling -->
+    <div style="background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-dark-alt) 100%); 
+                color: white; 
+                padding: 2rem; 
+                border-radius: var(--radius-lg); 
+                margin-bottom: 2rem;
+                border-left: 4px solid var(--accent);">
+        <div style="display: flex; align-items: flex-start; gap: 1rem;">
+            <div style="font-size: 2.5rem; line-height: 1;">🛡️</div>
+            <div>
+                <p style="font-size: 1.1rem; line-height: 1.7; margin: 0; color: #E5E7EB;">
+                    This training was built for those of us who work directly with sensitive patient data: the developers, engineers, analysts, and operators who design, ship, secure, and support the systems behind care delivery. You will learn how to recognize, protect, and responsibly handle PHI and PII in real technical workflows, so the work we build remains <strong style="color: var(--accent);">safe, trusted, and worthy of the people it serves</strong>.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Two mode cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        <!-- Learning Mode Card -->
+        <div style="background: var(--bg-card); 
+                    border: 2px solid var(--border-light); 
+                    border-radius: var(--radius-lg); 
+                    padding: 1.5rem;
+                    transition: all 0.3s ease;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                <span style="font-size: 1.5rem;">📚</span>
+                <h4 style="margin: 0; color: var(--text-primary); font-size: 1.1rem;">Learning Mode</h4>
+            </div>
+            <p style="color: var(--text-secondary); margin: 0; line-height: 1.6; font-size: 0.95rem;">
+                Designed for exploration. Review material, change answers, and build confidence at your own pace. Perfect for first-time learners or refresher training.
+            </p>
+        </div>
+        
+        <!-- Assessment Mode Card -->
+        <div style="background: var(--bg-card); 
+                    border: 2px solid var(--border-light); 
+                    border-radius: var(--radius-lg); 
+                    padding: 1.5rem;
+                    transition: all 0.3s ease;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                <span style="font-size: 1.5rem;">✏️</span>
+                <h4 style="margin: 0; color: var(--text-primary); font-size: 1.1rem;">Assessment Mode</h4>
+            </div>
+            <p style="color: var(--text-secondary); margin: 0; line-height: 1.6; font-size: 0.95rem;">
+                Test your understanding with no revisions. Completing the assessment generates a printable certificate for your records or compliance documentation.
+            </p>
+        </div>
+    </div>
 
                 <div class="learning-objectives">
                     <h3>By the end of this training, you will be able to:</h3>
